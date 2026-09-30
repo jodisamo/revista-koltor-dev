@@ -53,9 +53,9 @@ add_action( 'init', 'kdv_register_taxonomy_plataforma' );
 function kdv_get_default_platforms() {
 	return [
 		'playstation' => [ 'PlayStation', [ 'ps5' => 'PS5', 'ps4' => 'PS4' ] ],
-		'xbox'        => [ 'Xbox', [ 'xbox-series' => 'Xbox Series X|S', 'xbox-one' => 'Xbox One' ] ],
 		'nintendo'    => [ 'Nintendo', [ 'switch-2' => 'Switch 2', 'switch' => 'Switch' ] ],
-		'pc'          => [ 'PC', [] ],
+		'xbox'        => [ 'Xbox', [ 'xbox-series' => 'Xbox Series X|S', 'xbox-one' => 'Xbox One' ] ],
+		'pc'          => [ 'PC', [ 'steam' => 'Steam' ] ],
 		'movil'       => [ 'Móvil', [] ],
 	];
 }

@@ -5,7 +5,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.7.0
+Stable tag: 1.7.1
 Tags: blog, news, entertainment, two-columns, grid-layout, custom-logo, custom-menu, custom-colors, editor-style, featured-images, threaded-comments, translation-ready, block-styles, wide-blocks, dark-mode
 
 == Description ==
@@ -38,7 +38,7 @@ Características principales:
 * "Reseñas" (menú propio en el admin): Custom Post Type con puntuación y ficha técnica. Se clasifican con las taxonomías Género y Estudio.
 * "Diapositivas (Hero)" (menú propio en el admin): Custom Post Type para el slider de portada. Cada diapositiva usa el título de la entrada, una Imagen destacada obligatoria, y un subtítulo y botón opcionales. Sin diapositivas publicadas, la portada usa el título e imagen de respaldo de Personalizar.
 * "Entradas" normales, organizadas por tipo de contenido en las categorías Noticias (Lanzamientos, Industria, Esports), Avances, Reportajes (Opinión, Especiales) y Eventos, creadas automáticamente al activar el tema solo si no existen. La categoría dice QUÉ es el contenido; la plataforma dice PARA QUÉ es.
-* "Plataformas" (PlayStation → PS5/PS4, Xbox → Series X|S/One, Nintendo → Switch 2/Switch, PC, Móvil): taxonomía aparte, compartida por Entradas y Reseñas; se navega con la barra de iconos de la cabecera.
+* "Plataformas" (PlayStation → PS5/PS4, Nintendo → Switch 2/Switch, Xbox → Series X|S/One, PC → Steam, Móvil): taxonomía aparte, compartida por Entradas y Reseñas; se navega con la barra de iconos de la cabecera.
 
 == Instalación ==
 
@@ -60,6 +60,12 @@ Tipografías: "Baloo 2" y "Noto Sans" (Google Fonts, licencia SIL Open Font Lice
 Swiper.js (assets/lib/swiper/), usado para el slider nativo de portada, licencia MIT. https://swiperjs.com/
 
 == Changelog ==
+
+= 1.7.1 =
+* Orden de la barra de plataformas: PlayStation · Nintendo · Xbox · PC · Móvil.
+* Steam como subplataforma de PC (no como categoría ni como icono propio de la barra): filtrar por PC incluye lo marcado como Steam, y Steam tiene su propia portada con enlace a "Todo PC".
+* Los iconos de plataforma se invierten a blanco en modo oscuro (son glifos monocromos oscuros que desaparecían sobre el fondo oscuro).
+* En la portada de plataforma el icono nunca se amplía por encima de su tamaño real (hasta 88px), para que un icono pequeño no se vea borroso.
 
 = 1.7.0 =
 * Nueva portada por plataforma (/plataforma/playstation/, /plataforma/ps5/…): cabecera con el icono y el nombre, accesos a sus subplataformas y a sus Tops, y un bloque por tipo de contenido (Noticias, Reseñas, Avances, Reportajes, Eventos) con sus 3 últimas piezas y "Ver todas →" hacia el archivo ya filtrado. Incluye lo marcado en sus subplataformas; los bloques vacíos no se muestran.

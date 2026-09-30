@@ -353,7 +353,7 @@ function kdv_get_platforms_with_icon() {
 	}
 
 	// Orden de la barra: el de kdv_get_default_platforms() (PlayStation,
-	// Xbox, Nintendo, PC, Móvil); las que se añadan después, al final en
+	// Nintendo, Xbox, PC, Móvil); las que se añadan después, al final en
 	// orden de creación.
 	$order = array_flip( array_keys( kdv_get_default_platforms() ) );
 	usort( $terms, function( $a, $b ) use ( $order ) {
