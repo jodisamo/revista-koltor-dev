@@ -5,7 +5,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.4.0
+Stable tag: 1.5.0
 Tags: blog, news, entertainment, two-columns, grid-layout, custom-logo, custom-menu, custom-colors, editor-style, featured-images, threaded-comments, translation-ready, block-styles, wide-blocks, dark-mode
 
 == Description ==
@@ -61,6 +61,16 @@ Swiper.js (assets/lib/swiper/), usado para el slider nativo de portada, licencia
 Iconos: subconjunto de Tabler Icons (https://tabler.io/icons), licencia MIT, incrustados como SVG en el propio tema.
 
 == Changelog ==
+
+= 1.5.0 =
+* Pantalla de acceso (wp-login.php) con la marca del sitio: el logo de Personalizar → Identidad del sitio en lugar de la "W" de WordPress (o el nombre del sitio si no hay logo), el botón "Acceder" con el color primario y el logo enlazando a la portada.
+* Corregido (SEO): las entradas, páginas y reseñas tenían dos etiquetas canonical (la de WordPress y la del tema). Ahora el tema solo la añade donde WordPress no la pone, y ninguna en búsquedas ni en la 404 (antes la de la búsqueda apuntaba a la portada).
+* Corregido: el aviso "Filtrado por: X — quitar filtro" no salía en los archivos de categoría (Novedades, Análisis, Guías), justo los destinos de la barra de plataformas.
+* Corregido: la portada pisaba la variable global $posts de WordPress.
+* Corregido: una red social en dropbox.com, netflix.com o similares salía con el icono de X.
+* Corregido: el tiempo de lectura contaba cada palabra con tilde o ñ como dos y salía inflado en español.
+* Accesibilidad: el enlace "Ir al contenido" ahora se ve al recibir el foco; el slider de portada tiene botón de pausa y arranca detenido con "reducir movimiento"; la copia oculta de la cinta de anuncios ya no se recorre con el tabulador; el buscador ya no repite id cuando sale dos veces; un solo <h1> en el slider; la hamburguesa apunta a su <nav>; el botón de modo oscuro anuncia su estado (aria-pressed).
+* Restos de la temática anterior: el formato por defecto de una reseña nueva es "Videojuego", la ficha dice "entregas" en vez de "eps." y los estilos del editor usan la paleta actual.
 
 = 1.4.0 =
 * Cada icono de la barra de plataformas ahora abre un desplegable propio hacia Novedades, Análisis, Guías, Reseñas y Tops (Ranking), filtrados por esa plataforma (?plataforma=slug sobre las categorías y consultas ya existentes). Deliberadamente NO se crean categorías ni términos nuevos por plataforma -- el filtro cruza kdv_plataforma con la categoría de cada archivo ya existente, así que cada artículo se etiqueta una sola vez, no dos. Un enlace se omite en silencio si su destino no existe todavía (p. ej. "Tops" antes de crear la página de Ranking).

@@ -55,7 +55,10 @@ function kdv_get_active_typography() {
 function kdv_get_reading_time( $post_id = null ) {
 	$post_id = $post_id ?: get_the_ID();
 	$content = get_post_field( 'post_content', $post_id );
-	$words   = str_word_count( wp_strip_all_tags( strip_shortcodes( $content ) ) );
+	// str_word_count() no entiende UTF-8: partía cada palabra con tilde o
+	// ñ en dos ("análisis" contaba como 2) e inflaba el tiempo en español.
+	$text    = trim( wp_strip_all_tags( strip_shortcodes( $content ) ) );
+	$words   = '' === $text ? 0 : count( preg_split( '/\s+/u', $text ) );
 	return max( 1, (int) ceil( $words / 200 ) );
 }
 
@@ -312,11 +315,16 @@ function kdv_render_ticker() {
 
 	$html_items = array_map( $render_item, $items );
 	$group      = implode( '<span class="kdv-ticker__sep" aria-hidden="true">·</span>', $html_items );
+
+	// La copia solo existe para el bucle visual: ni el lector de pantalla
+	// (aria-hidden) ni el tabulador (inert + tabindex, este último para
+	// navegadores sin inert) deben recorrer sus enlaces dos veces.
+	$group_copy = str_replace( '<a class="kdv-ticker__item"', '<a tabindex="-1" class="kdv-ticker__item"', $group );
 	?>
 	<div class="kdv-ticker" role="region" aria-label="<?php esc_attr_e( 'Próximos eventos', 'revista-koltor-dev' ); ?>">
 		<div class="kdv-ticker__track" style="--kdv-ticker-duration: <?php echo esc_attr( $speed ); ?>s">
 			<span class="kdv-ticker__group"><?php echo $group; // phpcs:ignore WordPress.Security.EscapeOutput -- cada trozo ya se escapó en $render_item. ?></span>
-			<span class="kdv-ticker__group" aria-hidden="true"><?php echo $group; // phpcs:ignore WordPress.Security.EscapeOutput -- idem, duplicado para el bucle continuo. ?></span>
+			<span class="kdv-ticker__group" aria-hidden="true" inert><?php echo $group_copy; // phpcs:ignore WordPress.Security.EscapeOutput -- idem, duplicado para el bucle continuo. ?></span>
 		</div>
 	</div>
 	<?php
@@ -696,9 +704,12 @@ function kdv_get_social_icon_svg( $url ) {
 		'wa.me'         => 'whatsapp',
 	];
 
+	// Coincidencia exacta con el dominio o con un subdominio suyo
+	// (www.x.com, m.facebook.com…) -- un strpos() suelto confundía
+	// dropbox.com o netflix.com con x.com.
 	$platform = 'link';
 	foreach ( $domain_map as $domain => $key ) {
-		if ( false !== strpos( $host, $domain ) ) {
+		if ( $host === $domain || '.' . $domain === substr( $host, -strlen( '.' . $domain ) ) ) {
 			$platform = $key;
 			break;
 		}

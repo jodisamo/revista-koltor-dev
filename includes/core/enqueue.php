@@ -50,6 +50,8 @@ function kdv_enqueue_assets() {
 			'autoplaySpeed' => absint( get_theme_mod( 'kdv_hero_autoplay_speed', 5 ) ) * 1000,
 			'arrows'        => (bool) get_theme_mod( 'kdv_hero_show_arrows', true ),
 			'dots'          => (bool) get_theme_mod( 'kdv_hero_show_dots', true ),
+			'labelPause'    => __( 'Pausar el pase de diapositivas', 'revista-koltor-dev' ),
+			'labelPlay'     => __( 'Reanudar el pase de diapositivas', 'revista-koltor-dev' ),
 		] );
 	}
 

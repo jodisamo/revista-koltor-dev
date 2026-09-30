@@ -214,6 +214,24 @@ iframe, embed, object, video { max-width: 100%; }
 	clip: rect(1px, 1px, 1px, 1px);
 	white-space: nowrap;
 }
+/* El enlace "Ir al contenido" es lo primero que alcanza el tabulador: al
+   recibir el foco tiene que verse, si no quien navega con teclado no sabe
+   que existe. */
+.screen-reader-text:focus {
+	top: 8px;
+	left: 8px;
+	z-index: 100000;
+	width: auto; height: auto;
+	padding: 12px 18px;
+	clip: auto;
+	overflow: visible;
+	background: var(--kdv-primary);
+	color: #fff;
+	font-weight: 700;
+	border-radius: 8px;
+	text-decoration: none;
+	box-shadow: 0 4px 14px rgba(0, 0, 0, .25);
+}
 
 /* Gutenberg alignment helpers used by our own blocks + core blocks */
 .alignwide { max-width: 1200px; margin-inline: auto; }
@@ -918,6 +936,47 @@ html[data-kdv-theme="dark"] .kdv-dark-toggle__icon--moon { display: inline-flex;
 .kdv-hero-slider .swiper-button-next::after {
 	font-size: 18px;
 	font-weight: 700;
+}
+/* Botón de pausa del pase automático (lo crea assets/js/hero-slider.js). */
+.kdv-hero-slider__pause {
+	position: absolute;
+	left: 16px;
+	bottom: 16px;
+	z-index: 11;
+	display: grid;
+	place-items: center;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	background: rgba(20, 16, 26, .4);
+	color: #fff;
+	cursor: pointer;
+	backdrop-filter: blur(2px);
+	transition: background .2s ease;
+}
+.kdv-hero-slider__pause:hover,
+.kdv-hero-slider__pause:focus-visible {
+	background: var(--kdv-primary);
+}
+.kdv-hero-slider__pause:focus-visible {
+	outline: 2px solid #fff;
+	outline-offset: 2px;
+}
+/* Dos barras = pausar; triángulo = reanudar. */
+.kdv-hero-slider__pause span {
+	width: 12px;
+	height: 14px;
+	border-inline: 4px solid currentColor;
+}
+.kdv-hero-slider__pause.is-paused span {
+	width: 0;
+	height: 0;
+	border-block: 8px solid transparent;
+	border-inline: 13px solid currentColor;
+	border-inline-end: 0;
+	margin-left: 4px;
 }
 @media (max-width: 640px) {
 	.kdv-hero-slider .swiper-button-prev,

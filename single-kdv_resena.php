@@ -54,7 +54,7 @@ while ( have_posts() ) :
 						<?php if ( $estado ) : ?><span class="kdv-pill"><?php echo esc_html( kdv_get_estado_label( $estado ) ); ?></span><?php endif; ?>
 						<?php if ( $anio ) : ?><span class="kdv-pill"><?php echo esc_html( $anio ); ?></span><?php endif; ?>
 						<?php if ( $periodo ) : ?><span class="kdv-pill"><?php echo esc_html( $periodo ); ?></span><?php endif; ?>
-						<?php if ( $entregas ) : ?><span class="kdv-pill"><?php echo esc_html( $entregas ); ?> <?php esc_html_e( 'eps.', 'revista-koltor-dev' ); ?></span><?php endif; ?>
+						<?php if ( $entregas ) : ?><span class="kdv-pill"><?php echo esc_html( $entregas ); ?> <?php esc_html_e( 'entregas', 'revista-koltor-dev' ); ?></span><?php endif; ?>
 						<?php if ( $estudios && ! is_wp_error( $estudios ) ) : ?>
 							<span class="kdv-pill"><?php echo esc_html( implode( ', ', wp_list_pluck( $estudios, 'name' ) ) ); ?></span>
 						<?php endif; ?>

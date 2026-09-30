@@ -35,7 +35,7 @@ $kdv_hero_mods   = ( 'normal' !== $kdv_hero_height ? ' kdv-hero--' . $kdv_hero_h
 	<section class="kdv-hero kdv-hero-slider<?php echo esc_attr( $kdv_hero_mods ); ?>">
 		<div class="swiper">
 			<div class="swiper-wrapper">
-				<?php foreach ( $hero_slides as $slide ) :
+				<?php foreach ( $hero_slides as $slide_index => $slide ) :
 					$bg          = get_the_post_thumbnail_url( $slide, 'full' );
 					$mobile_id   = (int) get_post_meta( $slide->ID, '_kdv_slide_image_mobile', true );
 					$mobile_bg   = $mobile_id ? wp_get_attachment_image_url( $mobile_id, 'large' ) : '';
@@ -54,7 +54,12 @@ $kdv_hero_mods   = ( 'normal' !== $kdv_hero_height ? ' kdv-hero--' . $kdv_hero_h
 					<div class="swiper-slide" <?php echo $slide_style ? 'style="' . esc_attr( $slide_style ) . '"' : ''; ?>>
 						<div class="kdv-hero-slider__overlay"></div>
 						<div class="kdv-container kdv-hero-slider__content">
-							<h1 class="kdv-hero__title"><?php echo esc_html( get_the_title( $slide ) ); ?></h1>
+							<?php
+							// Un solo <h1> por página: el resto de diapositivas usan <h2>
+							// con la misma clase, así que se ven exactamente igual.
+							$kdv_slide_tag = 0 === $slide_index ? 'h1' : 'h2';
+							?>
+							<<?php echo $kdv_slide_tag; // phpcs:ignore WordPress.Security.EscapeOutput -- 'h1' o 'h2' literal. ?> class="kdv-hero__title"><?php echo esc_html( get_the_title( $slide ) ); ?></<?php echo $kdv_slide_tag; // phpcs:ignore WordPress.Security.EscapeOutput ?>>
 							<?php if ( $subtitle ) : ?>
 								<p class="kdv-hero__subtitle"><?php echo esc_html( $subtitle ); ?></p>
 							<?php endif; ?>
@@ -219,13 +224,13 @@ $kdv_hero_mods   = ( 'normal' !== $kdv_hero_height ? ' kdv-hero--' . $kdv_hero_h
 			continue;
 		}
 		$section_count = max( 2, absint( get_theme_mod( "kdv_home_section_{$slot}_count", 3 ) ) );
-		$posts         = new WP_Query( [
+		$section_posts = new WP_Query( [
 			'post_type'      => 'post',
 			'posts_per_page' => $section_count,
 			'cat'            => $term->term_id,
 			'no_found_rows'  => true,
 		] );
-		if ( ! $posts->have_posts() ) {
+		if ( ! $section_posts->have_posts() ) {
 			wp_reset_postdata();
 			continue;
 		}
@@ -237,8 +242,8 @@ $kdv_hero_mods   = ( 'normal' !== $kdv_hero_height ? ' kdv-hero--' . $kdv_hero_h
 			</div>
 			<div class="kdv-cards-grid kdv-cards-grid--cols-3">
 				<?php
-				while ( $posts->have_posts() ) :
-					$posts->the_post();
+				while ( $section_posts->have_posts() ) :
+					$section_posts->the_post();
 					get_template_part( 'template-parts/content/post-card' );
 				endwhile;
 				wp_reset_postdata();

@@ -18,6 +18,8 @@ get_header();
 				<h1 class="kdv-section__title"><?php single_cat_title(); ?></h1>
 			</header>
 
+			<?php kdv_render_platform_filter_notice(); ?>
+
 			<?php if ( category_description() ) : ?>
 				<div class="kdv-card__excerpt"><?php echo wp_kses_post( category_description() ); ?></div>
 			<?php endif; ?>

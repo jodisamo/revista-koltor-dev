@@ -28,7 +28,7 @@ add_action( 'add_meta_boxes', 'kdv_add_resena_meta_box' );
 function kdv_render_resena_meta_box( $post ) {
 	wp_nonce_field( 'kdv_save_resena_meta', 'kdv_resena_nonce' );
 
-	$tipo       = get_post_meta( $post->ID, '_kdv_tipo', true ) ?: 'serie';
+	$tipo       = get_post_meta( $post->ID, '_kdv_tipo', true ) ?: 'videojuego';
 	$estado     = get_post_meta( $post->ID, '_kdv_estado', true ) ?: 'finalizado';
 	$anio       = get_post_meta( $post->ID, '_kdv_anio', true );
 	$entregas  = get_post_meta( $post->ID, '_kdv_entregas', true );

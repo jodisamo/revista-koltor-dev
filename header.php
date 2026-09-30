@@ -46,7 +46,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		?>
 		<div class="kdv-nav-backdrop" id="kdv-nav-backdrop" aria-hidden="true"></div>
 
-		<nav class="kdv-header__nav" aria-label="<?php esc_attr_e( 'Menú principal', 'revista-koltor-dev' ); ?>">
+		<nav class="kdv-header__nav" id="kdv-primary-nav" aria-label="<?php esc_attr_e( 'Menú principal', 'revista-koltor-dev' ); ?>">
 			<button type="button" class="kdv-nav-close" id="kdv-nav-close" aria-label="<?php esc_attr_e( 'Cerrar menú', 'revista-koltor-dev' ); ?>">
 				<span aria-hidden="true">&times;</span>
 			</button>
@@ -76,7 +76,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<?php kdv_dark_mode_toggle_button(); ?>
 
-			<button type="button" class="kdv-icon-btn" id="kdv-menu-toggle" aria-expanded="false" aria-controls="kdv-header" aria-label="<?php esc_attr_e( 'Abrir menú', 'revista-koltor-dev' ); ?>" data-label-close="<?php esc_attr_e( 'Cerrar menú', 'revista-koltor-dev' ); ?>">
+			<button type="button" class="kdv-icon-btn" id="kdv-menu-toggle" aria-expanded="false" aria-controls="kdv-primary-nav" aria-label="<?php esc_attr_e( 'Abrir menú', 'revista-koltor-dev' ); ?>" data-label-close="<?php esc_attr_e( 'Cerrar menú', 'revista-koltor-dev' ); ?>">
 				<span class="kdv-menu-toggle__bar"></span>
 				<span class="kdv-menu-toggle__bar"></span>
 				<span class="kdv-menu-toggle__bar"></span>

@@ -24,8 +24,15 @@
 		if ( ! toggle ) {
 			return;
 		}
+		// aria-pressed dice al lector de pantalla si el modo oscuro está
+		// activo; la etiqueta del botón no cambia, solo su estado.
+		var syncPressed = function () {
+			toggle.setAttribute( 'aria-pressed', 'dark' === currentTheme() ? 'true' : 'false' );
+		};
 		toggle.addEventListener( 'click', function () {
 			setTheme( 'dark' === currentTheme() ? 'light' : 'dark' );
+			syncPressed();
 		} );
+		syncPressed();
 	} );
 } )();

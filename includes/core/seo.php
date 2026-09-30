@@ -172,8 +172,19 @@ function kdv_render_fallback_seo_meta() {
 	$title       = wp_get_document_title();
 	$url         = kdv_get_fallback_canonical_url();
 	$type        = is_singular( [ 'post', 'kdv_resena' ] ) ? 'article' : 'website';
+
+	/*
+	 * En entradas/páginas/reseñas el canonical ya lo imprime WordPress
+	 * (rel_canonical() en wp_head): repetirlo aquí dejaba dos etiquetas
+	 * canonical por página. En búsquedas y 404 no se imprime ninguno --
+	 * $wp->request viene vacío con ?s=, así que apuntaba a la portada.
+	 */
+	if ( ! is_singular() && ! is_search() && ! is_404() ) :
+		?>
+		<link rel="canonical" href="<?php echo esc_url( $url ); ?>" />
+		<?php
+	endif;
 	?>
-	<link rel="canonical" href="<?php echo esc_url( $url ); ?>" />
 	<?php if ( $description ) : ?>
 		<meta name="description" content="<?php echo esc_attr( $description ); ?>" />
 	<?php endif; ?>
