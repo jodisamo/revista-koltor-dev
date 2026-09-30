@@ -34,6 +34,9 @@ require_once KDV_INCLUDES_DIR . '/core/cpt-ticker.php';
 // mientras el sitio no está listo (ver includes/core/maintenance-mode.php).
 require_once KDV_INCLUDES_DIR . '/core/maintenance-mode.php';
 
+// Marca del sitio en la pantalla de acceso (logo + color primario).
+require_once KDV_INCLUDES_DIR . '/core/login-branding.php';
+
 // Admin meta box for review fields (score, studio, year, pros/cons...).
 require_once KDV_INCLUDES_DIR . '/admin/meta-box-resena.php';
 
