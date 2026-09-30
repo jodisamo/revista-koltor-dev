@@ -242,10 +242,12 @@ iframe, embed, object, video { max-width: 100%; }
    .kdv-primary-menu -- ver la nota junto a kdv_render_platform_bar() en
    template-tags.php sobre por qué no se integra en el menú principal. */
 .kdv-platform-bar {
-	background: var(--kdv-surface);
-	border-bottom: 1px solid var(--kdv-border);
+	/* Vive dentro de <header> (header.php): comparte su fondo, también el
+	   efecto cristal de la cabecera fija, y se separa del menú con una línea. */
+	background: transparent;
+	border-top: 1px solid var(--kdv-border);
 	position: relative;
-	z-index: 100;
+	z-index: 1;
 }
 .kdv-platform-bar__inner {
 	position: relative; /* referencia del indicador deslizante */
@@ -390,6 +392,36 @@ html[data-kdv-theme="dark"] .kdv-platform-hub__icon {
 }
 .kdv-platform-bar__indicator.is-visible { opacity: 1; }
 
+/* Móvil: solo iconos, en una fila, repartidos a lo ancho. Con nombres, la
+   barra saltaba a dos líneas y la cabecera fija se comía casi una cuarta
+   parte de la pantalla. El nombre sigue en el HTML (lo leen los lectores
+   de pantalla) y aparece arriba del desplegable al tocar el icono. */
+@media (max-width: 640px) {
+	.kdv-platform-bar__inner {
+		flex-wrap: nowrap;
+		justify-content: space-between;
+		gap: 2px;
+	}
+	.kdv-platform-bar__toggle {
+		padding: 8px 10px;
+		gap: 0;
+	}
+	.kdv-platform-bar__label {
+		position: absolute !important;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(1px, 1px, 1px, 1px);
+		white-space: nowrap;
+	}
+	.kdv-platform-bar__iconwrap,
+	.kdv-platform-bar__icon,
+	.kdv-platform-bar__house { width: 25px; height: 25px; flex-basis: 25px; }
+	/* Los desplegables de los iconos de la derecha se abren hacia la izquierda
+	   para no salirse de la pantalla. */
+	.kdv-platform-bar__item:nth-last-child(-n+3) .kdv-platform-bar__menu { left: auto; right: 0; }
+}
+
 /* "Reducir movimiento": solo cambian los colores, nada se desplaza. */
 @media (prefers-reduced-motion: reduce) {
 	.kdv-platform-bar__iconwrap,
@@ -463,7 +495,7 @@ html[data-kdv-theme="dark"] .kdv-platform-hub {
 /* Dentro de la portada de una plataforma, las barras de los títulos y los
    "Ver todas" van en el color de su marca. */
 .kdv-platform-hub .kdv-section__title { border-left-color: var(--kdv-pc-base); }
-.kdv-platform-hub .kdv-section__link { color: var(--kdv-pc-text); }
+.kdv-platform-hub .kdv-section__link { --kdv-section-accent: var(--kdv-pc-text); }
 .kdv-platform-hub__head {
 	display: flex;
 	align-items: center;
@@ -651,6 +683,17 @@ body.kdv-header-sticky .kdv-header {
 	top: 0;
 	z-index: 100;
 }
+/* Con sesión iniciada, la barra negra de WordPress ocupa lo alto de la
+   ventana (32px; 46px en pantallas medianas): la cabecera fija se pega
+   debajo de ella, no debajo de ella tapada. Por debajo de 600px esa barra
+   ya no es fija y se va con el scroll, así que ahí vuelve a top: 0. */
+body.admin-bar.kdv-header-sticky .kdv-header { top: 32px; }
+@media (max-width: 782px) {
+	body.admin-bar.kdv-header-sticky .kdv-header { top: 46px; }
+}
+@media (max-width: 600px) {
+	body.admin-bar.kdv-header-sticky .kdv-header { top: 0; }
+}
 
 /* Once the visitor scrolls a little (assets/js/main.js adds this class to a
    sticky header only), the solid header gets a soft frosted-glass look —
@@ -663,6 +706,41 @@ body.kdv-header-sticky .kdv-header--scrolled {
 	-webkit-backdrop-filter: blur(14px);
 	border-bottom-color: transparent;
 	box-shadow: var(--kdv-shadow-sm);
+}
+/*
+ * backdrop-filter convierte la cabecera en el "marco" de los elementos
+ * position: fixed que lleva dentro -- el panel del menú móvil y su fondo
+ * oscuro. Con el menú abierto tras hacer scroll, el panel quedaba recortado
+ * a la altura de la cabecera en vez de ocupar la pantalla. Mientras el menú
+ * está abierto no hay efecto cristal.
+ */
+body.kdv-header-sticky .kdv-header--scrolled.kdv-nav-open {
+	background: var(--kdv-surface);
+	backdrop-filter: none;
+	-webkit-backdrop-filter: none;
+}
+
+/* Cabecera compacta al hacer scroll: logo algo más pequeño, sin el lema y
+   con menos aire, para que el bloque fijo (logo + menú + plataformas) no se
+   coma la pantalla. Al volver arriba recupera su tamaño. */
+.kdv-header__bar { transition: padding-block .25s ease; }
+.custom-logo-link img { transition: max-height .25s ease; }
+.kdv-site-tagline {
+	max-height: 2.6em;
+	overflow: hidden;
+	transition: max-height .25s ease, opacity .2s ease, margin .25s ease;
+}
+body.kdv-header-sticky .kdv-header--scrolled .kdv-header__bar { padding-block: 8px; }
+body.kdv-header-sticky .kdv-header--scrolled .custom-logo-link img { max-height: calc(var(--kdv-logo-height, 56px) * .78); }
+body.kdv-header-sticky .kdv-header--scrolled .kdv-site-tagline {
+	max-height: 0;
+	margin-top: 0;
+	opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+	.kdv-header__bar,
+	.custom-logo-link img,
+	.kdv-site-tagline { transition: none; }
 }
 
 /* El logo y los botones de la derecha nunca se encogen; el menú es la única
@@ -1245,8 +1323,9 @@ html[data-kdv-theme="dark"] .kdv-dark-toggle__icon--moon { display: inline-flex;
 .kdv-section { padding-block: 48px; }
 .kdv-section__head {
 	display: flex;
-	align-items: baseline;
+	align-items: center;
 	justify-content: space-between;
+	gap: 16px;
 	margin-bottom: 24px;
 }
 .kdv-section__title, .kdv-review-grid__title {
@@ -1255,7 +1334,45 @@ html[data-kdv-theme="dark"] .kdv-dark-toggle__icon--moon { display: inline-flex;
 	padding-left: 16px;
 	border-left: 6px solid var(--kdv-primary);
 }
-.kdv-section__link { font-weight: 600; font-size: .9rem; }
+/* "Ver todas" / "Ver más": botón en píldora con borde. Toma el color de la
+   sección (--kdv-section-accent; en la portada de una plataforma, el de su
+   marca) y la flecha avanza un poco al pasar el ratón. */
+.kdv-section__link {
+	--kdv-section-accent: var(--kdv-primary);
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	flex: 0 0 auto;
+	min-height: 38px;
+	padding: 6px 16px;
+	border: 1.5px solid color-mix(in srgb, var(--kdv-section-accent) 45%, transparent);
+	border-radius: 999px;
+	color: var(--kdv-section-accent);
+	font-weight: 700;
+	font-size: .85rem;
+	white-space: nowrap;
+	text-decoration: none;
+	transition: background-color .2s ease, border-color .2s ease, color .2s ease;
+}
+.kdv-section__link:hover,
+.kdv-section__link:focus-visible {
+	background: var(--kdv-section-accent);
+	border-color: var(--kdv-section-accent);
+	color: #fff;
+	text-decoration: none;
+}
+/* Modo oscuro: el color de la sección es claro, así que el texto del botón
+   activo va oscuro (el fondo de la página) en vez de blanco. */
+html[data-kdv-theme="dark"] .kdv-section__link:hover,
+html[data-kdv-theme="dark"] .kdv-section__link:focus-visible { color: var(--kdv-bg); }
+.kdv-section__link-arrow { display: inline-block; transition: transform .2s ease; }
+.kdv-section__link:hover .kdv-section__link-arrow,
+.kdv-section__link:focus-visible .kdv-section__link-arrow { transform: translateX(3px); }
+@media (prefers-reduced-motion: reduce) {
+	.kdv-section__link-arrow { transition: none; }
+	.kdv-section__link:hover .kdv-section__link-arrow,
+	.kdv-section__link:focus-visible .kdv-section__link-arrow { transform: none; }
+}
 
 /* ---------- Cards grid ---------- */
 .kdv-cards-grid {

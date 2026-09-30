@@ -139,7 +139,7 @@ $kdv_any_content = false;
 			<section class="kdv-section kdv-platform-hub__block">
 				<div class="kdv-section__head">
 					<h2 class="kdv-section__title"><?php echo esc_html( $kdv_block['title'] ); ?></h2>
-					<a class="kdv-section__link" href="<?php echo esc_url( add_query_arg( 'plataforma', $kdv_platform->slug, $kdv_block['url'] ) ); ?>"><?php esc_html_e( 'Ver todas →', 'revista-koltor-dev' ); ?></a>
+					<a class="kdv-section__link" href="<?php echo esc_url( add_query_arg( 'plataforma', $kdv_platform->slug, $kdv_block['url'] ) ); ?>"><?php esc_html_e( 'Ver todas', 'revista-koltor-dev' ); ?><span class="kdv-section__link-arrow" aria-hidden="true">→</span></a>
 				</div>
 				<div class="kdv-cards-grid kdv-cards-grid--cols-3">
 					<?php

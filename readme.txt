@@ -5,7 +5,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.10.1
+Stable tag: 1.11.0
 Tags: blog, news, entertainment, two-columns, grid-layout, custom-logo, custom-menu, custom-colors, editor-style, featured-images, threaded-comments, translation-ready, block-styles, wide-blocks, dark-mode
 
 == Description ==
@@ -60,6 +60,14 @@ Tipografías: "Baloo 2" y "Noto Sans" (Google Fonts, licencia SIL Open Font Lice
 Swiper.js (assets/lib/swiper/), usado para el slider nativo de portada, licencia MIT. https://swiperjs.com/
 
 == Changelog ==
+
+= 1.11.0 =
+* Cabecera fija como un solo bloque: logo, menú y barra de plataformas van juntos dentro de <header>. Antes la barra de plataformas quedaba fuera, pasaba por encima de la cabecera fija al hacer scroll y tapaba el lema.
+* Al hacer scroll la cabecera se compacta (logo algo más pequeño, sin el lema, menos relleno) y recupera su tamaño al volver arriba, con histéresis para que no "tiemble" en el límite.
+* Corregido: con sesión iniciada, la cabecera fija quedaba debajo de la barra de administración de WordPress y el logo salía cortado. Ahora se coloca debajo de ella (32px; 46px en pantallas medianas).
+* Corregido: en el móvil, tras hacer scroll, el panel del menú se abría recortado a la altura de la cabecera (el efecto cristal, backdrop-filter, cambia la referencia de los elementos fijos). Con el menú abierto el efecto se desactiva.
+* Móvil: la barra de plataformas muestra solo los iconos, en una fila; los nombres siguen disponibles para lectores de pantalla y en el desplegable, que en los iconos de la derecha se abre hacia la izquierda.
+* "Ver todas" / "Ver más" pasan a ser botones en píldora con el color de la sección (el de la marca en la portada de plataforma) y una flecha que avanza al pasar el ratón; en modo oscuro el texto del botón activo es oscuro para que se lea.
 
 = 1.10.1 =
 * Corregido: la portada de plataforma y el archivo de Reseñas usaban el ancho de lectura de 780px (pensado para páginas de texto); ahora ocupan todo el contenedor, como la portada, y la rejilla muestra sus tres columnas.

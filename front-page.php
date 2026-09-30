@@ -163,7 +163,7 @@ $kdv_hero_mods   = ( 'normal' !== $kdv_hero_height ? ' kdv-hero--' . $kdv_hero_h
 			<section class="kdv-section">
 				<div class="kdv-section__head">
 					<h2 class="kdv-section__title"><?php esc_html_e( 'Últimas reseñas', 'revista-koltor-dev' ); ?></h2>
-					<a class="kdv-section__link" href="<?php echo esc_url( get_post_type_archive_link( 'kdv_resena' ) ); ?>"><?php esc_html_e( 'Ver todas →', 'revista-koltor-dev' ); ?></a>
+					<a class="kdv-section__link" href="<?php echo esc_url( get_post_type_archive_link( 'kdv_resena' ) ); ?>"><?php esc_html_e( 'Ver todas', 'revista-koltor-dev' ); ?><span class="kdv-section__link-arrow" aria-hidden="true">→</span></a>
 				</div>
 				<div class="kdv-cards-grid">
 					<?php
@@ -238,7 +238,7 @@ $kdv_hero_mods   = ( 'normal' !== $kdv_hero_height ? ' kdv-hero--' . $kdv_hero_h
 		<section class="kdv-section">
 			<div class="kdv-section__head">
 				<h2 class="kdv-section__title"><?php echo esc_html( $term->name ); ?></h2>
-				<a class="kdv-section__link" href="<?php echo esc_url( get_category_link( $term ) ); ?>"><?php esc_html_e( 'Ver más →', 'revista-koltor-dev' ); ?></a>
+				<a class="kdv-section__link" href="<?php echo esc_url( get_category_link( $term ) ); ?>"><?php esc_html_e( 'Ver más', 'revista-koltor-dev' ); ?><span class="kdv-section__link-arrow" aria-hidden="true">→</span></a>
 			</div>
 			<div class="kdv-cards-grid kdv-cards-grid--cols-3">
 				<?php

@@ -500,10 +500,18 @@
 		// main.css) while the header is sticky, but toggling the class here
 		// unconditionally is harmless either way.
 		if ( siteHeader ) {
+			/*
+			 * Con histéresis: se compacta pasados 64px y solo se expande de
+			 * nuevo por debajo de 8px. La cabecera compacta es más baja, así
+			 * que el contenido sube al activarla; con un único umbral, justo
+			 * en el límite la página "temblaba" entrando y saliendo del
+			 * estado compacto.
+			 */
 			var toggleHeaderScrolled = function () {
-				if ( window.scrollY > 12 ) {
+				var y = window.scrollY;
+				if ( y > 64 ) {
 					siteHeader.classList.add( 'kdv-header--scrolled' );
-				} else {
+				} else if ( y < 8 ) {
 					siteHeader.classList.remove( 'kdv-header--scrolled' );
 				}
 			};

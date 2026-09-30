@@ -84,14 +84,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</div>
 	</div>
 
+	<?php
+	/*
+	 * La barra de plataformas va DENTRO de <header>: con la cabecera fija,
+	 * logo, menú y plataformas forman un solo bloque que se queda arriba (y
+	 * se compacta al hacer scroll). Fuera de <header>, la barra pasaba por
+	 * encima de la cabecera fija al subir y tapaba el lema.
+	 */
+	kdv_render_platform_bar();
+	?>
+
 	<?php if ( get_theme_mod( 'kdv_header_show_search', true ) ) : ?>
 		<div class="kdv-header-search" id="kdv-header-search">
 			<?php get_search_form(); ?>
 		</div>
 	<?php endif; ?>
 </header>
-
-<?php kdv_render_platform_bar(); ?>
 
 <?php if ( get_theme_mod( 'kdv_ad_header_enabled', false ) && trim( get_theme_mod( 'kdv_ad_header_code', '' ) ) ) : ?>
 	<div class="kdv-container">
