@@ -368,6 +368,109 @@ function kdv_customize_register( WP_Customize_Manager $wp_customize ) {
 		],
 	] );
 
+	/* ---------------------------------------------------------------
+	 * Section: Barra lateral y widgets
+	 *
+	 * Dónde se muestra la barra lateral y cómo se ven sus widgets (los del
+	 * tema y los de bloque de WordPress). Todo lo visual va por postMessage
+	 * (clases de <body> y variables CSS, ver customizer-preview.js), así que
+	 * se ve al instante. Para montar una barra completa en un clic:
+	 * Revista Koltor Dev → Barra lateral, en el escritorio.
+	 * ------------------------------------------------------------- */
+	$wp_customize->add_section( 'kdv_section_sidebar', [
+		'title'       => __( 'Barra lateral y widgets', 'revista-koltor-dev' ),
+		'description' => sprintf(
+			/* translators: %s: enlace a la pantalla de Widgets. */
+			__( 'Dónde aparece la barra lateral y el aspecto de sus widgets. Los widgets en sí (qué hay y en qué orden) se editan en %s, o en un clic con "Revista Koltor Dev → Barra lateral" del escritorio.', 'revista-koltor-dev' ),
+			'<a href="' . esc_url( admin_url( 'widgets.php' ) ) . '">' . __( 'Apariencia → Widgets', 'revista-koltor-dev' ) . '</a>'
+		),
+		'panel'       => 'kdv_panel',
+	] );
+
+	$kdv_sidebar_places = [
+		'kdv_sidebar_on_single'   => __( 'Mostrar en artículos (entradas)', 'revista-koltor-dev' ),
+		'kdv_sidebar_on_resenas'  => __( 'Mostrar en reseñas', 'revista-koltor-dev' ),
+		'kdv_sidebar_on_archives' => __( 'Mostrar en categorías, etiquetas y archivos', 'revista-koltor-dev' ),
+		'kdv_sidebar_on_search'   => __( 'Mostrar en los resultados de búsqueda', 'revista-koltor-dev' ),
+	];
+	foreach ( $kdv_sidebar_places as $kdv_id => $kdv_label ) {
+		$wp_customize->add_setting( $kdv_id, [
+			'default'           => true,
+			'sanitize_callback' => 'wp_validate_boolean',
+			'transport'         => 'refresh',
+		] );
+		$wp_customize->add_control( $kdv_id, [
+			'label'   => $kdv_label,
+			'section' => 'kdv_section_sidebar',
+			'type'    => 'checkbox',
+		] );
+	}
+
+	$wp_customize->add_setting( 'kdv_sidebar_sticky', [
+		'default'           => true,
+		'sanitize_callback' => 'wp_validate_boolean',
+		'transport'         => 'postMessage',
+	] );
+	$wp_customize->add_control( 'kdv_sidebar_sticky', [
+		'label'       => __( 'Barra lateral fija al hacer scroll', 'revista-koltor-dev' ),
+		'description' => __( 'En escritorio, la barra acompaña al lector mientras baja por el artículo.', 'revista-koltor-dev' ),
+		'section'     => 'kdv_section_sidebar',
+		'type'        => 'checkbox',
+	] );
+
+	$kdv_wopts = kdv_widget_style_options();
+	$kdv_widget_selects = [
+		'kdv_widget_box'         => [ __( 'Caja de cada widget', 'revista-koltor-dev' ), 'card', $kdv_wopts['box'] ],
+		'kdv_widget_title_style' => [ __( 'Estilo de los títulos', 'revista-koltor-dev' ), 'bar', $kdv_wopts['title_style'] ],
+		'kdv_widget_title_size'  => [ __( 'Tamaño de los títulos', 'revista-koltor-dev' ), 'normal', [
+			'small'  => __( 'Pequeño', 'revista-koltor-dev' ),
+			'normal' => __( 'Normal (por defecto)', 'revista-koltor-dev' ),
+			'large'  => __( 'Grande', 'revista-koltor-dev' ),
+		] ],
+		'kdv_widget_radius'      => [ __( 'Esquinas', 'revista-koltor-dev' ), 'soft', [
+			'square' => __( 'Casi rectas', 'revista-koltor-dev' ),
+			'soft'   => __( 'Suaves (por defecto)', 'revista-koltor-dev' ),
+			'round'  => __( 'Muy redondeadas', 'revista-koltor-dev' ),
+		] ],
+	];
+	foreach ( $kdv_widget_selects as $kdv_id => [ $kdv_label, $kdv_default, $kdv_choices ] ) {
+		$wp_customize->add_setting( $kdv_id, [
+			'default'           => $kdv_default,
+			'sanitize_callback' => function( $value ) use ( $kdv_choices, $kdv_default ) {
+				return array_key_exists( $value, $kdv_choices ) ? $value : $kdv_default;
+			},
+			'transport'         => 'postMessage',
+		] );
+		$wp_customize->add_control( $kdv_id, [
+			'label'   => $kdv_label,
+			'section' => 'kdv_section_sidebar',
+			'type'    => 'select',
+			'choices' => $kdv_choices,
+		] );
+	}
+
+	$wp_customize->add_setting( 'kdv_widget_accent', [
+		'default'           => '',
+		'sanitize_callback' => 'sanitize_hex_color',
+		'transport'         => 'postMessage',
+	] );
+	$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'kdv_widget_accent', [
+		'label'       => __( 'Color de acento de los widgets', 'revista-koltor-dev' ),
+		'description' => __( 'Barra o subrayado de los títulos, enlaces al pasar el ratón y botón de buscar. Vacío = el color primario del tema.', 'revista-koltor-dev' ),
+		'section'     => 'kdv_section_sidebar',
+	] ) );
+
+	$wp_customize->add_setting( 'kdv_widget_separators', [
+		'default'           => true,
+		'sanitize_callback' => 'wp_validate_boolean',
+		'transport'         => 'postMessage',
+	] );
+	$wp_customize->add_control( 'kdv_widget_separators', [
+		'label'   => __( 'Líneas separadoras entre los elementos de las listas', 'revista-koltor-dev' ),
+		'section' => 'kdv_section_sidebar',
+		'type'    => 'checkbox',
+	] );
+
 	$wp_customize->add_setting( 'kdv_header_show_search', [
 		'default'           => true,
 		'sanitize_callback' => 'wp_validate_boolean',
@@ -1126,8 +1229,11 @@ function kdv_customize_preview_js() {
 	);
 
 	// Mismos porcentajes que usa el CSS dinámico (una sola fuente).
+	$kdv_wopts = kdv_widget_style_options();
 	wp_localize_script( 'kdv-customizer-preview', 'KdvPreview', [
 		'platformHoverMixes' => kdv_platform_hover_mixes(),
+		'widgetTitleSizes'   => $kdv_wopts['title_size'],
+		'widgetRadii'        => $kdv_wopts['radius'],
 	] );
 }
 add_action( 'customize_preview_init', 'kdv_customize_preview_js' );

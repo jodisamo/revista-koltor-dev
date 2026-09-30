@@ -5,7 +5,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.11.0
+Stable tag: 1.12.0
 Tags: blog, news, entertainment, two-columns, grid-layout, custom-logo, custom-menu, custom-colors, editor-style, featured-images, threaded-comments, translation-ready, block-styles, wide-blocks, dark-mode
 
 == Description ==
@@ -60,6 +60,16 @@ Tipografías: "Baloo 2" y "Noto Sans" (Google Fonts, licencia SIL Open Font Lice
 Swiper.js (assets/lib/swiper/), usado para el slider nativo de portada, licencia MIT. https://swiperjs.com/
 
 == Changelog ==
+
+= 1.12.0 =
+* Nueva sección Personalizar → Revista Koltor Dev → "Barra lateral y widgets": en qué páginas se muestra (artículos, reseñas, archivos, búsqueda), barra fija al hacer scroll, caja de los widgets (tarjeta / borde / plano), estilo, tamaño y color de los títulos, esquinas y separadores; todo con vista previa en vivo.
+* Nueva pantalla "Revista Koltor Dev → Barra lateral" en el escritorio: muestra los widgets actuales y monta en un clic la barra recomendada (buscador, Lo último, Publicidad, Secciones, Comentarios recientes, en español). Los widgets anteriores pasan a "Widgets inactivos", no se borran.
+* Nuevo widget "Koltor Dev: Publicidad": un anuncio en cualquier posición de la barra lateral (arriba, entre dos widgets…), repetible, con el código de Personalizar → Publicidad o uno propio. Si hay uno en la barra, el anuncio fijo de arriba se omite para que no salga dos veces.
+* Los widgets de bloque de WordPress (Buscar, Entradas y Comentarios recientes, Archivos, Categorías) toman el estilo del tema: títulos del tamaño de widget (antes salían como títulos de artículo), listas numeradas sin sangría, buscador sin la etiqueta suelta y con el botón del color del sitio.
+* La barra lateral fija solo se fija si cabe en la ventana: una barra más alta dejaba sus últimos widgets inalcanzables.
+* Sin barra lateral (vacía o desactivada), el contenido se centra al ancho de lectura en vez de reservar una columna vacía de 320px.
+* Corregido: en el formulario de comentarios, la casilla "Guarda mi nombre…" salía centrada sola en su línea y el botón "Publicar el comentario" (un input type="submit") salía con aspecto de campo de texto.
+* Corregido: "Secciones" (widget de categorías) con el relleno duplicado, y el extracto de "Comentarios recientes" en negrita.
 
 = 1.11.0 =
 * Cabecera fija como un solo bloque: logo, menú y barra de plataformas van juntos dentro de <header>. Antes la barra de plataformas quedaba fuera, pasaba por encima de la cabecera fija al hacer scroll y tapaba el lema.

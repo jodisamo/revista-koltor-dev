@@ -48,11 +48,17 @@ require_once KDV_INCLUDES_DIR . '/core/template-tags.php';
 // kdv_get_site_info() (declarada en template-tags.php, siempre disponible).
 if ( is_admin() ) {
 	require_once KDV_INCLUDES_DIR . '/admin/site-info-page.php';
+	// "Revista Koltor Dev → Barra lateral": montar la barra recomendada en un clic.
+	require_once KDV_INCLUDES_DIR . '/admin/sidebar-tools.php';
 }
 
 // Safety-net Spanish translation for stock WordPress widget titles.
 require_once KDV_INCLUDES_DIR . '/core/widget-titles.php';
 require_once KDV_INCLUDES_DIR . '/core/widgets.php';
+
+// Barra lateral: dónde se muestra y aspecto de los widgets (Personalizar →
+// Barra lateral y widgets).
+require_once KDV_INCLUDES_DIR . '/core/sidebar.php';
 
 // Contador nativo de vistas + consulta de "Populares del mes".
 require_once KDV_INCLUDES_DIR . '/core/popular-posts.php';

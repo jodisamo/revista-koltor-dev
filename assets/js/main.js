@@ -519,6 +519,27 @@
 			toggleHeaderScrolled();
 		}
 
+		/*
+		 * Barra lateral fija (Personalizar → Barra lateral y widgets): solo se
+		 * fija si CABE en la ventana bajo la cabecera. Si es más alta, fijarla
+		 * dejaría sus últimos widgets inalcanzables hasta el final del
+		 * artículo. Se vuelve a medir al cambiar de tamaño la ventana o la
+		 * propia barra (un anuncio que termina de cargar, por ejemplo).
+		 */
+		var sidebar = document.querySelector( '.kdv-sidebar' );
+		if ( sidebar && document.body.classList.contains( 'kdv-sidebar-sticky' ) ) {
+			var updateSidebarFit = function () {
+				var topOffset = document.body.classList.contains( 'admin-bar' ) ? 172 : 140;
+				sidebar.classList.toggle( 'kdv-sidebar--fits', sidebar.offsetHeight + topOffset + 24 <= window.innerHeight );
+			};
+			updateSidebarFit();
+			window.addEventListener( 'resize', updateSidebarFit, { passive: true } );
+			window.addEventListener( 'load', updateSidebarFit );
+			if ( 'ResizeObserver' in window ) {
+				new ResizeObserver( updateSidebarFit ).observe( sidebar );
+			}
+		}
+
 		// Reading progress bar (single artículo/reseña only — the element
 		// simply doesn't exist on other templates, so this is a no-op there).
 		var readingProgressBar = document.querySelector( '.kdv-reading-progress__bar' );

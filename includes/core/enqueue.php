@@ -147,6 +147,7 @@ function kdv_get_dynamic_css() {
 	}
 	$css .= '--kdv-hover-duration: ' . $hover_speed_ms . "ms;\n";
 	$css .= '--kdv-platform-hover-mix: ' . absint( $hover_mix ) . "%;\n";
+	$css .= kdv_get_widget_css_vars();
 	$css .= "}\n";
 
 	return $css;

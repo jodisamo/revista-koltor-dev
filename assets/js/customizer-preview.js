@@ -66,6 +66,67 @@
 		} );
 	} );
 
+	// Barra lateral y widgets.
+	var swapBodyClass = function ( prefix, options, value ) {
+		options.forEach( function ( option ) {
+			document.body.classList.remove( prefix + option );
+		} );
+		document.body.classList.add( prefix + value );
+	};
+	var previewData = window.KdvPreview || {};
+
+	wp.customize( 'kdv_widget_box', function ( value ) {
+		value.bind( function ( newval ) {
+			swapBodyClass( 'kdv-widgets-', [ 'card', 'border', 'flat' ], newval );
+		} );
+	} );
+
+	wp.customize( 'kdv_widget_title_style', function ( value ) {
+		value.bind( function ( newval ) {
+			swapBodyClass( 'kdv-widget-title-', [ 'bar', 'underline', 'plain' ], newval );
+		} );
+	} );
+
+	wp.customize( 'kdv_widget_title_size', function ( value ) {
+		value.bind( function ( newval ) {
+			var sizes = previewData.widgetTitleSizes || {};
+			if ( sizes[ newval ] ) {
+				rootStyle.setProperty( '--kdv-widget-title-size', sizes[ newval ] + 'rem' );
+			}
+		} );
+	} );
+
+	wp.customize( 'kdv_widget_radius', function ( value ) {
+		value.bind( function ( newval ) {
+			var radii = previewData.widgetRadii || {};
+			if ( radii[ newval ] ) {
+				rootStyle.setProperty( '--kdv-widget-radius', radii[ newval ] + 'px' );
+			}
+		} );
+	} );
+
+	wp.customize( 'kdv_widget_accent', function ( value ) {
+		value.bind( function ( newval ) {
+			if ( newval ) {
+				rootStyle.setProperty( '--kdv-widget-accent', newval );
+			} else {
+				rootStyle.removeProperty( '--kdv-widget-accent' );
+			}
+		} );
+	} );
+
+	wp.customize( 'kdv_widget_separators', function ( value ) {
+		value.bind( function ( newval ) {
+			document.body.classList.toggle( 'kdv-widget-no-separators', ! newval );
+		} );
+	} );
+
+	wp.customize( 'kdv_sidebar_sticky', function ( value ) {
+		value.bind( function ( newval ) {
+			document.body.classList.toggle( 'kdv-sidebar-sticky', !! newval );
+		} );
+	} );
+
 	// Hero title / subtitle.
 	wp.customize( 'kdv_hero_title', function ( value ) {
 		value.bind( function ( newval ) {

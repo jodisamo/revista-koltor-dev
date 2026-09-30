@@ -266,9 +266,88 @@ class KDV_Widget_Categories extends WP_Widget {
 	}
 }
 
+/**
+ * "Koltor Dev: Publicidad" — un anuncio que se coloca en CUALQUIER posición
+ * de la barra lateral (o del pie): arriba, entre dos widgets, al final… y
+ * tantos como hagan falta. Usa el código de Personalizar → Publicidad →
+ * "Barra lateral" o uno propio escrito en el widget.
+ *
+ * Mismo modelo de confianza que el resto de espacios publicitarios
+ * (kdv_sanitize_ad_code()): quien tiene "unfiltered_html" guarda el código
+ * tal cual; cualquier otro perfil pasa por wp_kses_post().
+ */
+class KDV_Widget_Ad extends WP_Widget {
+
+	public function __construct() {
+		parent::__construct(
+			'kdv_ad',
+			__( 'Koltor Dev: Publicidad', 'revista-koltor-dev' ),
+			[
+				'description' => __( 'Un anuncio (AdSense, afiliados, un banner propio…) en la posición que quieras de la barra lateral.', 'revista-koltor-dev' ),
+			]
+		);
+	}
+
+	public function widget( $args, $instance ) {
+		$source = $instance['source'] ?? 'customizer';
+		if ( 'custom' === $source ) {
+			$code = trim( (string) ( $instance['code'] ?? '' ) );
+		} else {
+			// El espacio "Barra lateral" de Personalizar → Publicidad, si está activado.
+			$code = get_theme_mod( 'kdv_ad_sidebar_enabled', false ) ? trim( (string) get_theme_mod( 'kdv_ad_sidebar_code', '' ) ) : '';
+		}
+		if ( '' === $code ) {
+			return; // Sin código no se pinta nada: ni caja vacía ni etiqueta suelta.
+		}
+
+		// Sin título ni caja de widget: un anuncio no debe parecer contenido.
+		echo str_replace( 'kdv-widget ', 'kdv-widget kdv-widget--ad ', $args['before_widget'] ); // phpcs:ignore -- envoltorio del propio tema.
+		echo '<div class="kdv-ad-slot kdv-ad-slot--sidebar">';
+		if ( ! isset( $instance['show_label'] ) || $instance['show_label'] ) {
+			echo '<span class="kdv-ad-slot__label">' . esc_html__( 'Publicidad', 'revista-koltor-dev' ) . '</span>';
+		}
+		echo $code; // phpcs:ignore WordPress.Security.EscapeOutput -- código de anuncio de confianza, saneado al guardar con kdv_sanitize_ad_code().
+		echo '</div>';
+		echo $args['after_widget']; // phpcs:ignore -- core widget wrapper.
+	}
+
+	public function form( $instance ) {
+		$source     = $instance['source'] ?? 'customizer';
+		$code       = $instance['code'] ?? '';
+		$show_label = ! isset( $instance['show_label'] ) || $instance['show_label'];
+		?>
+		<p>
+			<label for="<?php echo esc_attr( $this->get_field_id( 'source' ) ); ?>"><?php esc_html_e( 'Código del anuncio:', 'revista-koltor-dev' ); ?></label>
+			<select class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'source' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'source' ) ); ?>">
+				<option value="customizer" <?php selected( $source, 'customizer' ); ?>><?php esc_html_e( 'El de Personalizar → Publicidad → Barra lateral', 'revista-koltor-dev' ); ?></option>
+				<option value="custom" <?php selected( $source, 'custom' ); ?>><?php esc_html_e( 'Uno propio (escríbelo abajo)', 'revista-koltor-dev' ); ?></option>
+			</select>
+		</p>
+		<p>
+			<label for="<?php echo esc_attr( $this->get_field_id( 'code' ) ); ?>"><?php esc_html_e( 'Código propio (HTML/JS del anuncio):', 'revista-koltor-dev' ); ?></label>
+			<textarea class="widefat code" rows="6" id="<?php echo esc_attr( $this->get_field_id( 'code' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'code' ) ); ?>"><?php echo esc_textarea( $code ); ?></textarea>
+		</p>
+		<p>
+			<input class="checkbox" type="checkbox" id="<?php echo esc_attr( $this->get_field_id( 'show_label' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'show_label' ) ); ?>" <?php checked( $show_label ); ?>>
+			<label for="<?php echo esc_attr( $this->get_field_id( 'show_label' ) ); ?>"><?php esc_html_e( 'Mostrar la etiqueta "Publicidad" encima', 'revista-koltor-dev' ); ?></label>
+		</p>
+		<p class="description"><?php esc_html_e( 'Si el código está vacío (o el espacio de Personalizar está desactivado), el widget no muestra nada.', 'revista-koltor-dev' ); ?></p>
+		<?php
+	}
+
+	public function update( $new_instance, $old_instance ) {
+		return [
+			'source'     => ( isset( $new_instance['source'] ) && 'custom' === $new_instance['source'] ) ? 'custom' : 'customizer',
+			'code'       => kdv_sanitize_ad_code( (string) ( $new_instance['code'] ?? '' ) ),
+			'show_label' => ! empty( $new_instance['show_label'] ),
+		];
+	}
+}
+
 add_action(
 	'widgets_init',
 	function() {
+		register_widget( 'KDV_Widget_Ad' );
 		register_widget( 'KDV_Widget_Recent_Posts' );
 		register_widget( 'KDV_Widget_Recent_Comments' );
 		register_widget( 'KDV_Widget_Categories' );
