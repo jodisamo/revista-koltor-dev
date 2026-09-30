@@ -17,12 +17,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<?php endif; ?>
 
 	<div class="kdv-card__body">
-		<?php
-		$categories = get_the_category();
-		if ( ! empty( $categories ) ) :
-			?>
-			<a href="<?php echo esc_url( get_category_link( $categories[0] ) ); ?>" class="kdv-card__category"><?php echo esc_html( $categories[0]->name ); ?></a>
-		<?php endif; ?>
+		<div class="kdv-card__labels">
+			<?php
+			$categories = get_the_category();
+			if ( ! empty( $categories ) ) :
+				?>
+				<a href="<?php echo esc_url( get_category_link( $categories[0] ) ); ?>" class="kdv-card__category"><?php echo esc_html( $categories[0]->name ); ?></a>
+			<?php endif; ?>
+			<?php kdv_render_platform_badges(); ?>
+		</div>
 
 		<h3 class="kdv-card__title">
 			<a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>

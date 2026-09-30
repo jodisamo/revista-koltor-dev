@@ -248,63 +248,87 @@ iframe, embed, object, video { max-width: 100%; }
 	z-index: 100;
 }
 .kdv-platform-bar__inner {
+	position: relative; /* referencia del indicador deslizante */
 	display: flex;
 	align-items: center;
 	flex-wrap: wrap;
-	gap: 4px;
-	padding-block: 4px;
+	gap: 5px;
+	padding-block: 5px 7px;
 }
 .kdv-platform-bar__item {
 	position: relative;
+	/* Color de marca de la plataforma (style="--kdv-pc:#…" en el HTML). Sin
+	   él, el resalte general del tema. --kdv-pc-text es el mismo color
+	   oscurecido o aclarado para que el texto se lea en cada modo. */
+	--kdv-pc-base: var(--kdv-pc, var(--kdv-hover-color, var(--kdv-primary)));
+	--kdv-pc-text: color-mix(in srgb, var(--kdv-pc-base) 60%, #000);
 }
+html[data-kdv-theme="dark"] .kdv-platform-bar__item {
+	--kdv-pc-text: color-mix(in srgb, var(--kdv-pc-base) 62%, #fff);
+}
+/* +15% respecto a la 1.8: iconos de 23px, texto .98rem y más aire. */
 .kdv-platform-bar__toggle {
 	display: inline-flex;
 	align-items: center;
-	gap: 6px;
-	padding: 6px 10px;
+	gap: 7px;
+	min-height: 44px;
+	padding: 7px 12px;
 	background: none;
 	border: none;
 	border-radius: var(--kdv-radius-sm);
 	color: var(--kdv-text);
 	font-family: inherit;
-	font-size: .85rem;
+	font-size: .98rem;
 	font-weight: 600;
+	text-decoration: none;
 	cursor: pointer;
 	transition: background-color var(--kdv-hover-duration, 200ms) ease, color var(--kdv-hover-duration, 200ms) ease;
 }
-/* Fondo del resalte: el color del resalte mezclado al porcentaje elegido en
-   Personalizar → Menús y efectos (--kdv-platform-hover-mix; 0% = sin fondo). */
+/* Fondo del resalte: el color de la marca mezclado al porcentaje elegido
+   en Personalizar → Menús y efectos (--kdv-platform-hover-mix). */
 .kdv-platform-bar__toggle:hover,
 .kdv-platform-bar__toggle:focus-visible,
-.kdv-platform-bar__toggle[aria-expanded="true"] {
-	background: color-mix(in srgb, var(--kdv-hover-color, var(--kdv-primary)) var(--kdv-platform-hover-mix, 12%), transparent);
-	color: var(--kdv-hover-color, var(--kdv-primary));
+.kdv-platform-bar__toggle[aria-expanded="true"],
+.kdv-platform-bar__item.is-current > .kdv-platform-bar__toggle {
+	background: color-mix(in srgb, var(--kdv-pc-base) var(--kdv-platform-hover-mix, 12%), transparent);
+	color: var(--kdv-pc-text);
+	text-decoration: none;
 }
-.kdv-platform-bar__icon {
-	width: 20px;
-	height: 20px;
-	object-fit: contain;
+.kdv-platform-bar__iconwrap {
+	position: relative;
 	display: block;
+	width: 23px;
+	height: 23px;
+	flex: 0 0 23px;
 	transition: transform var(--kdv-hover-duration, 200ms) ease;
 }
-/* Efecto del icono (clase en <body>, ver el filtro body_class de
-   theme-setup.php): "levantar" sube el icono; "zoom" lo agranda. */
-.kdv-platform-icon-fx-lift .kdv-platform-bar__toggle:hover .kdv-platform-bar__icon,
-.kdv-platform-icon-fx-lift .kdv-platform-bar__toggle:focus-visible .kdv-platform-bar__icon,
-.kdv-platform-icon-fx-lift .kdv-platform-bar__toggle[aria-expanded="true"] .kdv-platform-bar__icon {
-	transform: translateY(-2px) scale(1.08);
+.kdv-platform-bar__icon {
+	width: 23px;
+	height: 23px;
+	object-fit: contain;
+	display: block;
+	transition: opacity var(--kdv-hover-duration, 200ms) ease;
 }
-.kdv-platform-icon-fx-zoom .kdv-platform-bar__toggle:hover .kdv-platform-bar__icon,
-.kdv-platform-icon-fx-zoom .kdv-platform-bar__toggle:focus-visible .kdv-platform-bar__icon,
-.kdv-platform-icon-fx-zoom .kdv-platform-bar__toggle[aria-expanded="true"] .kdv-platform-bar__icon {
-	transform: scale(1.18);
+/* El icono "se enciende" en el color de la marca: una copia pintada con
+   máscara CSS (el propio PNG como silueta) aparece sobre el original. */
+.kdv-platform-bar__icon-tint {
+	position: absolute;
+	inset: 0;
+	background: var(--kdv-pc-base);
+	-webkit-mask: var(--kdv-icon-url) center / contain no-repeat;
+	mask: var(--kdv-icon-url) center / contain no-repeat;
+	opacity: 0;
+	transition: opacity var(--kdv-hover-duration, 200ms) ease;
 }
-/* "Reducir movimiento": solo cambian los colores, nada se desplaza. */
-@media (prefers-reduced-motion: reduce) {
-	.kdv-platform-bar__icon { transition: none; }
-	.kdv-platform-bar__toggle .kdv-platform-bar__icon { transform: none !important; }
-	.kdv-primary-menu--underline > li > a::before { transition: none; }
-}
+html[data-kdv-theme="dark"] .kdv-platform-bar__icon-tint { background: var(--kdv-pc-text); }
+.kdv-platform-bar__toggle:hover .kdv-platform-bar__icon-tint,
+.kdv-platform-bar__toggle:focus-visible .kdv-platform-bar__icon-tint,
+.kdv-platform-bar__toggle[aria-expanded="true"] .kdv-platform-bar__icon-tint,
+.kdv-platform-bar__item.is-current .kdv-platform-bar__icon-tint { opacity: 1; }
+.kdv-platform-bar__toggle:hover .kdv-platform-bar__icon,
+.kdv-platform-bar__toggle:focus-visible .kdv-platform-bar__icon,
+.kdv-platform-bar__toggle[aria-expanded="true"] .kdv-platform-bar__icon,
+.kdv-platform-bar__item.is-current .kdv-platform-bar__icon { opacity: 0; }
 /*
  * Los iconos de plataforma que se suben son glifos monocromos oscuros (los
  * logos oficiales en negro de los kits de prensa): sobre el fondo del modo
@@ -315,6 +339,65 @@ iframe, embed, object, video { max-width: 100%; }
 html[data-kdv-theme="dark"] .kdv-platform-bar__icon,
 html[data-kdv-theme="dark"] .kdv-platform-hub__icon {
 	filter: invert(1);
+}
+/* Efecto del icono (clase en <body>, ver el filtro body_class de
+   theme-setup.php): "levantar" sube el icono; "zoom" lo agranda. */
+.kdv-platform-icon-fx-lift .kdv-platform-bar__toggle:hover .kdv-platform-bar__iconwrap,
+.kdv-platform-icon-fx-lift .kdv-platform-bar__toggle:focus-visible .kdv-platform-bar__iconwrap,
+.kdv-platform-icon-fx-lift .kdv-platform-bar__toggle[aria-expanded="true"] .kdv-platform-bar__iconwrap {
+	transform: translateY(-2px) scale(1.08);
+}
+.kdv-platform-icon-fx-zoom .kdv-platform-bar__toggle:hover .kdv-platform-bar__iconwrap,
+.kdv-platform-icon-fx-zoom .kdv-platform-bar__toggle:focus-visible .kdv-platform-bar__iconwrap,
+.kdv-platform-icon-fx-zoom .kdv-platform-bar__toggle[aria-expanded="true"] .kdv-platform-bar__iconwrap {
+	transform: scale(1.18);
+}
+
+/* "Inicio": casa del propio tema. El tejado se levanta y la ventana se
+   enciende al pasar el ratón; en la portada queda encendida. */
+.kdv-platform-bar__house { display: block; width: 23px; height: 23px; }
+.kdv-house__roof { transition: transform var(--kdv-hover-duration, 200ms) ease; transform-origin: 12px 8px; }
+.kdv-house__window {
+	fill: transparent;
+	stroke: currentColor;
+	stroke-width: 1.6;
+	transition: fill var(--kdv-hover-duration, 200ms) ease;
+}
+.kdv-platform-bar__home:hover .kdv-house__roof,
+.kdv-platform-bar__home:focus-visible .kdv-house__roof { transform: translateY(-2px); }
+.kdv-platform-bar__home:hover .kdv-house__window,
+.kdv-platform-bar__home:focus-visible .kdv-house__window,
+.kdv-platform-bar__item--home.is-current .kdv-house__window { fill: var(--kdv-accent); }
+
+/* Indicador deslizante: una línea bajo el elemento señalado que sigue al
+   ratón/teclado y toma su color (posición y color los pone main.js). Sin
+   JS no existe (opacity 0) y la barra funciona igual. */
+.kdv-platform-bar__indicator {
+	position: absolute;
+	left: 0;
+	top: 0;
+	height: 3px;
+	width: 0;
+	border-radius: 3px;
+	background: var(--kdv-indicator-color, var(--kdv-primary));
+	opacity: 0;
+	pointer-events: none;
+	transition:
+		transform calc(var(--kdv-hover-duration, 200ms) + 100ms) cubic-bezier(.25, .1, .25, 1),
+		width calc(var(--kdv-hover-duration, 200ms) + 100ms) cubic-bezier(.25, .1, .25, 1),
+		background-color var(--kdv-hover-duration, 200ms) ease,
+		opacity var(--kdv-hover-duration, 200ms) ease;
+}
+.kdv-platform-bar__indicator.is-visible { opacity: 1; }
+
+/* "Reducir movimiento": solo cambian los colores, nada se desplaza. */
+@media (prefers-reduced-motion: reduce) {
+	.kdv-platform-bar__iconwrap,
+	.kdv-house__roof,
+	.kdv-platform-bar__indicator { transition: none; }
+	.kdv-platform-bar__toggle .kdv-platform-bar__iconwrap,
+	.kdv-platform-bar__home .kdv-house__roof { transform: none !important; }
+	.kdv-primary-menu--underline > li > a::before { transition: none; }
 }
 .kdv-platform-bar__menu {
 	display: none;
@@ -371,15 +454,24 @@ html[data-kdv-theme="dark"] .kdv-platform-hub__icon {
    nombre, subplataformas y acceso a sus Tops; debajo, un bloque por tipo
    de contenido con las secciones .kdv-section de siempre. */
 .kdv-platform-hub__head {
+	--kdv-pc-base: var(--kdv-pc, var(--kdv-primary));
+	--kdv-pc-text: color-mix(in srgb, var(--kdv-pc-base) 60%, #000);
 	display: flex;
 	align-items: center;
 	gap: 24px;
 	padding: 32px;
 	margin-top: 24px;
-	background: var(--kdv-surface);
+	/* Franja superior y un velo muy suave del color de la marca. */
+	background:
+		linear-gradient(135deg, color-mix(in srgb, var(--kdv-pc-base) 9%, transparent), transparent 60%),
+		var(--kdv-surface);
 	border: 1px solid var(--kdv-border);
+	border-top: 5px solid var(--kdv-pc-base);
 	border-radius: var(--kdv-radius-lg);
 	box-shadow: var(--kdv-shadow-sm);
+}
+html[data-kdv-theme="dark"] .kdv-platform-hub__head {
+	--kdv-pc-text: color-mix(in srgb, var(--kdv-pc-base) 62%, #fff);
 }
 .kdv-platform-hub__icon {
 	flex: 0 0 auto;
@@ -418,12 +510,14 @@ html[data-kdv-theme="dark"] .kdv-platform-hub__icon {
 }
 .kdv-platform-hub__chips .kdv-pill:hover,
 .kdv-platform-hub__chips .kdv-pill:focus-visible {
-	border-color: var(--kdv-primary);
-	color: var(--kdv-primary);
+	border-color: var(--kdv-pc-base, var(--kdv-primary));
+	color: var(--kdv-pc-text, var(--kdv-primary));
 }
-.kdv-pill--accent {
-	background: var(--kdv-primary);
-	border-color: var(--kdv-primary);
+/* Fondo siempre en la versión oscurecida del color (texto blanco legible
+   también con colores claros como el verde de Android, y en modo oscuro). */
+.kdv-platform-hub__chips .kdv-pill--accent {
+	background: color-mix(in srgb, var(--kdv-pc-base, var(--kdv-primary)) 60%, #000);
+	border-color: transparent;
 	color: #fff;
 }
 .kdv-platform-hub__chips .kdv-pill--accent:hover,
@@ -1302,6 +1396,69 @@ html[data-kdv-theme="dark"] .kdv-dark-toggle__icon--moon { display: inline-flex;
 	transition: opacity .15s ease, transform .15s ease;
 }
 .kdv-card__category:hover { opacity: .85; text-decoration: none; color: #fff; transform: translateY(-1px); }
+
+/* Fila de etiquetas de la tarjeta: tipo (Noticias…) + distintivos de
+   plataforma (kdv_render_platform_badges()). Vacía, no ocupa sitio. */
+.kdv-card__labels {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px;
+}
+.kdv-card__labels:empty { display: none; }
+.kdv-platform-badges {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.kdv-platform-badge {
+	--kdv-pc-base: var(--kdv-pc, var(--kdv-primary));
+	--kdv-pc-text: color-mix(in srgb, var(--kdv-pc-base) 60%, #000);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 26px;
+	height: 26px;
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--kdv-pc-base) 14%, transparent);
+	color: var(--kdv-pc-text);
+	font-size: .62rem;
+	font-weight: 800;
+	text-decoration: none;
+	transition: background-color .15s ease, transform .15s ease;
+}
+html[data-kdv-theme="dark"] .kdv-platform-badge {
+	--kdv-pc-text: color-mix(in srgb, var(--kdv-pc-base) 62%, #fff);
+	background: color-mix(in srgb, var(--kdv-pc-base) 24%, transparent);
+}
+.kdv-platform-badge:hover,
+.kdv-platform-badge:focus-visible {
+	background: color-mix(in srgb, var(--kdv-pc-base) 26%, transparent);
+	transform: translateY(-1px);
+	text-decoration: none;
+}
+.kdv-platform-badge--text { width: auto; padding-inline: 8px; }
+/* El icono subido, pintado del color de la marca con máscara CSS. */
+.kdv-platform-badge__icon {
+	width: 15px;
+	height: 15px;
+	background: var(--kdv-pc-text);
+	-webkit-mask: var(--kdv-icon-url) center / contain no-repeat;
+	mask: var(--kdv-icon-url) center / contain no-repeat;
+}
+.kdv-platform-badges__more {
+	font-size: .72rem;
+	font-weight: 700;
+	color: var(--kdv-text-muted);
+	padding-inline: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+	.kdv-platform-badge:hover,
+	.kdv-platform-badge:focus-visible { transform: none; }
+}
 .kdv-category-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
 
 /* ---------- Etiquetas (post_tag) ---------- */

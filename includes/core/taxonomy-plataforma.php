@@ -61,6 +61,41 @@ function kdv_get_default_platforms() {
 }
 
 /**
+ * Color de marca de partida por slug (aproximados a los oficiales; se
+ * ajustan en Entradas → Plataformas → Color). PC no tiene color propio y
+ * usa el del resalte general. Steam usa su azul claro: el oscuro de su
+ * marca desaparecería en modo oscuro.
+ *
+ * @return string[]
+ */
+function kdv_get_default_platform_colors() {
+	return [
+		'playstation' => '#0070D1',
+		'nintendo'    => '#E60012',
+		'xbox'        => '#107C10',
+		'android'     => '#3DDC84',
+		'steam'       => '#66C0F4',
+	];
+}
+
+/**
+ * Color de marca de una plataforma: el elegido en su pantalla de edición
+ * o, si no hay ninguno, el de partida para su slug. Cadena vacía = sin
+ * color propio (se usa el color del resalte general).
+ *
+ * @param WP_Term $term Plataforma.
+ * @return string Color hex o ''.
+ */
+function kdv_get_platform_color( $term ) {
+	$color = sanitize_hex_color( (string) get_term_meta( $term->term_id, 'kdv_platform_color', true ) );
+	if ( $color ) {
+		return $color;
+	}
+	$defaults = kdv_get_default_platform_colors();
+	return $defaults[ $term->slug ] ?? '';
+}
+
+/**
  * Crea las plataformas de partida una sola vez -- mismo patrón que
  * kdv_create_default_categories() en cpt-resena.php: si se borran o
  * renombran después, no se vuelven a crear solas.
@@ -104,6 +139,10 @@ function kdv_platform_icon_enqueue_media() {
 	$screen = get_current_screen();
 	if ( $screen && 'kdv_plataforma' === $screen->taxonomy ) {
 		wp_enqueue_media();
+		// Selector de color nativo de WordPress para el campo "Color".
+		wp_enqueue_style( 'wp-color-picker' );
+		wp_enqueue_script( 'wp-color-picker' );
+		wp_add_inline_script( 'wp-color-picker', "jQuery( function( $ ) { $( '.kdv-platform-color-input' ).wpColorPicker(); } );" );
 	}
 }
 add_action( 'admin_enqueue_scripts', 'kdv_platform_icon_enqueue_media' );
@@ -156,6 +195,61 @@ function kdv_platform_icon_field_edit( $term ) {
 	<?php
 }
 add_action( 'kdv_plataforma_edit_form_fields', 'kdv_platform_icon_field_edit' );
+
+/* ---------------------------------------------------------------------
+ * Color de marca: tiñe el icono, el fondo y el indicador de la barra al
+ * pasar el ratón, y la cabecera de la portada de la plataforma.
+ * ------------------------------------------------------------------- */
+
+function kdv_platform_color_field_add() {
+	?>
+	<div class="form-field">
+		<label for="kdv-platform-color"><?php esc_html_e( 'Color', 'revista-koltor-dev' ); ?></label>
+		<input type="text" name="kdv_platform_color" id="kdv-platform-color" class="kdv-platform-color-input" value="" />
+		<p><?php esc_html_e( 'Opcional: el color de la marca. Se usa al pasar el ratón por la barra de plataformas y en la portada de la plataforma. Vacío = el color de partida del tema para esta plataforma, o el color del resalte general.', 'revista-koltor-dev' ); ?></p>
+	</div>
+	<?php
+}
+add_action( 'kdv_plataforma_add_form_fields', 'kdv_platform_color_field_add' );
+
+function kdv_platform_color_field_edit( $term ) {
+	$saved    = sanitize_hex_color( (string) get_term_meta( $term->term_id, 'kdv_platform_color', true ) );
+	$defaults = kdv_get_default_platform_colors();
+	$fallback = $defaults[ $term->slug ] ?? '';
+	?>
+	<tr class="form-field">
+		<th scope="row"><label for="kdv-platform-color"><?php esc_html_e( 'Color', 'revista-koltor-dev' ); ?></label></th>
+		<td>
+			<input type="text" name="kdv_platform_color" id="kdv-platform-color" class="kdv-platform-color-input" value="<?php echo esc_attr( $saved ); ?>" <?php echo $fallback ? 'data-default-color="' . esc_attr( $fallback ) . '"' : ''; ?> />
+			<p class="description">
+				<?php
+				if ( $fallback && ! $saved ) {
+					/* translators: %s: color hex de partida. */
+					printf( esc_html__( 'Sin elegir: se usa el color de partida del tema, %s.', 'revista-koltor-dev' ), '<code>' . esc_html( $fallback ) . '</code>' );
+				} else {
+					esc_html_e( 'El color de la marca, para la barra de plataformas y la portada de la plataforma. Vacío = el color del resalte general.', 'revista-koltor-dev' );
+				}
+				?>
+			</p>
+		</td>
+	</tr>
+	<?php
+}
+add_action( 'kdv_plataforma_edit_form_fields', 'kdv_platform_color_field_edit' );
+
+function kdv_platform_color_field_save( $term_id ) {
+	if ( ! isset( $_POST['kdv_platform_color'] ) || ! current_user_can( 'edit_term', $term_id ) ) {
+		return;
+	}
+	$color = sanitize_hex_color( wp_unslash( $_POST['kdv_platform_color'] ) ); // phpcs:ignore WordPress.Security.NonceVerification -- el nonce del formulario de términos lo valida core antes de este hook.
+	if ( $color ) {
+		update_term_meta( $term_id, 'kdv_platform_color', $color );
+	} else {
+		delete_term_meta( $term_id, 'kdv_platform_color' );
+	}
+}
+add_action( 'created_kdv_plataforma', 'kdv_platform_color_field_save' );
+add_action( 'edited_kdv_plataforma', 'kdv_platform_color_field_save' );
 
 /**
  * JS del botón "Seleccionar imagen" -- vanilla JS, sin jQuery (principio

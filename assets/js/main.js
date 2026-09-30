@@ -356,7 +356,8 @@
 		// plataforma). Independiente del desplegable del buscador de
 		// arriba y del sistema de submenús de .kdv-primary-menu -- ver la
 		// nota junto a kdv_render_platform_bar() en template-tags.php.
-		var platformToggles = document.querySelectorAll( '.kdv-platform-bar__toggle' );
+		// Solo los botones de plataforma: "Inicio" es un enlace sin desplegable.
+		var platformToggles = document.querySelectorAll( 'button.kdv-platform-bar__toggle' );
 		if ( platformToggles.length ) {
 			var closeAllPlatformMenus = function ( except ) {
 				platformToggles.forEach( function ( btn ) {
@@ -384,6 +385,62 @@
 			document.addEventListener( 'click', function () {
 				closeAllPlatformMenus( null );
 			} );
+
+			/*
+			 * Indicador deslizante: una línea bajo el elemento señalado que
+			 * sigue al ratón y al teclado, con el color de marca de cada
+			 * plataforma (--kdv-pc-base, ver main.css). Sin ratón encima,
+			 * descansa bajo la sección actual (.is-current) o se oculta.
+			 * Se mide en cada movimiento porque la barra puede saltar de
+			 * línea en pantallas estrechas.
+			 */
+			var platformInner = document.querySelector( '.kdv-platform-bar__inner' );
+			var indicator     = platformInner ? platformInner.querySelector( '.kdv-platform-bar__indicator' ) : null;
+			if ( platformInner && indicator ) {
+				var platformItems = platformInner.querySelectorAll( '.kdv-platform-bar__item' );
+
+				var moveIndicator = function ( item ) {
+					var toggle = item ? item.querySelector( '.kdv-platform-bar__toggle' ) : null;
+					if ( ! toggle ) {
+						indicator.classList.remove( 'is-visible' );
+						return;
+					}
+					var innerRect  = platformInner.getBoundingClientRect();
+					var toggleRect = toggle.getBoundingClientRect();
+					var inset      = 8; // la línea no llega a los bordes redondeados
+					indicator.style.width     = Math.max( 0, toggleRect.width - inset * 2 ) + 'px';
+					indicator.style.transform = 'translate(' + ( toggleRect.left - innerRect.left + inset ) + 'px, ' + ( toggleRect.bottom - innerRect.top + 1 ) + 'px)';
+					indicator.style.setProperty( '--kdv-indicator-color', window.getComputedStyle( item ).getPropertyValue( '--kdv-pc-base' ).trim() || '' );
+					indicator.classList.add( 'is-visible' );
+				};
+
+				var restIndicator = function () {
+					moveIndicator( platformInner.querySelector( '.kdv-platform-bar__item.is-current' ) );
+				};
+
+				platformItems.forEach( function ( item ) {
+					item.addEventListener( 'mouseenter', function () { moveIndicator( item ); } );
+					item.addEventListener( 'focusin', function () { moveIndicator( item ); } );
+				} );
+				platformInner.addEventListener( 'mouseleave', restIndicator );
+				platformInner.addEventListener( 'focusout', function ( event ) {
+					if ( ! platformInner.contains( event.relatedTarget ) ) {
+						restIndicator();
+					}
+				} );
+
+				// Primera colocación sin animación (que no "llegue" volando al cargar).
+				indicator.style.transition = 'none';
+				restIndicator();
+				void indicator.offsetWidth; // fuerza el pintado antes de devolver la transición
+				indicator.style.transition = '';
+
+				var indicatorTimer = null;
+				window.addEventListener( 'resize', function () {
+					window.clearTimeout( indicatorTimer );
+					indicatorTimer = window.setTimeout( restIndicator, 150 );
+				}, { passive: true } );
+			}
 			document.addEventListener( 'keydown', function ( e ) {
 				if ( 'Escape' === e.key ) {
 					closeAllPlatformMenus( null );

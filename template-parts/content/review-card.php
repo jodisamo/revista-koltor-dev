@@ -31,12 +31,15 @@ $tipo       = get_post_meta( get_the_ID(), '_kdv_tipo', true );
 	</a>
 
 	<div class="kdv-card__body">
-		<?php
-		$terms = get_the_terms( get_the_ID(), 'kdv_genero' );
-		if ( $terms && ! is_wp_error( $terms ) ) :
-			?>
-			<a href="<?php echo esc_url( get_term_link( $terms[0] ) ); ?>" class="kdv-card__category"><?php echo esc_html( $terms[0]->name ); ?></a>
-		<?php endif; ?>
+		<div class="kdv-card__labels">
+			<?php
+			$terms = get_the_terms( get_the_ID(), 'kdv_genero' );
+			if ( $terms && ! is_wp_error( $terms ) ) :
+				?>
+				<a href="<?php echo esc_url( get_term_link( $terms[0] ) ); ?>" class="kdv-card__category"><?php echo esc_html( $terms[0]->name ); ?></a>
+			<?php endif; ?>
+			<?php kdv_render_platform_badges(); ?>
+		</div>
 
 		<h3 class="kdv-card__title">
 			<a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>

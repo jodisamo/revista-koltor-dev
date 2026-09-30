@@ -5,7 +5,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.9.0
+Stable tag: 1.10.0
 Tags: blog, news, entertainment, two-columns, grid-layout, custom-logo, custom-menu, custom-colors, editor-style, featured-images, threaded-comments, translation-ready, block-styles, wide-blocks, dark-mode
 
 == Description ==
@@ -60,6 +60,15 @@ Tipografías: "Baloo 2" y "Noto Sans" (Google Fonts, licencia SIL Open Font Lice
 Swiper.js (assets/lib/swiper/), usado para el slider nativo de portada, licencia MIT. https://swiperjs.com/
 
 == Changelog ==
+
+= 1.10.0 =
+* Color de marca por plataforma (Entradas → Plataformas → Color, con el selector de color de WordPress). De partida: PlayStation #0070D1, Nintendo #E60012, Xbox #107C10, Android #3DDC84, Steam #66C0F4; PC usa el color del resalte. Una subplataforma sin color usa el de su principal.
+* Barra de plataformas: cada plataforma se resalta con su color (fondo, texto y el propio icono teñido con máscara CSS), un 15% más grande, con un indicador que se desliza bajo el elemento señalado y toma su color, y la plataforma de la página actual encendida (portada de la plataforma, sus subplataformas o un listado con ?plataforma=).
+* Nuevo "Inicio" al principio de la barra: casa dibujada por el tema cuyo tejado se levanta y cuya ventana se enciende al pasar el ratón; activa en la portada.
+* Distintivos de plataforma en las tarjetas: junto a la etiqueta de tipo (que sigue diciendo QUÉ es), el icono de cada plataforma principal en su color, enlazando a su portada; "PlayStation (PS5)" al pasar el ratón; como mucho 3 y "+N".
+* Portada de plataforma con franja y velo del color de la marca.
+* Contraste: los colores de marca se oscurecen (modo claro) o aclaran (modo oscuro) para el texto; todos superan 4,5:1 en ambos modos.
+* Corregido: el botón "Tops de …" de la portada de plataforma salía sin su color de acento (lo pisaba el estilo base de las píldoras).
 
 = 1.9.0 =
 * Nueva sección Personalizar → Revista Koltor Dev → "Menús y efectos": color y velocidad del resalte al pasar el ratón, fondo de la barra de plataformas (sin fondo / suave / intenso) y efecto del icono (levantarse / agrandarse / ninguno), con vista previa en vivo. Los ajustes de menú que estaban en "Cabecera" (estilo de resaltado, velocidad, curva y aparición de los desplegables) se movieron aquí conservando lo ya guardado.

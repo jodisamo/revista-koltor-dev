@@ -452,27 +452,68 @@ function kdv_render_platform_bar() {
 	}
 	$sections[ __( 'Reseñas', 'revista-koltor-dev' ) ] = get_post_type_archive_link( 'kdv_resena' );
 	$sections[ __( 'Tops', 'revista-koltor-dev' ) ]    = kdv_get_ranking_page_url();
+
+	$current_slug = kdv_get_current_platform_slug();
+	$is_home      = is_front_page();
 	?>
-	<div class="kdv-platform-bar">
+	<nav class="kdv-platform-bar" aria-label="<?php esc_attr_e( 'Plataformas', 'revista-koltor-dev' ); ?>">
 		<div class="kdv-container kdv-platform-bar__inner">
+
+			<?php
+			/*
+			 * "Inicio": casa dibujada por el propio tema (SVG en línea, sin
+			 * marcas de terceros). Al pasar el ratón el tejado se levanta y
+			 * la ventana se enciende (main.css). En la portada queda activa.
+			 */
+			?>
+			<div class="kdv-platform-bar__item kdv-platform-bar__item--home<?php echo $is_home ? ' is-current' : ''; ?>">
+				<a class="kdv-platform-bar__toggle kdv-platform-bar__home" href="<?php echo esc_url( home_url( '/' ) ); ?>"<?php echo $is_home ? ' aria-current="page"' : ''; ?>>
+					<span class="kdv-platform-bar__iconwrap">
+						<svg class="kdv-platform-bar__house" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false">
+							<path class="kdv-house__roof" d="M3 11.2 12 4l9 7.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+							<path class="kdv-house__body" d="M5.5 10v9.5h13V10" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+							<rect class="kdv-house__window" x="10" y="13" width="4" height="4" rx=".8"/>
+						</svg>
+					</span>
+					<span class="kdv-platform-bar__label"><?php esc_html_e( 'Inicio', 'revista-koltor-dev' ); ?></span>
+				</a>
+			</div>
+
 			<?php foreach ( $platforms as $p ) : ?>
 				<?php
-				$slug      = $p['term']->slug;
-				$menu_id   = 'kdv-platform-menu-' . sanitize_html_class( $slug );
+				$slug     = $p['term']->slug;
+				$menu_id  = 'kdv-platform-menu-' . sanitize_html_class( $slug );
+				$color    = kdv_get_platform_color( $p['term'] );
+				$icon_url = wp_get_attachment_image_url( $p['icon_id'], 'thumbnail' );
+				$current  = $slug === $current_slug;
+
+				// Color de marca e icono como variables CSS del elemento: el
+				// fondo, el texto, el icono teñido y el indicador los leen.
+				$style = '';
+				if ( $color ) {
+					$style .= '--kdv-pc:' . $color . ';';
+				}
+				if ( $icon_url ) {
+					$style .= '--kdv-icon-url:url(' . esc_url( $icon_url ) . ');';
+				}
 				?>
-				<div class="kdv-platform-bar__item">
-					<button type="button" class="kdv-platform-bar__toggle" aria-expanded="false" aria-controls="<?php echo esc_attr( $menu_id ); ?>">
-						<?php
-						echo wp_get_attachment_image(
-							$p['icon_id'],
-							'thumbnail',
-							false,
-							[
-								'class' => 'kdv-platform-bar__icon',
-								'alt'   => '',
-							]
-						);
-						?>
+				<div class="kdv-platform-bar__item<?php echo $current ? ' is-current' : ''; ?>"<?php echo $style ? ' style="' . esc_attr( $style ) . '"' : ''; ?>>
+					<button type="button" class="kdv-platform-bar__toggle" aria-expanded="false" aria-controls="<?php echo esc_attr( $menu_id ); ?>"<?php echo $current ? ' aria-current="true"' : ''; ?>>
+						<span class="kdv-platform-bar__iconwrap">
+							<?php
+							echo wp_get_attachment_image(
+								$p['icon_id'],
+								'thumbnail',
+								false,
+								[
+									'class' => 'kdv-platform-bar__icon',
+									'alt'   => '',
+								]
+							);
+							?>
+							<?php // El mismo icono pintado del color de la marca (máscara CSS). ?>
+							<span class="kdv-platform-bar__icon-tint" aria-hidden="true"></span>
+						</span>
 						<span class="kdv-platform-bar__label"><?php echo esc_html( $p['term']->name ); ?></span>
 					</button>
 					<ul class="kdv-platform-bar__menu" id="<?php echo esc_attr( $menu_id ); ?>">
@@ -493,9 +534,112 @@ function kdv_render_platform_bar() {
 					</ul>
 				</div>
 			<?php endforeach; ?>
+
+			<?php // Línea que se desliza bajo el elemento señalado (JS en main.js). ?>
+			<span class="kdv-platform-bar__indicator" aria-hidden="true"></span>
 		</div>
-	</div>
+	</nav>
 	<?php
+}
+
+/**
+ * Slug de la plataforma PRINCIPAL que corresponde a la página actual, para
+ * marcarla como activa en la barra: la portada de una plataforma
+ * (/plataforma/ps5/ → playstation) o un listado filtrado con ?plataforma=.
+ * Cadena vacía si la página no es de ninguna plataforma.
+ *
+ * @return string
+ */
+function kdv_get_current_platform_slug() {
+	$term = is_tax( 'kdv_plataforma' ) ? get_queried_object() : kdv_get_platform_filter_term();
+	if ( ! $term instanceof WP_Term ) {
+		return '';
+	}
+	$ancestors = get_ancestors( $term->term_id, 'kdv_plataforma', 'taxonomy' );
+	if ( $ancestors ) {
+		$top = get_term( end( $ancestors ), 'kdv_plataforma' );
+		return ( $top && ! is_wp_error( $top ) ) ? $top->slug : '';
+	}
+	return $term->slug;
+}
+
+/**
+ * Plataformas principales de una entrada o reseña, sin repetir: marcada
+ * "PS5" y "PS4" da una sola PlayStation. Cada elemento: [ 'term' =>
+ * plataforma principal, 'names' => nombres concretos marcados ].
+ *
+ * @param int $post_id Entrada.
+ * @return array[]
+ */
+function kdv_get_post_top_platforms( $post_id ) {
+	$terms = get_the_terms( $post_id, 'kdv_plataforma' );
+	if ( ! $terms || is_wp_error( $terms ) ) {
+		return [];
+	}
+	$tops = [];
+	foreach ( $terms as $term ) {
+		$ancestors = get_ancestors( $term->term_id, 'kdv_plataforma', 'taxonomy' );
+		$top       = $ancestors ? get_term( end( $ancestors ), 'kdv_plataforma' ) : $term;
+		if ( ! $top || is_wp_error( $top ) ) {
+			continue;
+		}
+		if ( ! isset( $tops[ $top->term_id ] ) ) {
+			$tops[ $top->term_id ] = [ 'term' => $top, 'names' => [] ];
+		}
+		$tops[ $top->term_id ]['names'][] = $term->name;
+	}
+
+	// Mismo orden que la barra (PlayStation, Nintendo, Xbox, PC, Android).
+	$order = array_flip( array_keys( kdv_get_default_platforms() ) );
+	uasort( $tops, function( $a, $b ) use ( $order ) {
+		return ( $order[ $a['term']->slug ] ?? PHP_INT_MAX ) <=> ( $order[ $b['term']->slug ] ?? PHP_INT_MAX );
+	} );
+	return array_values( $tops );
+}
+
+/**
+ * Distintivos de plataforma para las tarjetas: el icono de cada plataforma
+ * principal, pintado de su color de marca, enlazando a su portada. La
+ * etiqueta de la tarjeta sigue diciendo QUÉ es (Noticias, Avances…); esto
+ * dice PARA QUÉ es. Como mucho 3 y "+N" si hay más. Sin icono subido, se
+ * muestra el nombre abreviado.
+ *
+ * @param int|null $post_id Entrada; por defecto la actual del bucle.
+ */
+function kdv_render_platform_badges( $post_id = null ) {
+	$platforms = kdv_get_post_top_platforms( $post_id ?: get_the_ID() );
+	if ( ! $platforms ) {
+		return;
+	}
+	$max   = 3;
+	$extra = count( $platforms ) - $max;
+
+	echo '<ul class="kdv-platform-badges">';
+	foreach ( array_slice( $platforms, 0, $max ) as $p ) {
+		$term     = $p['term'];
+		$color    = kdv_get_platform_color( $term );
+		$icon_id  = absint( get_term_meta( $term->term_id, 'kdv_platform_icon', true ) );
+		$icon_url = $icon_id ? wp_get_attachment_image_url( $icon_id, 'thumbnail' ) : '';
+		$style    = ( $color ? '--kdv-pc:' . $color . ';' : '' ) . ( $icon_url ? '--kdv-icon-url:url(' . esc_url( $icon_url ) . ');' : '' );
+		// "PlayStation (PS5, PS4)" cuando se marcaron plataformas concretas.
+		$specific = array_diff( $p['names'], [ $term->name ] );
+		$title    = $specific ? $term->name . ' (' . implode( ', ', $specific ) . ')' : $term->name;
+
+		printf(
+			'<li><a class="kdv-platform-badge%1$s" href="%2$s" title="%3$s"%4$s>%5$s<span class="screen-reader-text">%6$s</span></a></li>',
+			$icon_url ? '' : ' kdv-platform-badge--text',
+			esc_url( get_term_link( $term ) ),
+			esc_attr( $title ),
+			$style ? ' style="' . esc_attr( $style ) . '"' : '',
+			$icon_url ? '<span class="kdv-platform-badge__icon" aria-hidden="true"></span>' : '<span aria-hidden="true">' . esc_html( mb_substr( $term->name, 0, 3 ) ) . '</span>',
+			esc_html( $title )
+		);
+	}
+	if ( $extra > 0 ) {
+		/* translators: %d: número de plataformas no mostradas. */
+		printf( '<li class="kdv-platform-badges__more" title="%1$s">+%2$d</li>', esc_attr( sprintf( _n( '%d plataforma más', '%d plataformas más', $extra, 'revista-koltor-dev' ), $extra ) ), absint( $extra ) );
+	}
+	echo '</ul>';
 }
 
 /**

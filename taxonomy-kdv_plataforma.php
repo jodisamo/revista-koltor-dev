@@ -22,6 +22,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 get_header();
 
 $kdv_platform = get_queried_object();
+// Color de marca: el de la propia plataforma o, en una subplataforma sin
+// color (PS5), el de su principal (PlayStation).
+$kdv_color    = kdv_get_platform_color( $kdv_platform );
+if ( ! $kdv_color && $kdv_platform->parent ) {
+	$kdv_color_parent = get_term( $kdv_platform->parent, 'kdv_plataforma' );
+	$kdv_color        = ( $kdv_color_parent && ! is_wp_error( $kdv_color_parent ) ) ? kdv_get_platform_color( $kdv_color_parent ) : '';
+}
 $kdv_icon_id  = absint( get_term_meta( $kdv_platform->term_id, 'kdv_platform_icon', true ) );
 $kdv_parent   = $kdv_platform->parent ? get_term( $kdv_platform->parent, 'kdv_plataforma' ) : null;
 $kdv_children = get_terms( [
@@ -73,7 +80,7 @@ $kdv_any_content = false;
 <div class="kdv-container">
 	<div class="kdv-content kdv-content__grid--full">
 
-		<header class="kdv-platform-hub__head">
+		<header class="kdv-platform-hub__head"<?php echo $kdv_color ? ' style="' . esc_attr( '--kdv-pc:' . $kdv_color ) . '"' : ''; ?>>
 			<?php if ( $kdv_icon_id ) : ?>
 				<?php echo wp_get_attachment_image( $kdv_icon_id, 'thumbnail', false, [ 'class' => 'kdv-platform-hub__icon', 'alt' => '' ] ); ?>
 			<?php endif; ?>
