@@ -21,8 +21,18 @@ require_once KDV_INCLUDES_DIR . '/core/enqueue.php';
 // Custom Post Type "Reseña" + taxonomía de géneros.
 require_once KDV_INCLUDES_DIR . '/core/cpt-resena.php';
 
+// Taxonomía "Plataforma" (PC, PlayStation, Xbox, Nintendo Switch, Móvil...).
+require_once KDV_INCLUDES_DIR . '/core/taxonomy-plataforma.php';
+
 // Custom Post Type "Diapositiva" (slider nativo del hero).
 require_once KDV_INCLUDES_DIR . '/core/cpt-slide.php';
+
+// Custom Post Type "Anuncio de cinta" (cinta de anuncios sobre la cabecera).
+require_once KDV_INCLUDES_DIR . '/core/cpt-ticker.php';
+
+// Modo construcción: pantalla de "en construcción" para todo el frontend
+// mientras el sitio no está listo (ver includes/core/maintenance-mode.php).
+require_once KDV_INCLUDES_DIR . '/core/maintenance-mode.php';
 
 // Admin meta box for review fields (score, studio, year, pros/cons...).
 require_once KDV_INCLUDES_DIR . '/admin/meta-box-resena.php';

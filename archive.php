@@ -18,6 +18,8 @@ get_header();
 				<h1 class="kdv-section__title"><?php the_archive_title(); ?></h1>
 			</header>
 
+			<?php kdv_render_platform_filter_notice(); ?>
+
 			<?php the_archive_description( '<div class="kdv-card__excerpt">', '</div>' ); ?>
 
 			<?php if ( have_posts() ) : ?>

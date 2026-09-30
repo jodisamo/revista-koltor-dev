@@ -130,6 +130,15 @@ add_filter( 'body_class', function( $classes ) {
 			: 'kdv-has-social-bar-right';
 	}
 
+	/*
+	 * "Aparición del submenú" (Personalizar → Cabecera): por defecto los
+	 * desplegables solo aparecen (fade); esta clase activa además el
+	 * pequeño desplazamiento vertical. Ver assets/css/main.css.
+	 */
+	if ( 'slide' === get_theme_mod( 'kdv_submenu_reveal', 'fade' ) ) {
+		$classes[] = 'kdv-submenu-reveal-slide';
+	}
+
 	return $classes;
 } );
 

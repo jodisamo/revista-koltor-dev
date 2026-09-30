@@ -351,6 +351,46 @@
 			} );
 		}
 
+		// Barra de plataformas: cada icono abre su propio desplegable
+		// (Novedades/Análisis/Guías/Reseñas/Tops filtrados por esa
+		// plataforma). Independiente del desplegable del buscador de
+		// arriba y del sistema de submenús de .kdv-primary-menu -- ver la
+		// nota junto a kdv_render_platform_bar() en template-tags.php.
+		var platformToggles = document.querySelectorAll( '.kdv-platform-bar__toggle' );
+		if ( platformToggles.length ) {
+			var closeAllPlatformMenus = function ( except ) {
+				platformToggles.forEach( function ( btn ) {
+					if ( btn === except ) {
+						return;
+					}
+					btn.setAttribute( 'aria-expanded', 'false' );
+					btn.nextElementSibling.classList.remove( 'is-open' );
+				} );
+			};
+
+			platformToggles.forEach( function ( toggle ) {
+				toggle.addEventListener( 'click', function ( e ) {
+					e.stopPropagation();
+					var menu     = toggle.nextElementSibling;
+					var willOpen = ! menu.classList.contains( 'is-open' );
+					closeAllPlatformMenus( null );
+					if ( willOpen ) {
+						menu.classList.add( 'is-open' );
+						toggle.setAttribute( 'aria-expanded', 'true' );
+					}
+				} );
+			} );
+
+			document.addEventListener( 'click', function () {
+				closeAllPlatformMenus( null );
+			} );
+			document.addEventListener( 'keydown', function ( e ) {
+				if ( 'Escape' === e.key ) {
+					closeAllPlatformMenus( null );
+				}
+			} );
+		}
+
 		// Share buttons: "copy link" — copies the button's data-copy-url to
 		// the clipboard and shows a brief "¡Copiado!" confirmation. Falls
 		// back to a hidden-textarea + execCommand for browsers/contexts

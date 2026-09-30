@@ -18,6 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 </head>
 <body <?php body_class(); ?>>
 <?php wp_body_open(); ?>
+<?php kdv_render_ticker(); ?>
 
 <?php if ( is_singular( [ 'post', 'kdv_resena' ] ) ) : ?>
 	<?php kdv_render_reading_progress_bar(); ?>
@@ -89,6 +90,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</div>
 	<?php endif; ?>
 </header>
+
+<?php kdv_render_platform_bar(); ?>
 
 <?php if ( get_theme_mod( 'kdv_ad_header_enabled', false ) && trim( get_theme_mod( 'kdv_ad_header_code', '' ) ) ) : ?>
 	<div class="kdv-container">

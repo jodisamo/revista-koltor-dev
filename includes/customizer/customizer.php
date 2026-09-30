@@ -39,6 +39,53 @@ function kdv_customize_register( WP_Customize_Manager $wp_customize ) {
 	] );
 
 	/* ---------------------------------------------------------------
+	 * Section: Modo construcción
+	 *
+	 * 'priority' bajo a propósito, para que aparezca siempre arriba del
+	 * todo del panel -- es el ajuste que más importa mientras el sitio
+	 * está vacío, y el que hay que recordar apagar al lanzar.
+	 * ------------------------------------------------------------- */
+	$wp_customize->add_section( 'kdv_section_maintenance', [
+		'title'       => __( 'Modo construcción', 'revista-koltor-dev' ),
+		'description' => __( 'Muestra una pantalla simple de "en construcción" a cualquier visitante mientras preparas el sitio. Quien tenga sesión iniciada con permiso de editar contenido sigue viendo el sitio real -- así el equipo puede trabajar en él sin apagar esto.', 'revista-koltor-dev' ),
+		'panel'       => 'kdv_panel',
+		'priority'    => 1,
+	] );
+
+	$wp_customize->add_setting( 'kdv_maintenance_enabled', [
+		'default'           => false,
+		'sanitize_callback' => 'wp_validate_boolean',
+		'transport'         => 'refresh',
+	] );
+	$wp_customize->add_control( 'kdv_maintenance_enabled', [
+		'label'   => __( 'Activar modo construcción', 'revista-koltor-dev' ),
+		'section' => 'kdv_section_maintenance',
+		'type'    => 'checkbox',
+	] );
+
+	$wp_customize->add_setting( 'kdv_maintenance_message', [
+		'default'           => __( 'Estamos preparando el sitio. Vuelve pronto.', 'revista-koltor-dev' ),
+		'sanitize_callback' => 'sanitize_text_field',
+		'transport'         => 'refresh',
+	] );
+	$wp_customize->add_control( 'kdv_maintenance_message', [
+		'label'   => __( 'Mensaje', 'revista-koltor-dev' ),
+		'section' => 'kdv_section_maintenance',
+		'type'    => 'text',
+	] );
+
+	$wp_customize->add_setting( 'kdv_maintenance_illustration', [
+		'default'           => '',
+		'sanitize_callback' => 'esc_url_raw',
+		'transport'         => 'refresh',
+	] );
+	$wp_customize->add_control( new WP_Customize_Image_Control( $wp_customize, 'kdv_maintenance_illustration', [
+		'label'       => __( 'Ilustración (opcional)', 'revista-koltor-dev' ),
+		'description' => __( 'Si no subes ninguna, se usa la ilustración incluida en el tema. Es puramente decorativa -- el texto de al lado siempre es el mensaje de arriba, nunca texto dentro de la imagen.', 'revista-koltor-dev' ),
+		'section'     => 'kdv_section_maintenance',
+	] ) );
+
+	/* ---------------------------------------------------------------
 	 * Section: Colores
 	 * ------------------------------------------------------------- */
 	$wp_customize->add_section( 'kdv_section_colors', [
@@ -118,6 +165,44 @@ function kdv_customize_register( WP_Customize_Manager $wp_customize ) {
 	/* ---------------------------------------------------------------
 	 * Section: Header
 	 * ------------------------------------------------------------- */
+	/* ---------------------------------------------------------------
+	 * Section: Cinta de anuncios
+	 *
+	 * El encendido/apagado y la velocidad viven aquí; la lista de
+	 * anuncios en sí (texto, fecha, enlace) se gestiona como contenido
+	 * en el CPT "Cinta de anuncios" (ver includes/core/cpt-ticker.php),
+	 * el mismo reparto de responsabilidades que Diapositivas/Hero.
+	 * ------------------------------------------------------------- */
+	$wp_customize->add_section( 'kdv_section_ticker', [
+		'title'       => __( 'Cinta de anuncios', 'revista-koltor-dev' ),
+		'description' => __( 'Franja horizontal con desplazamiento continuo, encima de la cabecera, para anuncios de próximos eventos (Nintendo Direct, State of Play...). Los anuncios en sí se añaden desde el menú "Cinta de anuncios" del escritorio, no aquí.', 'revista-koltor-dev' ),
+		'panel'       => 'kdv_panel',
+	] );
+
+	$wp_customize->add_setting( 'kdv_ticker_enabled', [
+		'default'           => false,
+		'sanitize_callback' => 'wp_validate_boolean',
+		'transport'         => 'refresh',
+	] );
+	$wp_customize->add_control( 'kdv_ticker_enabled', [
+		'label'   => __( 'Mostrar la cinta de anuncios', 'revista-koltor-dev' ),
+		'section' => 'kdv_section_ticker',
+		'type'    => 'checkbox',
+	] );
+
+	$wp_customize->add_setting( 'kdv_ticker_speed', [
+		'default'           => 25,
+		'sanitize_callback' => 'absint',
+		'transport'         => 'refresh',
+	] );
+	$wp_customize->add_control( 'kdv_ticker_speed', [
+		'label'       => __( 'Velocidad (segundos por vuelta completa)', 'revista-koltor-dev' ),
+		'description' => __( 'Un número más alto = desplazamiento más lento.', 'revista-koltor-dev' ),
+		'section'     => 'kdv_section_ticker',
+		'type'        => 'number',
+		'input_attrs' => [ 'min' => 10, 'max' => 60 ],
+	] );
+
 	$wp_customize->add_section( 'kdv_section_header', [
 		'title' => __( 'Cabecera', 'revista-koltor-dev' ),
 		'panel' => 'kdv_panel',
@@ -139,6 +224,67 @@ function kdv_customize_register( WP_Customize_Manager $wp_customize ) {
 			'color'     => __( 'Solo color (clásico)', 'revista-koltor-dev' ),
 			'underline' => __( 'Subrayado animado', 'revista-koltor-dev' ),
 			'pill'      => __( 'Píldora de color', 'revista-koltor-dev' ),
+		],
+	] );
+
+	/*
+	 * Velocidad, curva de easing y forma de aparecer de los DESPLEGABLES del
+	 * menú de escritorio (las subcategorías, no el nivel superior). A
+	 * propósito NO hay control por elemento de menú ni afecta al panel
+	 * deslizante móvil, que usa clip-path y no transform por el motivo que
+	 * explica assets/css/main.css junto a esa regla (ensanchaba la página en
+	 * Chrome/Android en el tema hermano) -- introducir aquí una variante que
+	 * pudiera acabar usando transform reabriría ese mismo bug.
+	 */
+	$wp_customize->add_setting( 'kdv_menu_transition_speed', [
+		'default'           => 200,
+		'sanitize_callback' => function( $value ) {
+			$value = absint( $value );
+			return max( 100, min( 500, $value ) );
+		},
+		'transport'         => 'refresh',
+	] );
+	$wp_customize->add_control( 'kdv_menu_transition_speed', [
+		'label'       => __( 'Velocidad de los desplegables del menú (ms)', 'revista-koltor-dev' ),
+		'description' => __( 'Duración de la animación al abrir/cerrar una subcategoría en el menú de escritorio. Se ignora automáticamente si el visitante tiene activado "reducir movimiento" en su sistema.', 'revista-koltor-dev' ),
+		'section'     => 'kdv_section_header',
+		'type'        => 'number',
+		'input_attrs' => [ 'min' => 100, 'max' => 500, 'step' => 10 ],
+	] );
+
+	$wp_customize->add_setting( 'kdv_menu_transition_easing', [
+		'default'           => 'suave',
+		'sanitize_callback' => function( $value ) {
+			return in_array( $value, [ 'suave', 'lineal', 'rebote' ], true ) ? $value : 'suave';
+		},
+		'transport'         => 'refresh',
+	] );
+	$wp_customize->add_control( 'kdv_menu_transition_easing', [
+		'label'   => __( 'Curva de la animación', 'revista-koltor-dev' ),
+		'section' => 'kdv_section_header',
+		'type'    => 'select',
+		'choices' => [
+			'suave'  => __( 'Suave (por defecto)', 'revista-koltor-dev' ),
+			'lineal' => __( 'Lineal', 'revista-koltor-dev' ),
+			'rebote' => __( 'Rebote sutil', 'revista-koltor-dev' ),
+		],
+	] );
+
+	$wp_customize->add_setting( 'kdv_submenu_reveal', [
+		'default'           => 'fade',
+		'sanitize_callback' => function( $value ) {
+			return in_array( $value, [ 'fade', 'slide' ], true ) ? $value : 'fade';
+		},
+		'transport'         => 'refresh',
+	] );
+	$wp_customize->add_control( 'kdv_submenu_reveal', [
+		'label'       => __( 'Aparición del submenú', 'revista-koltor-dev' ),
+		'description' => __( 'Cómo entra la subcategoría: apareciendo en el sitio, o deslizándose ligeramente hacia abajo. Ambas usan solo "opacity" y "transform", las dos propiedades que el navegador puede animar sin recalcular el resto de la página.', 'revista-koltor-dev' ),
+		'section'     => 'kdv_section_header',
+		'type'        => 'select',
+		'choices'     => [
+			'fade'  => __( 'Aparecer', 'revista-koltor-dev' ),
+			'slide' => __( 'Deslizar hacia abajo', 'revista-koltor-dev' ),
 		],
 	] );
 
@@ -232,6 +378,18 @@ function kdv_customize_register( WP_Customize_Manager $wp_customize ) {
 			'left'   => __( 'Izquierda (clásico)', 'revista-koltor-dev' ),
 			'center' => __( 'Centrado, con menú a un lado', 'revista-koltor-dev' ),
 		],
+	] );
+
+	$wp_customize->add_setting( 'kdv_show_platform_bar', [
+		'default'           => false,
+		'sanitize_callback' => 'wp_validate_boolean',
+		'transport'         => 'refresh',
+	] );
+	$wp_customize->add_control( 'kdv_show_platform_bar', [
+		'label'       => __( 'Mostrar barra de plataformas', 'revista-koltor-dev' ),
+		'description' => __( 'Fila de iconos (PC, PlayStation, Xbox...) debajo de la cabecera, cada uno enlazando a su archivo. Gestiona las plataformas y sube su icono desde el menú "Plataformas" del escritorio -- si ninguna tiene icono todavía, esta fila no se muestra aunque esté activada.', 'revista-koltor-dev' ),
+		'section'     => 'kdv_section_header',
+		'type'        => 'checkbox',
 	] );
 
 	/* ---------------------------------------------------------------
@@ -725,10 +883,10 @@ function kdv_customize_register( WP_Customize_Manager $wp_customize ) {
 	] );
 
 	$kdv_score_label_defaults = [
-		1 => __( 'Historia / Guion', 'revista-koltor-dev' ),
-		2 => __( 'Apartado visual', 'revista-koltor-dev' ),
+		1 => __( 'Jugabilidad', 'revista-koltor-dev' ),
+		2 => __( 'Gráficos', 'revista-koltor-dev' ),
 		3 => __( 'Sonido', 'revista-koltor-dev' ),
-		4 => __( 'Personajes', 'revista-koltor-dev' ),
+		4 => __( 'Historia', 'revista-koltor-dev' ),
 	];
 	foreach ( $kdv_score_label_defaults as $kdv_i => $kdv_default ) {
 		$wp_customize->add_setting( "kdv_score_label_{$kdv_i}", [
@@ -752,8 +910,8 @@ function kdv_customize_register( WP_Customize_Manager $wp_customize ) {
 	] );
 
 	$wp_customize->add_setting( 'kdv_footer_text', [
-		/* translators: %year% is replaced with the current year on the frontend. */
-		'default'           => __( '© %year% Revista Koltor Dev. Todos los derechos reservados.', 'revista-koltor-dev' ),
+		/* translators: %1$s is replaced with the current year on the frontend (%year%), %2$s is the site name (Ajustes → Generales). */
+		'default'           => sprintf( __( '© %1$s %2$s. Todos los derechos reservados.', 'revista-koltor-dev' ), '%year%', get_bloginfo( 'name' ) ),
 		'sanitize_callback' => 'sanitize_text_field',
 		'transport'         => 'postMessage',
 	] );
@@ -869,7 +1027,7 @@ function kdv_sanitize_dark_mode_choice( $value ) {
 }
 
 function kdv_render_footer_copyright() {
-	$text = get_theme_mod( 'kdv_footer_text', __( '© %year% Revista Koltor Dev. Todos los derechos reservados.', 'revista-koltor-dev' ) );
+	$text = get_theme_mod( 'kdv_footer_text', sprintf( __( '© %1$s %2$s. Todos los derechos reservados.', 'revista-koltor-dev' ), '%year%', get_bloginfo( 'name' ) ) );
 	echo esc_html( str_replace( '%year%', gmdate( 'Y' ), $text ) );
 }
 

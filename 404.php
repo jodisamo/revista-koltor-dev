@@ -13,7 +13,7 @@ get_header();
 ?>
 <div class="kdv-container">
 	<div class="kdv-empty-state">
-		<h1><?php esc_html_e( '¡Ups! Esta página se perdió en el isekai 🌀', 'revista-koltor-dev' ); ?></h1>
+		<h1><?php esc_html_e( '¡Ups! Esta página se perdió en un glitch entre niveles 🎮', 'revista-koltor-dev' ); ?></h1>
 		<p><?php esc_html_e( 'No encontramos lo que buscabas. Prueba buscando algo distinto.', 'revista-koltor-dev' ); ?></p>
 		<div style="max-width:420px;margin:24px auto;">
 			<?php get_search_form(); ?>

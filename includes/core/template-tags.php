@@ -149,7 +149,8 @@ function kdv_get_default_category_id( $name ) {
 function kdv_get_site_info_defaults() {
 	return [
 		'show_about'     => true,
-		'about_title'    => __( 'Sobre Revista Koltor Dev', 'revista-koltor-dev' ),
+		/* translators: %s: nombre del sitio (Ajustes → Generales → Título del sitio). */
+		'about_title'    => sprintf( __( 'Sobre %s', 'revista-koltor-dev' ), get_bloginfo( 'name' ) ),
 		'about_text'     => __( 'Describe aquí tu publicación en dos o tres frases: de qué trata, para quién es y con qué frecuencia publicas. Este texto aparece en el pie de página.', 'revista-koltor-dev' ),
 
 		'show_explore'   => true,
@@ -254,6 +255,285 @@ function kdv_get_hero_slides() {
 }
 
 /**
+ * Anuncios publicados para la cinta sobre la cabecera (CPT kdv_ticker_item),
+ * en el orden fijado en "Atributos de página". No comprueba aquí el
+ * interruptor del Personalizador — eso lo hace kdv_render_ticker().
+ */
+function kdv_get_ticker_items() {
+	return get_posts( [
+		'post_type'      => 'kdv_ticker_item',
+		'posts_per_page' => -1,
+		'orderby'        => 'menu_order',
+		'order'          => 'ASC',
+		'post_status'    => 'publish',
+		'no_found_rows'  => true,
+	] );
+}
+
+/**
+ * Pinta la cinta de anuncios horizontal (eventos próximos: Nintendo Direct,
+ * State of Play, etc.), si está activada en Personalizar → Cinta de
+ * anuncios y hay al menos un anuncio publicado. Se llama desde header.php,
+ * antes de la etiqueta <header>.
+ *
+ * El contenido se repite dos veces (misma lista, la segunda con
+ * aria-hidden) para que el bucle de la animación CSS sea continuo sin
+ * salto visible; @media (prefers-reduced-motion: reduce) desactiva el
+ * movimiento y dispone los anuncios en una fila estática.
+ */
+function kdv_render_ticker() {
+	if ( ! get_theme_mod( 'kdv_ticker_enabled', false ) ) {
+		return;
+	}
+
+	$items = kdv_get_ticker_items();
+	if ( empty( $items ) ) {
+		return;
+	}
+
+	$speed = absint( get_theme_mod( 'kdv_ticker_speed', 25 ) );
+	$speed = max( 10, min( 60, $speed ) );
+
+	$render_item = static function( $post ) {
+		$date = get_post_meta( $post->ID, '_kdv_ticker_date', true );
+		$url  = get_post_meta( $post->ID, '_kdv_ticker_url', true );
+
+		$inner  = '';
+		if ( $date ) {
+			$inner .= '<span class="kdv-ticker__date">' . esc_html( $date ) . '</span>';
+		}
+		$inner .= '<span class="kdv-ticker__text">' . esc_html( get_the_title( $post ) ) . '</span>';
+
+		if ( $url ) {
+			return '<a class="kdv-ticker__item" href="' . esc_url( $url ) . '">' . $inner . '</a>';
+		}
+		return '<span class="kdv-ticker__item">' . $inner . '</span>';
+	};
+
+	$html_items = array_map( $render_item, $items );
+	$group      = implode( '<span class="kdv-ticker__sep" aria-hidden="true">·</span>', $html_items );
+	?>
+	<div class="kdv-ticker" role="region" aria-label="<?php esc_attr_e( 'Próximos eventos', 'revista-koltor-dev' ); ?>">
+		<div class="kdv-ticker__track" style="--kdv-ticker-duration: <?php echo esc_attr( $speed ); ?>s">
+			<span class="kdv-ticker__group"><?php echo $group; // phpcs:ignore WordPress.Security.EscapeOutput -- cada trozo ya se escapó en $render_item. ?></span>
+			<span class="kdv-ticker__group" aria-hidden="true"><?php echo $group; // phpcs:ignore WordPress.Security.EscapeOutput -- idem, duplicado para el bucle continuo. ?></span>
+		</div>
+	</div>
+	<?php
+}
+
+/**
+ * Plataformas (kdv_plataforma) que tienen un icono subido, en el orden en
+ * que se crearon -- esta taxonomía no tiene orden manual todavía; si hace
+ * falta reordenar, la forma más simple por ahora es borrar y crear de
+ * nuevo el término en el orden deseado.
+ */
+function kdv_get_platforms_with_icon() {
+	$terms = get_terms( [
+		'taxonomy'   => 'kdv_plataforma',
+		'hide_empty' => false,
+		'orderby'    => 'term_id',
+		'order'      => 'ASC',
+	] );
+
+	if ( is_wp_error( $terms ) || empty( $terms ) ) {
+		return [];
+	}
+
+	$with_icon = [];
+	foreach ( $terms as $term ) {
+		$icon_id = absint( get_term_meta( $term->term_id, 'kdv_platform_icon', true ) );
+		if ( $icon_id ) {
+			$with_icon[] = [
+				'term'    => $term,
+				'icon_id' => $icon_id,
+			];
+		}
+	}
+	return $with_icon;
+}
+
+/**
+ * Pinta la barra de plataformas (PC, PlayStation, Xbox...) como fila
+ * propia debajo de la cabecera -- deliberadamente NO integrada en
+ * .kdv-primary-menu ni sus desplegables: ese es el subsistema del tema con
+ * más historial de bugs (ver §9 del manual), y esto es un elemento
+ * aparte, no un nivel más del menú. Solo se pinta si está activada en
+ * Personalizar → Cabecera y hay al menos una plataforma con icono subido
+ * -- si no, no se muestra nada, nunca una fila vacía o con huecos rotos.
+ *
+ * Cada plataforma es un botón con un pequeño desplegable propio (JS en
+ * assets/js/main.js, sin relación con el del menú principal) hacia sus
+ * secciones ya existentes -- Novedades/Análisis/Guías (las categorías
+ * nativas), Reseñas y Tops (la plantilla de Ranking) -- filtradas por esa
+ * plataforma vía ?plataforma=slug. A propósito NO se crean términos ni
+ * categorías nuevas por plataforma: el filtro cruza dos taxonomías que ya
+ * existen (kdv_plataforma + category) en la URL, así que cada artículo se
+ * sigue etiquetando una sola vez. Un enlace se omite en silencio si su
+ * destino no existe todavía (p. ej. "Tops" antes de crear la página de
+ * Ranking, o una categoría nativa que se haya borrado).
+ */
+function kdv_render_platform_bar() {
+	if ( ! get_theme_mod( 'kdv_show_platform_bar', false ) ) {
+		return;
+	}
+
+	$platforms = kdv_get_platforms_with_icon();
+	if ( empty( $platforms ) ) {
+		return;
+	}
+
+	$kdv_novedades_id = kdv_get_default_category_id( 'Novedades' );
+	$kdv_analisis_id  = kdv_get_default_category_id( 'Análisis' );
+	$kdv_guias_id     = kdv_get_default_category_id( 'Guías' );
+
+	$sections = [
+		'Novedades' => $kdv_novedades_id ? get_category_link( $kdv_novedades_id ) : '',
+		'Análisis'  => $kdv_analisis_id ? get_category_link( $kdv_analisis_id ) : '',
+		'Guías'     => $kdv_guias_id ? get_category_link( $kdv_guias_id ) : '',
+		'Reseñas'   => get_post_type_archive_link( 'kdv_resena' ),
+		'Tops'      => kdv_get_ranking_page_url(),
+	];
+	?>
+	<div class="kdv-platform-bar">
+		<div class="kdv-container kdv-platform-bar__inner">
+			<?php foreach ( $platforms as $p ) : ?>
+				<?php
+				$slug      = $p['term']->slug;
+				$menu_id   = 'kdv-platform-menu-' . sanitize_html_class( $slug );
+				$has_links = false;
+				?>
+				<div class="kdv-platform-bar__item">
+					<button type="button" class="kdv-platform-bar__toggle" aria-expanded="false" aria-controls="<?php echo esc_attr( $menu_id ); ?>">
+						<?php
+						echo wp_get_attachment_image(
+							$p['icon_id'],
+							'thumbnail',
+							false,
+							[
+								'class' => 'kdv-platform-bar__icon',
+								'alt'   => '',
+							]
+						);
+						?>
+						<span class="kdv-platform-bar__label"><?php echo esc_html( $p['term']->name ); ?></span>
+					</button>
+					<ul class="kdv-platform-bar__menu" id="<?php echo esc_attr( $menu_id ); ?>">
+						<?php foreach ( $sections as $label => $base_url ) : ?>
+							<?php if ( $base_url ) : $has_links = true; ?>
+								<li><a href="<?php echo esc_url( add_query_arg( 'plataforma', $slug, $base_url ) ); ?>"><?php echo esc_html( $label ); ?></a></li>
+							<?php endif; ?>
+						<?php endforeach; ?>
+						<?php if ( ! $has_links ) : ?>
+							<li><a href="<?php echo esc_url( get_term_link( $p['term'] ) ); ?>"><?php esc_html_e( 'Ver todo', 'revista-koltor-dev' ); ?></a></li>
+						<?php endif; ?>
+					</ul>
+				</div>
+			<?php endforeach; ?>
+		</div>
+	</div>
+	<?php
+}
+
+/**
+ * Plataforma pedida por query string (?plataforma=slug), ya validada
+ * contra un término real de kdv_plataforma -- nunca se confía en el
+ * parámetro tal cual. Se usa tanto para filtrar la consulta principal
+ * (kdv_maybe_filter_by_platform()) como para pintar el aviso de "filtrado
+ * por..." en cada plantilla de archivo.
+ *
+ * @return WP_Term|null
+ */
+function kdv_get_platform_filter_term() {
+	if ( empty( $_GET['plataforma'] ) ) {
+		return null;
+	}
+	$slug = sanitize_title( wp_unslash( $_GET['plataforma'] ) );
+	$term = get_term_by( 'slug', $slug, 'kdv_plataforma' );
+	return ( $term && ! is_wp_error( $term ) ) ? $term : null;
+}
+
+/**
+ * Añade el filtro de plataforma a la consulta PRINCIPAL de los archivos
+ * que pueden recibir ?plataforma=... desde el desplegable de la barra de
+ * plataformas (categoría, etiqueta, archivo de Reseñas). La plantilla de
+ * Ranking NO pasa por aquí -- arma su propio WP_Query aparte (ver
+ * page-templates/ranking.php), así que el filtro se le añade ahí
+ * directamente en sus argumentos, no con este hook.
+ */
+function kdv_maybe_filter_by_platform( $query ) {
+	if ( is_admin() || ! $query->is_main_query() ) {
+		return;
+	}
+	if ( ! ( $query->is_category() || $query->is_tag() || $query->is_post_type_archive( 'kdv_resena' ) ) ) {
+		return;
+	}
+	$term = kdv_get_platform_filter_term();
+	if ( ! $term ) {
+		return;
+	}
+	$tax_query   = (array) $query->get( 'tax_query' );
+	$tax_query[] = [
+		'taxonomy' => 'kdv_plataforma',
+		'field'    => 'term_id',
+		'terms'    => $term->term_id,
+	];
+	$query->set( 'tax_query', $tax_query );
+}
+add_action( 'pre_get_posts', 'kdv_maybe_filter_by_platform' );
+
+/**
+ * Aviso "filtrado por: PlayStation" + enlace para quitar el filtro,
+ * pensado para pintarse justo debajo del título en cualquier plantilla de
+ * archivo que pueda recibir ?plataforma=... (archive.php,
+ * archive-kdv_resena.php, page-templates/ranking.php). No hace nada si no
+ * hay ningún filtro de plataforma activo en la URL actual.
+ */
+function kdv_render_platform_filter_notice() {
+	$term = kdv_get_platform_filter_term();
+	if ( ! $term ) {
+		return;
+	}
+	$remove_url = remove_query_arg( 'plataforma' );
+	?>
+	<p class="kdv-platform-filter-notice">
+		<?php
+		printf(
+			/* translators: %s: nombre de la plataforma (ej. PlayStation). */
+			esc_html__( 'Filtrado por: %s', 'revista-koltor-dev' ),
+			'<strong>' . esc_html( $term->name ) . '</strong>'
+		);
+		?>
+		— <a href="<?php echo esc_url( $remove_url ); ?>"><?php esc_html_e( 'quitar filtro', 'revista-koltor-dev' ); ?></a>
+	</p>
+	<?php
+}
+
+/**
+ * URL de la primera página que use la plantilla "Ranking de Reseñas", o
+ * cadena vacía si todavía no se ha creado ninguna (ver §8 del manual: la
+ * plantilla se asigna a mano desde "Atributos de página"). Resultado
+ * cacheado en memoria -- se llama una vez por plataforma en la barra, no
+ * hace falta repetir la consulta cada vez.
+ */
+function kdv_get_ranking_page_url() {
+	static $url = null;
+	if ( null !== $url ) {
+		return $url;
+	}
+	$pages = get_posts( [
+		'post_type'      => 'page',
+		'posts_per_page' => 1,
+		'post_status'    => 'publish',
+		'no_found_rows'  => true,
+		'meta_key'       => '_wp_page_template', // phpcs:ignore WordPress.DB.SlowDBQuery -- una sola vez por carga, con posts_per_page 1.
+		'meta_value'     => 'page-templates/ranking.php', // phpcs:ignore WordPress.DB.SlowDBQuery
+	] );
+	$url = $pages ? get_permalink( $pages[0] ) : '';
+	return $url;
+}
+
+/**
  * Returns the final score (0-10) for a Reseña, or null if none was set.
  */
 function kdv_get_score( $post_id ) {
@@ -328,10 +608,10 @@ function kdv_lines_to_array( $text ) {
  */
 function kdv_get_score_labels() {
 	return [
-		get_theme_mod( 'kdv_score_label_1', __( 'Historia / Guion', 'revista-koltor-dev' ) ),
-		get_theme_mod( 'kdv_score_label_2', __( 'Apartado visual', 'revista-koltor-dev' ) ),
+		get_theme_mod( 'kdv_score_label_1', __( 'Jugabilidad', 'revista-koltor-dev' ) ),
+		get_theme_mod( 'kdv_score_label_2', __( 'Gráficos', 'revista-koltor-dev' ) ),
 		get_theme_mod( 'kdv_score_label_3', __( 'Sonido', 'revista-koltor-dev' ) ),
-		get_theme_mod( 'kdv_score_label_4', __( 'Personajes', 'revista-koltor-dev' ) ),
+		get_theme_mod( 'kdv_score_label_4', __( 'Historia', 'revista-koltor-dev' ) ),
 	];
 }
 

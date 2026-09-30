@@ -219,6 +219,179 @@ iframe, embed, object, video { max-width: 100%; }
 .alignwide { max-width: 1200px; margin-inline: auto; }
 .alignfull { max-width: none; margin-inline: calc(50% - 50vw); }
 
+/* ---------- Barra de plataformas (Personalizar → Cabecera) ----------
+   Fila propia debajo de <header>, deliberadamente fuera de
+   .kdv-primary-menu -- ver la nota junto a kdv_render_platform_bar() en
+   template-tags.php sobre por qué no se integra en el menú principal. */
+.kdv-platform-bar {
+	background: var(--kdv-surface);
+	border-bottom: 1px solid var(--kdv-border);
+	position: relative;
+	z-index: 100;
+}
+.kdv-platform-bar__inner {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 4px;
+	padding-block: 4px;
+}
+.kdv-platform-bar__item {
+	position: relative;
+}
+.kdv-platform-bar__toggle {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 6px 10px;
+	background: none;
+	border: none;
+	border-radius: var(--kdv-radius-sm);
+	color: var(--kdv-text);
+	font-family: inherit;
+	font-size: .85rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background-color .15s ease, color .15s ease;
+}
+.kdv-platform-bar__toggle:hover,
+.kdv-platform-bar__toggle:focus-visible,
+.kdv-platform-bar__toggle[aria-expanded="true"] {
+	background: var(--kdv-bg);
+	color: var(--kdv-primary);
+}
+.kdv-platform-bar__icon {
+	width: 20px;
+	height: 20px;
+	object-fit: contain;
+	display: block;
+}
+.kdv-platform-bar__menu {
+	display: none;
+	list-style: none;
+	margin: 0;
+	padding: 6px;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	min-width: 180px;
+	background: var(--kdv-surface);
+	border: 1px solid var(--kdv-border);
+	border-radius: var(--kdv-radius-sm);
+	box-shadow: var(--kdv-shadow);
+	z-index: 100;
+}
+.kdv-platform-bar__menu.is-open {
+	display: block;
+}
+.kdv-platform-bar__menu a {
+	display: block;
+	padding: 7px 10px;
+	border-radius: var(--kdv-radius-sm);
+	color: var(--kdv-text);
+	text-decoration: none;
+	font-size: .85rem;
+}
+.kdv-platform-bar__menu a:hover,
+.kdv-platform-bar__menu a:focus-visible {
+	background: var(--kdv-bg);
+	color: var(--kdv-primary);
+}
+
+/* Aviso "Filtrado por: X — quitar filtro" en los archivos que aceptan
+   ?plataforma=... (ver kdv_render_platform_filter_notice() en
+   template-tags.php). */
+.kdv-platform-filter-notice {
+	font-size: .9rem;
+	color: var(--kdv-text-muted);
+	margin: -8px 0 20px;
+}
+.kdv-platform-filter-notice a {
+	color: var(--kdv-primary);
+}
+
+/* ---------- Cinta de anuncios (Personalizar → Cinta de anuncios) ----------
+   Franja fina encima de la cabecera con desplazamiento horizontal continuo.
+   El contenido se pinta dos veces (kdv_render_ticker() en template-tags.php)
+   y translateX(-50%) recorre exactamente una copia, así que el bucle no
+   da salto visible. "overflow: hidden" aquí es intencional y contenido
+   a este elemento -- no entra en conflicto con el cortafuegos de ancho
+   de la página (ver más arriba), que sigue gobernando el documento entero. */
+.kdv-ticker {
+	background: var(--kdv-primary);
+	color: #fff;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.kdv-ticker__track {
+	display: inline-flex;
+	width: max-content;
+	animation: kdv-ticker-scroll var(--kdv-ticker-duration, 25s) linear infinite;
+}
+
+/* Pausa al pasar el ratón o al tabular dentro (enlaces) -- para poder leer
+   un anuncio concreto sin que se escape, y para no mover contenido bajo el
+   foco de teclado mientras se navega por él. */
+.kdv-ticker:hover .kdv-ticker__track,
+.kdv-ticker:focus-within .kdv-ticker__track {
+	animation-play-state: paused;
+}
+
+.kdv-ticker__group {
+	display: inline-flex;
+	align-items: center;
+	flex-shrink: 0;
+	padding: 7px 0;
+}
+
+.kdv-ticker__item {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 0 18px;
+	color: inherit;
+	text-decoration: none;
+	font-size: 13px;
+	font-weight: 600;
+}
+
+a.kdv-ticker__item:hover,
+a.kdv-ticker__item:focus-visible {
+	text-decoration: underline;
+}
+
+.kdv-ticker__date {
+	font-weight: 700;
+	opacity: .85;
+	font-size: 12px;
+}
+
+.kdv-ticker__sep {
+	opacity: .5;
+}
+
+@keyframes kdv-ticker-scroll {
+	from { transform: translateX(0); }
+	to   { transform: translateX(-50%); }
+}
+
+/* Sin movimiento para quien lo ha pedido a nivel de sistema: la cinta pasa
+   a ser una fila estática que envuelve, en vez de desplazarse sola. */
+@media (prefers-reduced-motion: reduce) {
+	.kdv-ticker {
+		overflow-x: auto;
+		white-space: normal;
+	}
+	.kdv-ticker__track {
+		animation: none;
+		flex-wrap: wrap;
+	}
+	.kdv-ticker__group[aria-hidden="true"] {
+		display: none;
+	}
+}
+
 /* ---------- Header ---------- */
 .kdv-header {
 	background: var(--kdv-surface);
@@ -417,9 +590,19 @@ body.kdv-header-sticky .kdv-header--scrolled {
 	opacity: .6;
 }
 
-/* Dropdown submenus (desktop): hidden by default, shown on hover/focus */
+/* Dropdown submenus (desktop): hidden by default, shown on hover/focus.
+   "opacity + visibility" en vez de "display: none/block" a propósito: display
+   no se puede animar con CSS. Al ser position:absolute, que el elemento
+   siga "presente" mientras está oculto no mueve nada más en la página --
+   por eso este cambio no afecta al cortafuegos de ancho ni a la medición de
+   kdvSubmenuFlip en main.js (offsetWidth es el mismo con visibility:hidden
+   que con display:block, así que placeSubMenu() no necesita cambios).
+   "visibility" lleva su propio retardo para que el desplegable cerrado siga
+   sin ser alcanzable por tabulador ni lector de pantalla hasta que termina
+   de desvanecerse -- misma técnica que ya usa el panel móvil (clip-path)
+   más abajo en este archivo. */
 .kdv-primary-menu .sub-menu {
-	display: none;
+	display: block;
 	list-style: none;
 	margin: 0;
 	padding: 8px;
@@ -434,6 +617,11 @@ body.kdv-header-sticky .kdv-header--scrolled {
 	border-radius: var(--kdv-radius-sm);
 	box-shadow: var(--kdv-shadow);
 	z-index: 200;
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	transition: opacity var(--kdv-menu-transition-duration, 200ms) var(--kdv-menu-transition-easing, ease),
+	            visibility 0s linear var(--kdv-menu-transition-duration, 200ms);
 }
 .kdv-primary-menu .sub-menu .sub-menu {
 	top: -8px;
@@ -441,7 +629,43 @@ body.kdv-header-sticky .kdv-header--scrolled {
 }
 .kdv-primary-menu li:hover > .sub-menu,
 .kdv-primary-menu li:focus-within > .sub-menu {
-	display: block;
+	opacity: 1;
+	visibility: visible;
+	pointer-events: auto;
+	transition: opacity var(--kdv-menu-transition-duration, 200ms) var(--kdv-menu-transition-easing, ease),
+	            visibility 0s;
+}
+
+/* Variante "Deslizar hacia abajo" (Personalizar → Cabecera → Aparición del
+   submenú). Solo "transform", nunca "top"/"margin", para no forzar un
+   recálculo de layout en cada apertura -- ver la nota de rendimiento junto
+   a kdv_menu_transition_easing en customizer.php. */
+body.kdv-submenu-reveal-slide .kdv-primary-menu .sub-menu {
+	transform: translateY(-8px);
+	transition: opacity var(--kdv-menu-transition-duration, 200ms) var(--kdv-menu-transition-easing, ease),
+	            visibility 0s linear var(--kdv-menu-transition-duration, 200ms),
+	            transform var(--kdv-menu-transition-duration, 200ms) var(--kdv-menu-transition-easing, ease);
+}
+body.kdv-submenu-reveal-slide .kdv-primary-menu li:hover > .sub-menu,
+body.kdv-submenu-reveal-slide .kdv-primary-menu li:focus-within > .sub-menu {
+	transform: translateY(0);
+	transition: opacity var(--kdv-menu-transition-duration, 200ms) var(--kdv-menu-transition-easing, ease),
+	            visibility 0s,
+	            transform var(--kdv-menu-transition-duration, 200ms) var(--kdv-menu-transition-easing, ease);
+}
+
+/* Quien pide menos movimiento a nivel de sistema lo tiene también aquí: el
+   desplegable sigue abriendo/cerrando igual, solo que al instante. */
+@media (prefers-reduced-motion: reduce) {
+	.kdv-primary-menu .sub-menu,
+	.kdv-primary-menu li:hover > .sub-menu,
+	.kdv-primary-menu li:focus-within > .sub-menu,
+	body.kdv-submenu-reveal-slide .kdv-primary-menu .sub-menu,
+	body.kdv-submenu-reveal-slide .kdv-primary-menu li:hover > .sub-menu,
+	body.kdv-submenu-reveal-slide .kdv-primary-menu li:focus-within > .sub-menu {
+		transition: none;
+		transform: none;
+	}
 }
 
 /*
@@ -1666,6 +1890,15 @@ html[data-kdv-theme="dark"] {
 		box-shadow: none;
 		padding: 0 0 4px 16px;
 		margin: 0 0 6px;
+		/* En el panel deslizante no hay hover: el submenú va siempre
+		   expandido en línea, así que se anula aquí el estado "oculto" que
+		   arriba usa opacity/visibility para animar los desplegables de
+		   escritorio -- si no, se heredaría oculto también en el móvil. */
+		opacity: 1;
+		visibility: visible;
+		pointer-events: auto;
+		transform: none;
+		transition: none;
 	}
 	.kdv-primary-menu .sub-menu a { padding: 7px 0; font-size: .85rem; }
 	.kdv-header-social { margin-top: 8px; }
@@ -1803,5 +2036,73 @@ html[data-kdv-theme="dark"] {
 	.kdv-header,
 	.kdv-reading-progress__bar {
 		transition: none !important;
+	}
+}
+
+/* ---------- Modo construcción (Personalizar → Modo construcción) ----------
+   Página independiente: no hereda el layout del sitio (sin cabecera, sin
+   menú) porque kdv_render_maintenance_page() no pasa por header.php ni
+   footer.php -- ver includes/core/maintenance-mode.php. */
+.kdv-maintenance {
+	margin: 0;
+	min-height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--kdv-bg);
+	color: var(--kdv-text);
+	font-family: var(--kdv-font-body);
+	padding: 24px;
+	box-sizing: border-box;
+}
+.kdv-maintenance__box {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 48px;
+	max-width: 880px;
+}
+.kdv-maintenance__text {
+	max-width: 380px;
+	text-align: center;
+}
+.kdv-maintenance__illustration img {
+	display: block;
+	max-width: 280px;
+	width: 100%;
+	height: auto;
+	border-radius: var(--kdv-radius);
+}
+.kdv-maintenance__logo {
+	margin: 0 0 24px;
+}
+.kdv-maintenance__logo img {
+	max-width: 100%;
+	height: auto;
+}
+.kdv-maintenance__sitename {
+	font-family: var(--kdv-font-heading);
+	font-size: 2rem;
+	font-weight: 700;
+	color: var(--kdv-primary);
+	margin: 0 0 24px;
+}
+.kdv-maintenance__message {
+	font-size: 1.05rem;
+	color: var(--kdv-text-muted);
+	margin: 0 0 24px;
+}
+.kdv-maintenance__social {
+	justify-content: center;
+}
+/* Apilado en pantallas estrechas -- dos columnas de 380px + 280px no caben
+   por debajo de ~700px de ancho. */
+@media (max-width: 700px) {
+	.kdv-maintenance__box {
+		flex-direction: column-reverse;
+		gap: 32px;
+	}
+	.kdv-maintenance__illustration img {
+		max-width: 220px;
 	}
 }

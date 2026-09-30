@@ -20,20 +20,39 @@ get_header();
 $kdv_per_page = 10;
 $kdv_paged    = max( 1, absint( get_query_var( 'paged' ) ) );
 
-$kdv_ranking = new WP_Query( [
+$kdv_ranking_args = [
 	'post_type'      => 'kdv_resena',
 	'posts_per_page' => $kdv_per_page,
 	'paged'          => $kdv_paged,
 	'meta_key'       => '_kdv_score_final', // phpcs:ignore WordPress.DB.SlowDBQuery -- required for orderby=meta_value_num; also naturally excludes unscored reseñas from the ranking.
 	'orderby'        => 'meta_value_num',
 	'order'          => 'DESC',
-] );
+];
+
+// ?plataforma=slug (desde el desplegable de la barra de plataformas) --
+// esta plantilla arma su propio WP_Query, así que el filtro se añade aquí
+// directamente en vez de con el hook pre_get_posts que usan los demás
+// archivos (ver kdv_maybe_filter_by_platform() en template-tags.php).
+$kdv_ranking_platform = kdv_get_platform_filter_term();
+if ( $kdv_ranking_platform ) {
+	$kdv_ranking_args['tax_query'] = [
+		[
+			'taxonomy' => 'kdv_plataforma',
+			'field'    => 'term_id',
+			'terms'    => $kdv_ranking_platform->term_id,
+		],
+	];
+}
+
+$kdv_ranking = new WP_Query( $kdv_ranking_args );
 ?>
 <div class="kdv-container">
 	<div class="kdv-content kdv-content__grid--full">
 		<header class="kdv-section__head">
 			<h1 class="kdv-section__title"><?php the_title(); ?></h1>
 		</header>
+
+		<?php kdv_render_platform_filter_notice(); ?>
 
 		<?php if ( $kdv_ranking->have_posts() ) : ?>
 			<ol class="kdv-ranking-list">

@@ -90,6 +90,22 @@ function kdv_get_dynamic_css() {
 
 	$logo_height = absint( get_theme_mod( 'kdv_logo_height', 56 ) );
 
+	/*
+	 * Curvas de easing curadas para los desplegables del menú -- a
+	 * propósito no es un campo de texto libre en el Personalizador: un
+	 * cubic-bezier() mal formado ahí produciría un menú "raro" sin pista
+	 * de por qué. Tres opciones probadas es más honesto que una infinita
+	 * que casi nadie sabe ajustar a mano.
+	 */
+	$menu_easings = [
+		'suave'  => 'cubic-bezier(.25, .1, .25, 1)',
+		'lineal' => 'linear',
+		'rebote' => 'cubic-bezier(.34, 1.4, .64, 1)',
+	];
+	$menu_easing_key = get_theme_mod( 'kdv_menu_transition_easing', 'suave' );
+	$menu_easing     = $menu_easings[ $menu_easing_key ] ?? $menu_easings['suave'];
+	$menu_speed_ms   = absint( get_theme_mod( 'kdv_menu_transition_speed', 200 ) );
+
 	$css = ":root {\n";
 	$css .= '--kdv-primary: ' . esc_html( $primary ) . ";\n";
 	$css .= '--kdv-secondary: ' . esc_html( $secondary ) . ";\n";
@@ -99,6 +115,8 @@ function kdv_get_dynamic_css() {
 	$css .= '--kdv-hero-overlay-top: ' . esc_html( $overlay_top ) . ";\n";
 	$css .= '--kdv-hero-overlay-bottom: ' . esc_html( $overlay_bottom ) . ";\n";
 	$css .= '--kdv-logo-height: ' . $logo_height . "px;\n";
+	$css .= '--kdv-menu-transition-duration: ' . $menu_speed_ms . "ms;\n";
+	$css .= '--kdv-menu-transition-easing: ' . esc_html( $menu_easing ) . ";\n";
 	$css .= "}\n";
 
 	return $css;

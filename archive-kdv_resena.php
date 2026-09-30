@@ -17,6 +17,8 @@ get_header();
 			<h1 class="kdv-section__title"><?php esc_html_e( 'Todas las reseñas', 'revista-koltor-dev' ); ?></h1>
 		</header>
 
+		<?php kdv_render_platform_filter_notice(); ?>
+
 		<?php if ( have_posts() ) : ?>
 			<div class="kdv-cards-grid">
 				<?php

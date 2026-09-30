@@ -5,7 +5,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.4.0
 Tags: blog, news, entertainment, two-columns, grid-layout, custom-logo, custom-menu, custom-colors, editor-style, featured-images, threaded-comments, translation-ready, block-styles, wide-blocks, dark-mode
 
 == Description ==
@@ -61,6 +61,27 @@ Swiper.js (assets/lib/swiper/), usado para el slider nativo de portada, licencia
 Iconos: subconjunto de Tabler Icons (https://tabler.io/icons), licencia MIT, incrustados como SVG en el propio tema.
 
 == Changelog ==
+
+= 1.4.0 =
+* Cada icono de la barra de plataformas ahora abre un desplegable propio hacia Novedades, Análisis, Guías, Reseñas y Tops (Ranking), filtrados por esa plataforma (?plataforma=slug sobre las categorías y consultas ya existentes). Deliberadamente NO se crean categorías ni términos nuevos por plataforma -- el filtro cruza kdv_plataforma con la categoría de cada archivo ya existente, así que cada artículo se etiqueta una sola vez, no dos. Un enlace se omite en silencio si su destino no existe todavía (p. ej. "Tops" antes de crear la página de Ranking).
+* Aviso "Filtrado por: X — quitar filtro" en los archivos de categoría, el de Reseñas y el Ranking cuando el filtro de plataforma está activo.
+* Desplegable con JS propio (independiente del menú principal y del buscador), vanilla, con cierre al hacer clic fuera o pulsar Escape.
+
+= 1.3.0 =
+* Nueva taxonomía "Plataforma" (PC, PlayStation, Xbox, Nintendo Switch, Móvil, con 5 de partida), compartida entre Reseñas y Entradas -- un juego puede tener varias a la vez. Icono por plataforma subido por quien administra el sitio desde su propia biblioteca de medios (menú "Plataformas" del escritorio); el tema no incluye ni genera logos de marcas ajenas.
+* Nueva barra de plataformas (Personalizar → Cabecera → "Mostrar barra de plataformas"), fila de iconos enlazados debajo de la cabecera. Deliberadamente independiente del menú principal, sin tocar su CSS ni su JS. Se oculta sola si ninguna plataforma tiene icono subido.
+
+= 1.2.1 =
+* Corregido (seguridad): el modo construcción no bloqueaba la API REST (/wp-json/...). Un visitante veía la pantalla de "en construcción" en el navegador, pero cualquiera podía seguir pidiendo /wp-json/wp/v2/posts, /wp-json/wp/v2/kdv_resena, /wp-json/wp/v2/kdv_slide, etc. y recibir el contenido real completo en JSON, sin pasar por el bloqueo. Ahora se filtra también a través de "rest_authentication_errors" con el mismo criterio que la pantalla normal (503, y quien tenga sesión iniciada con permiso de editar contenido sigue pasando).
+
+= 1.2.0 =
+* Cinta de anuncios configurable (Personalizar → Cinta de anuncios + menú "Cinta de anuncios" del escritorio): franja horizontal con desplazamiento continuo sobre la cabecera, para anuncios de eventos próximos. Respeta prefers-reduced-motion y se pausa al pasar el cursor o tabular dentro.
+* Modo construcción (Personalizar → Modo construcción): pantalla de "en construcción" para todo el frontend mientras el sitio no está listo, con mensaje e ilustración configurables. Devuelve 503 + Retry-After; quien tenga sesión iniciada con permiso de editar sigue viendo el sitio real.
+* Menú de escritorio: velocidad, curva de easing (3 opciones curadas) y forma de aparición (aparecer / deslizar) configurables desde Personalizar → Cabecera. El panel móvil no cambia -- sigue con clip-path a propósito.
+* Librería de iconos de categoría retematizada a videojuegos (13 etiquetas reconvertidas + 4 iconos nuevos genuinos: ajedrez, diana, pieza de construcción, monedas), manteniendo los slugs para no romper iconos ya asignados a categorías.
+* Corregido: la página 404 y un icono de categoría conservaban una referencia temática de anime ("isekai") que había sobrevivido al retiro de identificadores documentado en la 1.0.0.
+* Corregido: los 4 nombres de puntuación por defecto seguían siendo los del tema original (Historia/Guion, Apartado visual, Sonido, Personajes) en vez de los genéricos para videojuegos (Jugabilidad, Gráficos, Sonido, Historia).
+* Corregido: el título "Sobre el sitio" y el texto de copyright del pie tenían el nombre del tema fijo en vez de tomar el nombre real del sitio (Ajustes → Generales), así que aparecía "Revista Koltor Dev" en el pie de cualquier sitio que usara esta base sin cambiarlo a mano.
 
 = 1.1.0 =
 * Puesta al día con las correcciones acumuladas en el tema de revista del que se derivó esta base, publicadas después de que esta copia se archivara: el desbordamiento horizontal en móvil (causado por bloques de código o tablas anchas dentro de artículos, y por el panel del menú), los desplegables de escritorio que no cabían en pantalla (el tercer nivel se salía a cualquier ancho), los objetivos de toque de la cabecera (38→44px), la trampa de foco de teclado en el menú móvil, la marca que no podía encogerse en pantallas pequeñas, y el solape entre la flecha del slider y la barra flotante de redes.

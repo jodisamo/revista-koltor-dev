@@ -7,10 +7,12 @@
  * Los trazos SVG (el atributo "d" de cada icono) provienen del set de
  * iconos Tabler Icons (https://tabler.io/icons), publicado bajo licencia
  * MIT — de uso y redistribución libres, incluso comercial, sin necesidad
- * de atribución. Aquí se incluye un subconjunto neutro y reutilizable,
- * pensado para cualquier revista digital (noticias, videojuegos, cine,
- * tecnología, cultura), ya traducido al español para el selector de
- * Entradas → Categorías.
+ * de atribución. La mayoría son trazos genéricos retematizados con
+ * etiquetas en español pensadas para las categorías típicas de un portal
+ * de videojuegos (novedades, análisis, guías, eSports, retro,
+ * multijugador...); un pequeño grupo (chess, target-arrow, lego, coins)
+ * son formas con significado propio de videojuegos, no genéricas.
+ * Disponibles en el selector de Entradas → Categorías.
  *
  * @package Revista_Koltor_Dev
  */
@@ -43,15 +45,15 @@ function kdv_get_icon_library() {
 			'svg'   => '<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m12 17.75l-6.172 3.245l1.179-6.873l-5-4.867l6.9-1l3.086-6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/>',
 		],
 		'movie'            => [
-			'label' => __( 'Cine / Series', 'revista-koltor-dev' ),
+			'label' => __( 'Adaptaciones (cine y series)', 'revista-koltor-dev' ),
 			'svg'   => '<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm4-2v16m8-16v16M4 8h4m-4 8h4m-4-4h16m-4-4h4m-4 8h4"/>',
 		],
 		'book-2'           => [
-			'label' => __( 'Libro / Cómic', 'revista-koltor-dev' ),
+			'label' => __( 'Guías', 'revista-koltor-dev' ),
 			'svg'   => '<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M19 4v16H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><path d="M19 16H7a2 2 0 0 0-2 2M9 8h6"/></g>',
 		],
 		'book'             => [
-			'label' => __( 'Lectura / Análisis', 'revista-koltor-dev' ),
+			'label' => __( 'Análisis', 'revista-koltor-dev' ),
 			'svg'   => '<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0M3 6v13m9-13v13m9-13v13"/>',
 		],
 		'news'             => [
@@ -63,15 +65,15 @@ function kdv_get_icon_library() {
 			'svg'   => '<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M12 5h3.5a5 5 0 0 1 0 10H10l-4.015 4.227a2.3 2.3 0 0 1-3.923-2.035l1.634-8.173A5 5 0 0 1 8.6 5z"/><path d="m14 15l4.07 4.284a2.3 2.3 0 0 0 3.925-2.023l-1.6-8.232M8 9v2m-1-1h2m5 0h2"/></g>',
 		],
 		'music'            => [
-			'label' => __( 'Música', 'revista-koltor-dev' ),
+			'label' => __( 'Banda sonora / OST', 'revista-koltor-dev' ),
 			'svg'   => '<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M3 17a3 3 0 1 0 6 0a3 3 0 0 0-6 0m10 0a3 3 0 1 0 6 0a3 3 0 0 0-6 0"/><path d="M9 17V4h10v13M9 8h10"/></g>',
 		],
 		'headphones'       => [
-			'label' => __( 'Audio / Podcast', 'revista-koltor-dev' ),
+			'label' => __( 'Podcast', 'revista-koltor-dev' ),
 			'svg'   => '<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M4 15a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm11 0a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2z"/><path d="M4 15v-3a8 8 0 0 1 16 0v3"/></g>',
 		],
 		'palette'          => [
-			'label' => __( 'Arte / Diseño', 'revista-koltor-dev' ),
+			'label' => __( 'Arte conceptual', 'revista-koltor-dev' ),
 			'svg'   => '<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M12 21a9 9 0 0 1 0-18c4.97 0 9 3.582 9 8c0 1.06-.474 2.078-1.318 2.828S17.693 15 16.5 15H14a2 2 0 0 0-1 3.75A1.3 1.3 0 0 1 12 21"/><path d="M7.5 10.5a1 1 0 1 0 2 0a1 1 0 1 0-2 0m4-3a1 1 0 1 0 2 0a1 1 0 1 0-2 0m4 3a1 1 0 1 0 2 0a1 1 0 1 0-2 0"/></g>',
 		],
 		'calendar-event'   => [
@@ -83,7 +85,7 @@ function kdv_get_icon_library() {
 			'svg'   => '<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0-8 0M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2m1-17.87a4 4 0 0 1 0 7.75M21 21v-2a4 4 0 0 0-3-3.85"/>',
 		],
 		'camera'           => [
-			'label' => __( 'Fotografía', 'revista-koltor-dev' ),
+			'label' => __( 'Capturas de pantalla', 'revista-koltor-dev' ),
 			'svg'   => '<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M5 7h1a2 2 0 0 0 2-2a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2"/><path d="M9 13a3 3 0 1 0 6 0a3 3 0 0 0-6 0"/></g>',
 		],
 		'video'            => [
@@ -91,7 +93,7 @@ function kdv_get_icon_library() {
 			'svg'   => '<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m15 10l4.553-2.276A1 1 0 0 1 21 8.618v6.764a1 1 0 0 1-1.447.894L15 14zM3 8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
 		],
 		'trophy'           => [
-			'label' => __( 'Rankings', 'revista-koltor-dev' ),
+			'label' => __( 'Logros / Trofeos', 'revista-koltor-dev' ),
 			'svg'   => '<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 21h8m-4-4v4M7 4h10m0 0v8a5 5 0 0 1-10 0V4M3 9a2 2 0 1 0 4 0a2 2 0 1 0-4 0m14 0a2 2 0 1 0 4 0a2 2 0 1 0-4 0"/>',
 		],
 		'building'         => [
@@ -99,7 +101,7 @@ function kdv_get_icon_library() {
 			'svg'   => '<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21h18M9 8h1m-1 4h1m-1 4h1m4-8h1m-1 4h1m-1 4h1M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"/>',
 		],
 		'sparkles'         => [
-			'label' => __( 'Destacado', 'revista-koltor-dev' ),
+			'label' => __( 'Novedades', 'revista-koltor-dev' ),
 			'svg'   => '<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2-2a2 2 0 0 1-2-2a2 2 0 0 1-2 2m0-12a2 2 0 0 1 2 2a2 2 0 0 1 2-2a2 2 0 0 1-2-2a2 2 0 0 1-2 2M9 18a6 6 0 0 1 6-6a6 6 0 0 1-6-6a6 6 0 0 1-6 6a6 6 0 0 1 6 6"/>',
 		],
 		'bulb'             => [
@@ -127,7 +129,7 @@ function kdv_get_icon_library() {
 			'svg'   => '<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0-18 0"/><path d="M12 7v5l3 3"/></g>',
 		],
 		'device-laptop'    => [
-			'label' => __( 'Tecnología', 'revista-koltor-dev' ),
+			'label' => __( 'PC / Tecnología', 'revista-koltor-dev' ),
 			'svg'   => '<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 19h18M5 7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z"/>',
 		],
 		'heart'            => [
@@ -155,7 +157,7 @@ function kdv_get_icon_library() {
 			'svg'   => '<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M6.331 8H17.67a2 2 0 0 1 1.977 2.304l-1.255 8.152A3 3 0 0 1 15.426 21H8.574a3 3 0 0 1-2.965-2.544l-1.255-8.152A2 2 0 0 1 6.331 8"/><path d="M9 11V6a3 3 0 0 1 6 0v5"/></g>',
 		],
 		'world'            => [
-			'label' => __( 'Internacional', 'revista-koltor-dev' ),
+			'label' => __( 'Multijugador online', 'revista-koltor-dev' ),
 			'svg'   => '<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0-18 0m.6-3h16.8M3.6 15h16.8"/><path d="M11.5 3a17 17 0 0 0 0 18m1-18a17 17 0 0 1 0 18"/></g>',
 		],
 		'flag'             => [
@@ -171,7 +173,7 @@ function kdv_get_icon_library() {
 			'svg'   => '<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10.941c2.333-3.308.167-7.823-1-8.941c0 3.395-2.235 5.299-3.667 6.706C5.903 10.114 5 12 5 14.294C5 17.998 8.134 21 12 21s7-3.002 7-6.706c0-1.712-1.232-4.403-2.333-5.588c-2.084 3.353-3.257 3.353-4.667 2.235"/>',
 		],
 		'brush'            => [
-			'label' => __( 'Ilustración', 'revista-koltor-dev' ),
+			'label' => __( 'Fan art', 'revista-koltor-dev' ),
 			'svg'   => '<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M3 21v-4a4 4 0 1 1 4 4z"/><path d="M21 3A16 16 0 0 0 8.2 13.2M21 3a16 16 0 0 1-10.2 12.8"/><path d="M10.6 9a9 9 0 0 1 4.4 4.4"/></g>',
 		],
 		'sword'            => [
@@ -184,7 +186,7 @@ function kdv_get_icon_library() {
 		],
 
 		'ufo'              => [
-			'label' => __( 'Ciencia ficción / Isekai', 'revista-koltor-dev' ),
+			'label' => __( 'Ciencia ficción / Alienígenas', 'revista-koltor-dev' ),
 			'svg'   => '<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M16.95 9.01c3.02.739 5.05 2.123 5.05 3.714C22 15.091 17.52 17 12 17S2 15.091 2 12.724C2 11.134 4.04 9.739 7.07 9"/><path d="M7 9c0 1.105 2.239 2 5 2s5-.895 5-2v-.035C17 6.223 14.761 4 12 4S7 6.223 7 8.965zm8 8l2 3m-8.5-3L7 20m5-6h.01M7 13h.01M17 13h.01"/></g>',
 		],
 		'rocket'           => [
@@ -196,8 +198,31 @@ function kdv_get_icon_library() {
 			'svg'   => '<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 3v5l-11 9l-4 4l-3-3l4-4l9-11zM5 13l6 6m3.32-1.68L18 21l3-3l-3.365-3.365M10 5.5L8 3H3v5l3 2.5"/>',
 		],
 		'confetti'         => [
-			'label' => __( 'Celebración', 'revista-koltor-dev' ),
+			'label' => __( 'Lanzamientos', 'revista-koltor-dev' ),
 			'svg'   => '<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5h2M5 4v2m6.5-2L11 6m7-1h2m-1-1v2m-4 3l-1 1m4 3l2-.5M18 19h2m-1-1v2m-5-3.482L7.482 10l-4.39 9.58a1 1 0 0 0 1.329 1.329z"/>',
+		],
+
+		/*
+		 * Los 4 iconos siguientes NO son relabels de la librería original:
+		 * son iconos nuevos, tomados literalmente de Tabler Icons (tabler.io),
+		 * misma licencia MIT que el resto de este archivo, elegidos por su
+		 * significado propio de videojuegos (no genérico de revista).
+		 */
+		'chess'            => [
+			'label' => __( 'Estrategia', 'revista-koltor-dev' ),
+			'svg'   => '<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3a3 3 0 0 1 3 3c0 1.113 -.6 2.482 -1.5 3l1.5 7h-6l1.5 -7c-.9 -.518 -1.5 -1.887 -1.5 -3a3 3 0 0 1 3 -3"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9h8"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6.684 16.772a1 1 0 0 0 -.684 .949v1.279a1 1 0 0 0 1 1h10a1 1 0 0 0 1 -1v-1.28a1 1 0 0 0 -.684 -.948l-2.316 -.772h-6l-2.316 .772"/>',
+		],
+		'target-arrow'     => [
+			'label' => __( 'Disparos / FPS', 'revista-koltor-dev' ),
+			'svg'   => '<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"/><path d="M12 7a5 5 0 1 0 5 5"/><path d="M13 3.055a9 9 0 1 0 7.941 7.945"/><path d="M15 6v3h3l3 -3h-3v-3z"/><path d="M15 9l-3 3"/></g>',
+		],
+		'lego'             => [
+			'label' => __( 'Construcción / Sandbox', 'revista-koltor-dev' ),
+			'svg'   => '<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M9.5 11l.01 0"/><path d="M14.5 11l.01 0"/><path d="M9.5 15a3.5 3.5 0 0 0 5 0"/><path d="M7 5h1v-2h8v2h1a3 3 0 0 1 3 3v9a3 3 0 0 1 -3 3v1h-10v-1a3 3 0 0 1 -3 -3v-9a3 3 0 0 1 3 -3"/></g>',
+		],
+		'coins'            => [
+			'label' => __( 'Economía / Moneda del juego', 'revista-koltor-dev' ),
+			'svg'   => '<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M9 14c0 1.657 2.686 3 6 3s6 -1.343 6 -3s-2.686 -3 -6 -3s-6 1.343 -6 3"/><path d="M9 14v4c0 1.656 2.686 3 6 3s6 -1.344 6 -3v-4"/><path d="M3 6c0 1.072 1.144 2.062 3 2.598s4.144 .536 6 0c1.856 -.536 3 -1.526 3 -2.598c0 -1.072 -1.144 -2.062 -3 -2.598s-4.144 -.536 -6 0c-1.856 .536 -3 1.526 -3 2.598"/><path d="M3 6v10c0 .888 .772 1.45 2 2"/><path d="M3 11c0 .888 .772 1.45 2 2"/></g>',
 		],
 	];
 
