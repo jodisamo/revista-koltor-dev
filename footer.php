@@ -54,6 +54,7 @@ $kdv_has_newsletter    = $kdv_newsletter_on && '' !== $kdv_newsletter_code;
 		<span class="kdv-footer__copyright">
 			<?php kdv_render_footer_copyright(); ?>
 		</span>
+		<?php kdv_render_footer_credits(); ?>
 	</div>
 </footer>
 

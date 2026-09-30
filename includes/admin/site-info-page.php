@@ -71,6 +71,11 @@ function kdv_sanitize_site_info( $input ) {
 
 	$output['contact_email'] = isset( $input['contact_email'] ) ? sanitize_email( $input['contact_email'] ) : '';
 
+	// Una sola línea: los saltos de línea se convierten en espacios.
+	$output['credits'] = isset( $input['credits'] )
+		? trim( preg_replace( '/\s+/', ' ', wp_kses( wp_unslash( $input['credits'] ), kdv_get_credits_allowed_html() ) ) )
+		: '';
+
 	return $output;
 }
 
@@ -227,6 +232,20 @@ function kdv_render_site_info_page() {
 					<td>
 						<input type="email" class="regular-text" id="kdv-contact-email" name="kdv_site_info[contact_email]" value="<?php echo esc_attr( $info['contact_email'] ); ?>" placeholder="<?php echo esc_attr( get_option( 'admin_email' ) ); ?>">
 						<p class="description"><?php esc_html_e( 'Déjalo vacío si prefieres no publicar el correo y enlazar solo una página de Contacto desde el menú legal — es lo más recomendable para evitar spam automático.', 'revista-koltor-dev' ); ?></p>
+					</td>
+				</tr>
+			</table>
+
+			<h2 class="title"><?php esc_html_e( 'Créditos', 'revista-koltor-dev' ); ?></h2>
+			<table class="form-table" role="presentation">
+				<tr>
+					<th scope="row"><label for="kdv-credits"><?php esc_html_e( 'Línea de créditos', 'revista-koltor-dev' ); ?></label></th>
+					<td>
+						<textarea id="kdv-credits" name="kdv_site_info[credits]" rows="2" class="large-text code"><?php echo esc_textarea( $info['credits'] ); ?></textarea>
+						<p class="description">
+							<?php esc_html_e( 'Se muestra en una línea pequeña bajo el copyright. Úsala para agradecer los recursos que usa el sitio (iconos, fotos, tipografías): muchas licencias gratuitas exigen un enlace al autor. Admite enlaces, por ejemplo:', 'revista-koltor-dev' ); ?>
+							<br><code>Iconos de plataformas: &lt;a href="https://icons8.com" target="_blank" rel="noopener"&gt;Icons8&lt;/a&gt;</code>
+						</p>
 					</td>
 				</tr>
 			</table>

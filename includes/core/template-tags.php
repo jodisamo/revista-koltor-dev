@@ -168,7 +168,44 @@ function kdv_get_site_info_defaults() {
 		'contact_title'  => __( 'Contacto', 'revista-koltor-dev' ),
 		'contact_text'   => __( '¿Tienes una noticia, una corrección o quieres colaborar con nosotros? Escríbenos.', 'revista-koltor-dev' ),
 		'contact_email'  => '',
+
+		// Créditos (iconos, fotos, fuentes…) en una línea pequeña junto al
+		// copyright. Admite enlaces: muchas licencias gratuitas (Icons8,
+		// por ejemplo) exigen enlazar al autor.
+		'credits'        => '',
 	];
+}
+
+/**
+ * Etiquetas permitidas en el campo "Créditos": solo texto con enlaces y
+ * énfasis. La misma lista sirve al guardar (site-info-page.php) y al
+ * imprimir, así que nada fuera de esto llega nunca al HTML.
+ *
+ * @return array
+ */
+function kdv_get_credits_allowed_html() {
+	return [
+		'a'      => [
+			'href'   => true,
+			'title'  => true,
+			'target' => true,
+			'rel'    => true,
+		],
+		'strong' => [],
+		'em'     => [],
+	];
+}
+
+/**
+ * Línea de créditos del pie de página (Revista Koltor Dev → Información del
+ * sitio → Créditos). No imprime nada si el campo está vacío.
+ */
+function kdv_render_footer_credits() {
+	$credits = trim( (string) kdv_get_site_info( 'credits' ) );
+	if ( '' === $credits ) {
+		return;
+	}
+	echo '<span class="kdv-footer__credits">' . wp_kses( $credits, kdv_get_credits_allowed_html() ) . '</span>';
 }
 
 /**

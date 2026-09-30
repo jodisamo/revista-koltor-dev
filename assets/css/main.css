@@ -1710,6 +1710,8 @@ html[data-kdv-theme="dark"] .kdv-dark-toggle__icon--moon { display: inline-flex;
 	border-top: 1px solid var(--kdv-border);
 	padding-block: 18px;
 	display: flex;
+	flex-direction: column;
+	gap: 4px;
 	justify-content: center;
 	align-items: center;
 	font-size: .85rem;
@@ -1717,6 +1719,9 @@ html[data-kdv-theme="dark"] .kdv-dark-toggle__icon--moon { display: inline-flex;
 	text-align: center;
 }
 .kdv-footer__copyright { max-width: 100%; }
+.kdv-footer__credits { max-width: 100%; font-size: .78rem; opacity: .85; }
+.kdv-footer__credits a { color: inherit; text-decoration: underline; }
+.kdv-footer__credits a:hover { color: var(--kdv-primary); }
 @media (max-width: 640px) {
 	.kdv-footer__bottom {
 		font-size: .78rem;
