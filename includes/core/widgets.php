@@ -185,9 +185,13 @@ class KDV_Widget_Recent_Comments extends WP_Widget {
 
 /**
  * "Koltor Dev: Categorías" — como el widget nativo de Categorías, pero con
- * un icono (emoji, configurable por categoría desde Entradas → Categorías)
- * y una flechita, en vez de la lista de texto plano sin estilo del widget
- * original.
+ * el estilo del tema (fila con flecha y contador opcional) en vez de la
+ * lista de texto plano del widget original.
+ *
+ * Hasta la 1.6.0 llevaba además un icono por categoría; se retiró en la
+ * 1.7.0 porque en Entre Píxeles los iconos son de las plataformas, no de
+ * las categorías, y tener los dos confundía. El widget se conserva para
+ * que no desaparezca de ninguna barra lateral donde ya esté puesto.
  */
 class KDV_Widget_Categories extends WP_Widget {
 
@@ -196,7 +200,7 @@ class KDV_Widget_Categories extends WP_Widget {
 			'kdv_categories',
 			__( 'Koltor Dev: Categorías', 'revista-koltor-dev' ),
 			[
-				'description' => __( 'Como "Categorías", pero con un icono por categoría y una flecha — asigna el icono de cada una desde Entradas → Categorías.', 'revista-koltor-dev' ),
+				'description' => __( 'Como "Categorías", pero con el estilo del tema: una fila por categoría con flecha y contador opcional.', 'revista-koltor-dev' ),
 			]
 		);
 	}
@@ -223,13 +227,9 @@ class KDV_Widget_Categories extends WP_Widget {
 		}
 		?>
 		<ul class="kdv-widget-categories">
-			<?php foreach ( $categories as $kdv_cat ) :
-				$icon_slug = get_term_meta( $kdv_cat->term_id, 'kdv_category_icon', true );
-				$color     = ( $kdv_cat->term_id % 8 ) + 1;
-				?>
+			<?php foreach ( $categories as $kdv_cat ) : ?>
 				<li class="kdv-widget-categories__item">
 					<a href="<?php echo esc_url( get_category_link( $kdv_cat ) ); ?>" class="kdv-widget-categories__link">
-						<span class="kdv-widget-categories__icon kdv-tag--<?php echo absint( $color ); ?>"><?php kdv_render_icon_svg( $icon_slug ?: 'tag', 17 ); ?></span>
 						<span class="kdv-widget-categories__name"><?php echo esc_html( $kdv_cat->name ); ?></span>
 						<?php if ( $show_count ) : ?>
 							<span class="kdv-widget-categories__count"><?php echo absint( $kdv_cat->count ); ?></span>
@@ -255,7 +255,6 @@ class KDV_Widget_Categories extends WP_Widget {
 			<input class="checkbox" type="checkbox" id="<?php echo esc_attr( $this->get_field_id( 'show_count' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'show_count' ) ); ?>" <?php checked( $show_count ); ?>>
 			<label for="<?php echo esc_attr( $this->get_field_id( 'show_count' ) ); ?>"><?php esc_html_e( 'Mostrar número de entradas por categoría', 'revista-koltor-dev' ); ?></label>
 		</p>
-		<p class="description"><?php esc_html_e( 'El icono de cada categoría se asigna desde Entradas → Categorías (campo "Icono").', 'revista-koltor-dev' ); ?></p>
 		<?php
 	}
 

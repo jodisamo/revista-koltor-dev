@@ -5,7 +5,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.6.0
+Stable tag: 1.7.0
 Tags: blog, news, entertainment, two-columns, grid-layout, custom-logo, custom-menu, custom-colors, editor-style, featured-images, threaded-comments, translation-ready, block-styles, wide-blocks, dark-mode
 
 == Description ==
@@ -26,8 +26,8 @@ Características principales:
 * Slider nativo de portada ("Diapositivas"): imágenes con título, subtítulo y botón opcionales, efecto fade o deslizar, autoplay configurable — sin plugins de slider.
 * Sección "Populares del mes" en la portada: slider horizontal con lo más leído del mes, basado en un contador de vistas propio del tema (sin Google Analytics), que descarta rastreadores y se reinicia solo cada mes.
 * Redes sociales con icono correcto por plataforma (Facebook, Instagram, X, TikTok, YouTube, Discord, WhatsApp) más un campo libre, y barra flotante opcional con el color de cada marca.
-* Selector visual de icono por categoría: 41 iconos SVG de línea fina incrustados en el tema, sin librerías externas.
-* Widgets propios con miniatura: Entradas recientes, Comentarios recientes y Categorías con icono.
+* Portada propia por plataforma (/plataforma/playstation/…): últimas noticias, reseñas, avances, reportajes y eventos de esa plataforma, con acceso a sus subplataformas.
+* Widgets propios: Entradas recientes y Comentarios recientes con miniatura, y Categorías con el estilo del tema.
 * Espacios de publicidad configurables (cabecera, barra lateral, dentro del artículo y pie de página).
 * Botones de compartir, artículos relacionados, caja de autor y plantilla "Ranking de Reseñas".
 * SEO: datos estructurados schema.org para las reseñas y etiquetas Open Graph de respaldo, que se desactivan solas si detectan Yoast, Rank Math o similares.
@@ -48,7 +48,7 @@ Características principales:
 4. Personalizar → Reseñas: cambia los nombres de los cuatro apartados de puntuación por los que encajen con tu temática.
 5. Apariencia → Menús: crea el "Menú principal" y, si quieres, el "Menú de pie de página" y el "Menú legal (pie de página)".
 6. Revista Koltor Dev → Información del sitio: escribe la presentación y los datos de contacto que salen en el pie.
-7. Entradas → Categorías: asigna un icono a cada categoría (campo "Icono") si vas a usar el widget de Categorías.
+7. Entradas → Plataformas: sube el icono de cada plataforma principal y activa la barra en Personalizar → Cabecera.
 8. (Opcional) Crea Diapositivas para activar el slider de portada, y una página con la plantilla "Ranking de Reseñas".
 
 == Licencia ==
@@ -59,9 +59,12 @@ Tipografías: "Baloo 2" y "Noto Sans" (Google Fonts, licencia SIL Open Font Lice
 
 Swiper.js (assets/lib/swiper/), usado para el slider nativo de portada, licencia MIT. https://swiperjs.com/
 
-Iconos: subconjunto de Tabler Icons (https://tabler.io/icons), licencia MIT, incrustados como SVG en el propio tema.
-
 == Changelog ==
+
+= 1.7.0 =
+* Nueva portada por plataforma (/plataforma/playstation/, /plataforma/ps5/…): cabecera con el icono y el nombre, accesos a sus subplataformas y a sus Tops, y un bloque por tipo de contenido (Noticias, Reseñas, Avances, Reportajes, Eventos) con sus 3 últimas piezas y "Ver todas →" hacia el archivo ya filtrado. Incluye lo marcado en sus subplataformas; los bloques vacíos no se muestran.
+* El desplegable de cada icono de la barra empieza por "Todo PlayStation" (la portada de esa plataforma).
+* Retirados los iconos de categoría (selector en Entradas → Categorías y librería SVG): en Entre Píxeles los iconos son de las plataformas y tener los dos confundía. El widget "Koltor Dev: Categorías" se conserva, sin icono.
 
 = 1.6.0 =
 * Navegación de portal de noticias: la categoría dice QUÉ es el contenido y la plataforma PARA QUÉ es, sin categorías por plataforma. Categorías de partida: Noticias (Lanzamientos, Industria, Esports), Avances, Reportajes (Opinión, Especiales) y Eventos. Se retira Guías.

@@ -50,16 +50,9 @@ if ( is_admin() ) {
 	require_once KDV_INCLUDES_DIR . '/admin/site-info-page.php';
 }
 
-// Librería propia de iconos SVG (línea fina, licencia MIT) — usada por el
-// selector de icono de categorías y por el widget de Categorías.
-require_once KDV_INCLUDES_DIR . '/core/icon-library.php';
-
 // Safety-net Spanish translation for stock WordPress widget titles.
 require_once KDV_INCLUDES_DIR . '/core/widget-titles.php';
 require_once KDV_INCLUDES_DIR . '/core/widgets.php';
-
-// Selector visual de icono por categoría (usado por el widget de Categorías).
-require_once KDV_INCLUDES_DIR . '/core/category-icons.php';
 
 // Contador nativo de vistas + consulta de "Populares del mes".
 require_once KDV_INCLUDES_DIR . '/core/popular-posts.php';

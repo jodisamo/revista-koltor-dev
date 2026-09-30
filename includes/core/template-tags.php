@@ -422,7 +422,6 @@ function kdv_render_platform_bar() {
 				<?php
 				$slug      = $p['term']->slug;
 				$menu_id   = 'kdv-platform-menu-' . sanitize_html_class( $slug );
-				$has_links = false;
 				?>
 				<div class="kdv-platform-bar__item">
 					<button type="button" class="kdv-platform-bar__toggle" aria-expanded="false" aria-controls="<?php echo esc_attr( $menu_id ); ?>">
@@ -440,14 +439,20 @@ function kdv_render_platform_bar() {
 						<span class="kdv-platform-bar__label"><?php echo esc_html( $p['term']->name ); ?></span>
 					</button>
 					<ul class="kdv-platform-bar__menu" id="<?php echo esc_attr( $menu_id ); ?>">
+						<?php // Primero, la portada de la plataforma (taxonomy-kdv_plataforma.php). ?>
+						<li class="kdv-platform-bar__menu-hub">
+							<a href="<?php echo esc_url( get_term_link( $p['term'] ) ); ?>">
+								<?php
+								/* translators: %s: nombre de la plataforma (ej. PlayStation). */
+								printf( esc_html__( 'Todo %s', 'revista-koltor-dev' ), esc_html( $p['term']->name ) );
+								?>
+							</a>
+						</li>
 						<?php foreach ( $sections as $label => $base_url ) : ?>
-							<?php if ( $base_url ) : $has_links = true; ?>
+							<?php if ( $base_url ) : ?>
 								<li><a href="<?php echo esc_url( add_query_arg( 'plataforma', $slug, $base_url ) ); ?>"><?php echo esc_html( $label ); ?></a></li>
 							<?php endif; ?>
 						<?php endforeach; ?>
-						<?php if ( ! $has_links ) : ?>
-							<li><a href="<?php echo esc_url( get_term_link( $p['term'] ) ); ?>"><?php esc_html_e( 'Ver todo', 'revista-koltor-dev' ); ?></a></li>
-						<?php endif; ?>
 					</ul>
 				</div>
 			<?php endforeach; ?>

@@ -12,13 +12,11 @@
  * defecto), así que un artículo marcado solo "PS5" sale bajo PlayStation.
  *
  * El icono de cada plataforma se sube como imagen normal de la biblioteca
- * de medios (term meta `kdv_platform_icon`, un ID de adjunto) -- a
- * propósito NO es un icono de la librería SVG del tema
- * (includes/core/icon-library.php). Esa librería es de trazos genéricos
- * bajo licencia MIT; los logos de PlayStation, Xbox o Nintendo son marcas
- * registradas de Sony/Microsoft/Nintendo, así que el tema no los incluye
- * ni los genera -- quien administra el sitio los sube él mismo (por
- * ejemplo, desde los kits de prensa oficiales de cada plataforma).
+ * de medios (term meta `kdv_platform_icon`, un ID de adjunto): los logos
+ * de PlayStation, Xbox o Nintendo son marcas registradas de
+ * Sony/Microsoft/Nintendo, así que el tema no los incluye ni los genera --
+ * quien administra el sitio los sube él mismo (por ejemplo, desde los kits
+ * de prensa oficiales de cada plataforma).
  *
  * @package Revista_Koltor_Dev
  */

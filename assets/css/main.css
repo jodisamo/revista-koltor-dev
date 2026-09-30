@@ -315,6 +315,13 @@ iframe, embed, object, video { max-width: 100%; }
 	background: var(--kdv-bg);
 	color: var(--kdv-primary);
 }
+/* "Todo PlayStation" (la portada de la plataforma) va separado del resto. */
+.kdv-platform-bar__menu-hub {
+	margin-bottom: 4px;
+	padding-bottom: 4px;
+	border-bottom: 1px solid var(--kdv-border);
+}
+.kdv-platform-bar__menu-hub a { font-weight: 700; }
 
 /* Aviso "Filtrado por: X — quitar filtro" en los archivos que aceptan
    ?plataforma=... (ver kdv_render_platform_filter_notice() en
@@ -326,6 +333,79 @@ iframe, embed, object, video { max-width: 100%; }
 }
 .kdv-platform-filter-notice a {
 	color: var(--kdv-primary);
+}
+
+/* Portada de plataforma (taxonomy-kdv_plataforma.php): cabecera con icono,
+   nombre, subplataformas y acceso a sus Tops; debajo, un bloque por tipo
+   de contenido con las secciones .kdv-section de siempre. */
+.kdv-platform-hub__head {
+	display: flex;
+	align-items: center;
+	gap: 24px;
+	padding: 32px;
+	margin-top: 24px;
+	background: var(--kdv-surface);
+	border: 1px solid var(--kdv-border);
+	border-radius: var(--kdv-radius-lg);
+	box-shadow: var(--kdv-shadow-sm);
+}
+.kdv-platform-hub__icon {
+	flex: 0 0 auto;
+	width: 88px;
+	height: 88px;
+	object-fit: contain;
+}
+.kdv-platform-hub__intro { min-width: 0; }
+.kdv-platform-hub__up {
+	display: inline-block;
+	margin-bottom: 4px;
+	font-size: .85rem;
+	font-weight: 600;
+	color: var(--kdv-text-muted);
+}
+.kdv-platform-hub__up:hover { color: var(--kdv-primary); }
+.kdv-platform-hub__title { font-size: clamp(1.8rem, 4vw, 2.6rem); margin: 0; }
+.kdv-platform-hub__desc { margin-top: 6px; color: var(--kdv-text-muted); }
+.kdv-platform-hub__desc p { margin: 0; }
+.kdv-platform-hub__chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 14px;
+}
+.kdv-platform-hub__chips .kdv-pill {
+	display: inline-flex;
+	align-items: center;
+	min-height: 36px;
+	padding-inline: 14px;
+	font-size: .85rem;
+	text-decoration: none;
+	transition: border-color .2s ease, color .2s ease;
+}
+.kdv-platform-hub__chips .kdv-pill:hover,
+.kdv-platform-hub__chips .kdv-pill:focus-visible {
+	border-color: var(--kdv-primary);
+	color: var(--kdv-primary);
+}
+.kdv-pill--accent {
+	background: var(--kdv-primary);
+	border-color: var(--kdv-primary);
+	color: #fff;
+}
+.kdv-platform-hub__chips .kdv-pill--accent:hover,
+.kdv-platform-hub__chips .kdv-pill--accent:focus-visible {
+	color: #fff;
+	filter: brightness(.92);
+}
+.kdv-platform-hub__block { padding-block: 36px 8px; }
+@media (max-width: 640px) {
+	.kdv-platform-hub__head {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 14px;
+		padding: 20px;
+	}
+	.kdv-platform-hub__icon { width: 64px; height: 64px; }
 }
 
 /* ---------- Cinta de anuncios (Personalizar → Cinta de anuncios) ----------
@@ -1476,17 +1556,6 @@ html[data-kdv-theme="dark"] .kdv-dark-toggle__icon--moon { display: inline-flex;
 	transition: transform .15s ease;
 }
 .kdv-widget-categories__link:hover { color: var(--kdv-primary); text-decoration: none; transform: translateX(2px); }
-.kdv-widget-categories__icon {
-	flex: 0 0 30px;
-	width: 30px;
-	height: 30px;
-	border-radius: 50%;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	line-height: 1;
-}
-.kdv-widget-categories__icon .kdv-icon { width: 17px; height: 17px; }
 .kdv-widget-categories__name { flex: 1; font-weight: 600; font-size: .92rem; min-width: 0; }
 .kdv-widget-categories__count {
 	font-size: .76rem;
