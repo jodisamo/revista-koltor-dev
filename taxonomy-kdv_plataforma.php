@@ -78,9 +78,10 @@ $kdv_ranking_url = kdv_get_ranking_page_url();
 $kdv_any_content = false;
 ?>
 <div class="kdv-container">
-	<div class="kdv-content kdv-content__grid--full">
+	<?php // Ancho completo (rejilla de tarjetas), no el de lectura de 780px. El color de marca va en el contenedor para que lo hereden cabecera y secciones. ?>
+	<div class="kdv-content kdv-content__grid--wide kdv-platform-hub"<?php echo $kdv_color ? ' style="' . esc_attr( '--kdv-pc:' . $kdv_color ) . '"' : ''; ?>>
 
-		<header class="kdv-platform-hub__head"<?php echo $kdv_color ? ' style="' . esc_attr( '--kdv-pc:' . $kdv_color ) . '"' : ''; ?>>
+		<header class="kdv-platform-hub__head">
 			<?php if ( $kdv_icon_id ) : ?>
 				<?php echo wp_get_attachment_image( $kdv_icon_id, 'thumbnail', false, [ 'class' => 'kdv-platform-hub__icon', 'alt' => '' ] ); ?>
 			<?php endif; ?>

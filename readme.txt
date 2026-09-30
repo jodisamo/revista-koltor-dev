@@ -5,7 +5,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.10.0
+Stable tag: 1.10.1
 Tags: blog, news, entertainment, two-columns, grid-layout, custom-logo, custom-menu, custom-colors, editor-style, featured-images, threaded-comments, translation-ready, block-styles, wide-blocks, dark-mode
 
 == Description ==
@@ -60,6 +60,11 @@ Tipografías: "Baloo 2" y "Noto Sans" (Google Fonts, licencia SIL Open Font Lice
 Swiper.js (assets/lib/swiper/), usado para el slider nativo de portada, licencia MIT. https://swiperjs.com/
 
 == Changelog ==
+
+= 1.10.1 =
+* Corregido: la portada de plataforma y el archivo de Reseñas usaban el ancho de lectura de 780px (pensado para páginas de texto); ahora ocupan todo el contenedor, como la portada, y la rejilla muestra sus tres columnas.
+* Portada de plataforma: cabecera como banda ancha con el icono y el título más grandes (sin la barra lateral de los títulos, el icono ya identifica la plataforma); las barras de los títulos de sección y los "Ver todas" usan el color de la marca.
+* Modo oscuro: el botón "Tops de …" pasa a translúcido con borde y texto en el color de la marca, para que destaque sobre el fondo oscuro.
 
 = 1.10.0 =
 * Color de marca por plataforma (Entradas → Plataformas → Color, con el selector de color de WordPress). De partida: PlayStation #0070D1, Nintendo #E60012, Xbox #107C10, Android #3DDC84, Steam #66C0F4; PC usa el color del resalte. Una subplataforma sin color usa el de su principal.

@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 get_header();
 ?>
 <div class="kdv-container">
-	<div class="kdv-content kdv-content__grid--full">
+	<div class="kdv-content kdv-content__grid--wide">
 		<header class="kdv-section__head">
 			<h1 class="kdv-section__title"><?php esc_html_e( 'Todas las reseñas', 'revista-koltor-dev' ); ?></h1>
 		</header>

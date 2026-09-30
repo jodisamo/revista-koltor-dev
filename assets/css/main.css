@@ -453,14 +453,22 @@ html[data-kdv-theme="dark"] .kdv-platform-hub__icon {
 /* Portada de plataforma (taxonomy-kdv_plataforma.php): cabecera con icono,
    nombre, subplataformas y acceso a sus Tops; debajo, un bloque por tipo
    de contenido con las secciones .kdv-section de siempre. */
-.kdv-platform-hub__head {
+.kdv-platform-hub {
 	--kdv-pc-base: var(--kdv-pc, var(--kdv-primary));
 	--kdv-pc-text: color-mix(in srgb, var(--kdv-pc-base) 60%, #000);
+}
+html[data-kdv-theme="dark"] .kdv-platform-hub {
+	--kdv-pc-text: color-mix(in srgb, var(--kdv-pc-base) 62%, #fff);
+}
+/* Dentro de la portada de una plataforma, las barras de los títulos y los
+   "Ver todas" van en el color de su marca. */
+.kdv-platform-hub .kdv-section__title { border-left-color: var(--kdv-pc-base); }
+.kdv-platform-hub .kdv-section__link { color: var(--kdv-pc-text); }
+.kdv-platform-hub__head {
 	display: flex;
 	align-items: center;
-	gap: 24px;
-	padding: 32px;
-	margin-top: 24px;
+	gap: 28px;
+	padding: 40px 44px;
 	/* Franja superior y un velo muy suave del color de la marca. */
 	background:
 		linear-gradient(135deg, color-mix(in srgb, var(--kdv-pc-base) 9%, transparent), transparent 60%),
@@ -470,15 +478,13 @@ html[data-kdv-theme="dark"] .kdv-platform-hub__icon {
 	border-radius: var(--kdv-radius-lg);
 	box-shadow: var(--kdv-shadow-sm);
 }
-html[data-kdv-theme="dark"] .kdv-platform-hub__head {
-	--kdv-pc-text: color-mix(in srgb, var(--kdv-pc-base) 62%, #fff);
-}
+
 .kdv-platform-hub__icon {
 	flex: 0 0 auto;
 	width: auto;
 	height: auto;
-	max-width: 88px;
-	max-height: 88px;
+	max-width: 96px;
+	max-height: 96px;
 	object-fit: contain;
 }
 .kdv-platform-hub__intro { min-width: 0; }
@@ -490,7 +496,13 @@ html[data-kdv-theme="dark"] .kdv-platform-hub__head {
 	color: var(--kdv-text-muted);
 }
 .kdv-platform-hub__up:hover { color: var(--kdv-primary); }
-.kdv-platform-hub__title { font-size: clamp(1.8rem, 4vw, 2.6rem); margin: 0; }
+.kdv-platform-hub__head .kdv-platform-hub__title {
+	font-size: clamp(2rem, 4.4vw, 3rem);
+	margin: 0;
+	/* El icono ya identifica la plataforma: sin la barra lateral de los títulos. */
+	padding-left: 0;
+	border-left: 0;
+}
 .kdv-platform-hub__desc { margin-top: 6px; color: var(--kdv-text-muted); }
 .kdv-platform-hub__desc p { margin: 0; }
 .kdv-platform-hub__chips {
@@ -513,8 +525,15 @@ html[data-kdv-theme="dark"] .kdv-platform-hub__head {
 	border-color: var(--kdv-pc-base, var(--kdv-primary));
 	color: var(--kdv-pc-text, var(--kdv-primary));
 }
-/* Fondo siempre en la versión oscurecida del color (texto blanco legible
-   también con colores claros como el verde de Android, y en modo oscuro). */
+/* Modo oscuro: botón translúcido con borde y texto en el color de la marca
+   (aclarado, ya contrastado), que destaca sin apagarse sobre el fondo. */
+html[data-kdv-theme="dark"] .kdv-platform-hub__chips .kdv-pill--accent {
+	background: color-mix(in srgb, var(--kdv-pc-base) 22%, transparent);
+	border-color: var(--kdv-pc-text);
+	color: var(--kdv-pc-text);
+}
+/* Modo claro: fondo en la versión oscurecida del color, con texto blanco
+   legible también con colores claros como el verde de Android. */
 .kdv-platform-hub__chips .kdv-pill--accent {
 	background: color-mix(in srgb, var(--kdv-pc-base, var(--kdv-primary)) 60%, #000);
 	border-color: transparent;
@@ -1587,6 +1606,10 @@ html[data-kdv-theme="dark"] .kdv-platform-badge {
 .kdv-content { padding-block: 40px; }
 .kdv-content__grid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 40px; }
 .kdv-content__grid--full { grid-template-columns: minmax(0, 1fr); max-width: 780px; margin-inline: auto; }
+/* Una columna a todo el ancho del contenedor: para rejillas de tarjetas
+   (portada de plataforma, archivo de reseñas). --full es el ancho de
+   lectura, pensado para páginas de texto. */
+.kdv-content__grid--wide { grid-template-columns: minmax(0, 1fr); }
 .kdv-post__title { font-size: clamp(1.6rem, 3vw, 2.2rem); }
 .kdv-post__meta { color: var(--kdv-text-muted); font-size: .88rem; margin-bottom: 24px; display: flex; gap: 14px; flex-wrap: wrap; }
 .kdv-post__thumbnail { border-radius: var(--kdv-radius); overflow: hidden; margin-bottom: 24px; box-shadow: var(--kdv-shadow-sm); }
