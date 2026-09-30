@@ -92,6 +92,34 @@ function kdv_register_site_info_page() {
 		'dashicons-star-filled',
 		3
 	);
+
+	// El primer submenú repite el slug del menú padre: así la entrada se
+	// llama "Información del sitio" en vez de repetir "Revista Koltor Dev".
+	add_submenu_page(
+		'kdv-site-info',
+		__( 'Koltor Dev — Información del sitio', 'revista-koltor-dev' ),
+		__( 'Información del sitio', 'revista-koltor-dev' ),
+		'manage_options',
+		'kdv-site-info',
+		'kdv_render_site_info_page'
+	);
+
+	/*
+	 * Accesos directos: submenús sin pantalla propia cuyo "slug" es la URL
+	 * de destino (WordPress la usa tal cual como enlace cuando no hay
+	 * función asociada). Llevan al Personalizador ya abierto en la sección
+	 * correcta (autofocus) o a las pantallas nativas que más se usan con
+	 * este tema, sin tener que pasar por Apariencia.
+	 */
+	$shortcuts = [
+		[ __( 'Personalizar el tema', 'revista-koltor-dev' ), 'edit_theme_options', 'customize.php?autofocus[panel]=kdv_panel' ],
+		[ __( 'Menús y efectos', 'revista-koltor-dev' ), 'edit_theme_options', 'customize.php?autofocus[section]=kdv_section_menus' ],
+		[ __( 'Menús de navegación', 'revista-koltor-dev' ), 'edit_theme_options', 'nav-menus.php' ],
+		[ __( 'Plataformas', 'revista-koltor-dev' ), 'manage_categories', 'edit-tags.php?taxonomy=kdv_plataforma' ],
+	];
+	foreach ( $shortcuts as [ $label, $capability, $url ] ) {
+		add_submenu_page( 'kdv-site-info', $label, $label, $capability, $url );
+	}
 }
 add_action( 'admin_menu', 'kdv_register_site_info_page' );
 

@@ -208,21 +208,101 @@ function kdv_customize_register( WP_Customize_Manager $wp_customize ) {
 		'panel' => 'kdv_panel',
 	] );
 
-	$wp_customize->add_setting( 'kdv_menu_style', [
-		'default'           => 'color',
+	/* ---------------------------------------------------------------
+	 * Section: Menús y efectos
+	 *
+	 * Todo lo que controla cómo se ve y reacciona la navegación: el
+	 * estilo de resaltado del menú principal, el resalte al pasar el
+	 * ratón (color, velocidad) y la barra de plataformas (fondo, efecto
+	 * del icono), más la animación de los desplegables. Los cuatro ajustes
+	 * de menú vivían antes en "Cabecera": se movieron aquí conservando sus
+	 * IDs, así que lo ya guardado se mantiene. Acceso directo desde el
+	 * escritorio: Revista Koltor Dev → Menús y efectos.
+	 * ------------------------------------------------------------- */
+	$wp_customize->add_section( 'kdv_section_menus', [
+		'title'       => __( 'Menús y efectos', 'revista-koltor-dev' ),
+		'description' => __( 'Cómo se resaltan el menú principal y la barra de plataformas al pasar el ratón (o al llegar con el teclado). Los cambios de color y velocidad se ven al instante en la vista previa: pasa el ratón por el menú para probarlos.', 'revista-koltor-dev' ),
+		'panel'       => 'kdv_panel',
+	] );
+
+	$wp_customize->add_setting( 'kdv_hover_color', [
+		'default'           => '',
+		'sanitize_callback' => 'sanitize_hex_color',
+		'transport'         => 'postMessage',
+	] );
+	$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'kdv_hover_color', [
+		'label'       => __( 'Color del resalte', 'revista-koltor-dev' ),
+		'description' => __( 'Color del texto, del subrayado y del fondo al pasar el ratón. Vacío = el color primario del tema.', 'revista-koltor-dev' ),
+		'section'     => 'kdv_section_menus',
+	] ) );
+
+	$wp_customize->add_setting( 'kdv_hover_speed', [
+		'default'           => 200,
 		'sanitize_callback' => function( $value ) {
-			return in_array( $value, [ 'color', 'underline', 'pill' ], true ) ? $value : 'color';
+			return min( 600, absint( $value ) );
+		},
+		'transport'         => 'postMessage',
+	] );
+	$wp_customize->add_control( 'kdv_hover_speed', [
+		'label'       => __( 'Velocidad del resalte (ms)', 'revista-koltor-dev' ),
+		'description' => __( 'Cuánto tarda el cambio de color y el efecto del icono. 0 = instantáneo; 150-250 se siente natural.', 'revista-koltor-dev' ),
+		'section'     => 'kdv_section_menus',
+		'type'        => 'number',
+		'input_attrs' => [ 'min' => 0, 'max' => 600, 'step' => 10 ],
+	] );
+
+	$wp_customize->add_setting( 'kdv_platform_hover_bg', [
+		'default'           => 'suave',
+		'sanitize_callback' => function( $value ) {
+			return array_key_exists( $value, kdv_platform_hover_mixes() ) ? $value : 'suave';
+		},
+		'transport'         => 'postMessage',
+	] );
+	$wp_customize->add_control( 'kdv_platform_hover_bg', [
+		'label'       => __( 'Barra de plataformas: fondo al pasar el ratón', 'revista-koltor-dev' ),
+		'section'     => 'kdv_section_menus',
+		'type'        => 'select',
+		'choices'     => [
+			'ninguno' => __( 'Sin fondo (solo color)', 'revista-koltor-dev' ),
+			'suave'   => __( 'Suave (por defecto)', 'revista-koltor-dev' ),
+			'intenso' => __( 'Intenso', 'revista-koltor-dev' ),
+		],
+	] );
+
+	$wp_customize->add_setting( 'kdv_platform_icon_effect', [
+		'default'           => 'lift',
+		'sanitize_callback' => function( $value ) {
+			return in_array( $value, [ 'lift', 'zoom', 'none' ], true ) ? $value : 'lift';
+		},
+		'transport'         => 'postMessage',
+	] );
+	$wp_customize->add_control( 'kdv_platform_icon_effect', [
+		'label'       => __( 'Barra de plataformas: efecto del icono', 'revista-koltor-dev' ),
+		'description' => __( 'Con "reducir movimiento" activado en el sistema del visitante, el icono no se mueve y solo cambian los colores.', 'revista-koltor-dev' ),
+		'section'     => 'kdv_section_menus',
+		'type'        => 'select',
+		'choices'     => [
+			'lift' => __( 'Levantarse (por defecto)', 'revista-koltor-dev' ),
+			'zoom' => __( 'Agrandarse', 'revista-koltor-dev' ),
+			'none' => __( 'Ninguno', 'revista-koltor-dev' ),
+		],
+	] );
+
+	$wp_customize->add_setting( 'kdv_menu_style', [
+		'default'           => 'underline',
+		'sanitize_callback' => function( $value ) {
+			return in_array( $value, [ 'color', 'underline', 'pill' ], true ) ? $value : 'underline';
 		},
 		'transport'         => 'refresh',
 	] );
 	$wp_customize->add_control( 'kdv_menu_style', [
 		'label'       => __( 'Estilo de resaltado del menú', 'revista-koltor-dev' ),
 		'description' => __( 'Cómo se destacan las categorías del menú principal (color al pasar el cursor / en la sección activa, o subrayado animado, o píldora de color). Solo afecta al nivel superior del menú, no a las subcategorías de los desplegables.', 'revista-koltor-dev' ),
-		'section'     => 'kdv_section_header',
+		'section'     => 'kdv_section_menus',
 		'type'        => 'select',
 		'choices'     => [
 			'color'     => __( 'Solo color (clásico)', 'revista-koltor-dev' ),
-			'underline' => __( 'Subrayado animado', 'revista-koltor-dev' ),
+			'underline' => __( 'Subrayado animado (por defecto)', 'revista-koltor-dev' ),
 			'pill'      => __( 'Píldora de color', 'revista-koltor-dev' ),
 		],
 	] );
@@ -247,7 +327,7 @@ function kdv_customize_register( WP_Customize_Manager $wp_customize ) {
 	$wp_customize->add_control( 'kdv_menu_transition_speed', [
 		'label'       => __( 'Velocidad de los desplegables del menú (ms)', 'revista-koltor-dev' ),
 		'description' => __( 'Duración de la animación al abrir/cerrar una subcategoría en el menú de escritorio. Se ignora automáticamente si el visitante tiene activado "reducir movimiento" en su sistema.', 'revista-koltor-dev' ),
-		'section'     => 'kdv_section_header',
+		'section'     => 'kdv_section_menus',
 		'type'        => 'number',
 		'input_attrs' => [ 'min' => 100, 'max' => 500, 'step' => 10 ],
 	] );
@@ -261,7 +341,7 @@ function kdv_customize_register( WP_Customize_Manager $wp_customize ) {
 	] );
 	$wp_customize->add_control( 'kdv_menu_transition_easing', [
 		'label'   => __( 'Curva de la animación', 'revista-koltor-dev' ),
-		'section' => 'kdv_section_header',
+		'section' => 'kdv_section_menus',
 		'type'    => 'select',
 		'choices' => [
 			'suave'  => __( 'Suave (por defecto)', 'revista-koltor-dev' ),
@@ -280,7 +360,7 @@ function kdv_customize_register( WP_Customize_Manager $wp_customize ) {
 	$wp_customize->add_control( 'kdv_submenu_reveal', [
 		'label'       => __( 'Aparición del submenú', 'revista-koltor-dev' ),
 		'description' => __( 'Cómo entra la subcategoría: apareciendo en el sitio, o deslizándose ligeramente hacia abajo. Ambas usan solo "opacity" y "transform", las dos propiedades que el navegador puede animar sin recalcular el resto de la página.', 'revista-koltor-dev' ),
-		'section'     => 'kdv_section_header',
+		'section'     => 'kdv_section_menus',
 		'type'        => 'select',
 		'choices'     => [
 			'fade'  => __( 'Aparecer', 'revista-koltor-dev' ),
@@ -1044,6 +1124,11 @@ function kdv_customize_preview_js() {
 		KDV_THEME_VERSION,
 		true
 	);
+
+	// Mismos porcentajes que usa el CSS dinámico (una sola fuente).
+	wp_localize_script( 'kdv-customizer-preview', 'KdvPreview', [
+		'platformHoverMixes' => kdv_platform_hover_mixes(),
+	] );
 }
 add_action( 'customize_preview_init', 'kdv_customize_preview_js' );
 

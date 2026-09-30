@@ -139,6 +139,11 @@ add_filter( 'body_class', function( $classes ) {
 		$classes[] = 'kdv-submenu-reveal-slide';
 	}
 
+	// Efecto del icono en la barra de plataformas (Personalizar → Menús y
+	// efectos): kdv-platform-icon-fx-lift | -zoom | -none. Ver main.css.
+	$icon_fx   = get_theme_mod( 'kdv_platform_icon_effect', 'lift' );
+	$classes[] = 'kdv-platform-icon-fx-' . ( in_array( $icon_fx, [ 'lift', 'zoom', 'none' ], true ) ? $icon_fx : 'lift' );
+
 	return $classes;
 } );
 

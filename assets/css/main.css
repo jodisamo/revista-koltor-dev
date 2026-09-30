@@ -270,19 +270,40 @@ iframe, embed, object, video { max-width: 100%; }
 	font-size: .85rem;
 	font-weight: 600;
 	cursor: pointer;
-	transition: background-color .15s ease, color .15s ease;
+	transition: background-color var(--kdv-hover-duration, 200ms) ease, color var(--kdv-hover-duration, 200ms) ease;
 }
+/* Fondo del resalte: el color del resalte mezclado al porcentaje elegido en
+   Personalizar → Menús y efectos (--kdv-platform-hover-mix; 0% = sin fondo). */
 .kdv-platform-bar__toggle:hover,
 .kdv-platform-bar__toggle:focus-visible,
 .kdv-platform-bar__toggle[aria-expanded="true"] {
-	background: var(--kdv-bg);
-	color: var(--kdv-primary);
+	background: color-mix(in srgb, var(--kdv-hover-color, var(--kdv-primary)) var(--kdv-platform-hover-mix, 12%), transparent);
+	color: var(--kdv-hover-color, var(--kdv-primary));
 }
 .kdv-platform-bar__icon {
 	width: 20px;
 	height: 20px;
 	object-fit: contain;
 	display: block;
+	transition: transform var(--kdv-hover-duration, 200ms) ease;
+}
+/* Efecto del icono (clase en <body>, ver el filtro body_class de
+   theme-setup.php): "levantar" sube el icono; "zoom" lo agranda. */
+.kdv-platform-icon-fx-lift .kdv-platform-bar__toggle:hover .kdv-platform-bar__icon,
+.kdv-platform-icon-fx-lift .kdv-platform-bar__toggle:focus-visible .kdv-platform-bar__icon,
+.kdv-platform-icon-fx-lift .kdv-platform-bar__toggle[aria-expanded="true"] .kdv-platform-bar__icon {
+	transform: translateY(-2px) scale(1.08);
+}
+.kdv-platform-icon-fx-zoom .kdv-platform-bar__toggle:hover .kdv-platform-bar__icon,
+.kdv-platform-icon-fx-zoom .kdv-platform-bar__toggle:focus-visible .kdv-platform-bar__icon,
+.kdv-platform-icon-fx-zoom .kdv-platform-bar__toggle[aria-expanded="true"] .kdv-platform-bar__icon {
+	transform: scale(1.18);
+}
+/* "Reducir movimiento": solo cambian los colores, nada se desplaza. */
+@media (prefers-reduced-motion: reduce) {
+	.kdv-platform-bar__icon { transition: none; }
+	.kdv-platform-bar__toggle .kdv-platform-bar__icon { transform: none !important; }
+	.kdv-primary-menu--underline > li > a::before { transition: none; }
 }
 /*
  * Los iconos de plataforma que se suben son glifos monocromos oscuros (los
@@ -626,8 +647,12 @@ body.kdv-header-sticky .kdv-header--scrolled {
 	align-items: center;
 	gap: 4px;
 	padding: 8px 0;
+	transition: color var(--kdv-hover-duration, 200ms) ease, background-color var(--kdv-hover-duration, 200ms) ease;
 }
-.kdv-primary-menu a:hover { color: var(--kdv-primary); text-decoration: none; }
+/* Color y velocidad del resalte: Personalizar → Menús y efectos
+   (--kdv-hover-color / --kdv-hover-duration, ver kdv_get_dynamic_css()). */
+.kdv-primary-menu a:hover,
+.kdv-primary-menu a:focus-visible { color: var(--kdv-hover-color, var(--kdv-primary)); text-decoration: none; }
 
 /* Top-level items = categories. The visual treatment (color / underline /
    pill) is chosen in Personalizar → Cabecera → "Estilo de resaltado del
@@ -638,7 +663,7 @@ body.kdv-header-sticky .kdv-header--scrolled {
 .kdv-primary-menu--color > li.current-menu-item > a,
 .kdv-primary-menu--color > li.current-menu-ancestor > a,
 .kdv-primary-menu--color > li.current-menu-parent > a {
-	color: var(--kdv-primary);
+	color: var(--kdv-hover-color, var(--kdv-primary));
 }
 
 /* --- Estilo "underline": subrayado animado (efecto de movimiento) --- */
@@ -652,19 +677,21 @@ body.kdv-header-sticky .kdv-header--scrolled {
 	right: 0;
 	bottom: 0;
 	height: 2px;
-	background: var(--kdv-primary);
+	background: var(--kdv-hover-color, var(--kdv-primary));
 	border-radius: 2px;
 	transform: scaleX(0);
 	transform-origin: left;
-	transition: transform .25s ease;
+	transition: transform calc(var(--kdv-hover-duration, 200ms) + 50ms) ease;
 }
 .kdv-primary-menu--underline > li > a:hover,
+.kdv-primary-menu--underline > li > a:focus-visible,
 .kdv-primary-menu--underline > li.current-menu-item > a,
 .kdv-primary-menu--underline > li.current-menu-ancestor > a,
 .kdv-primary-menu--underline > li.current-menu-parent > a {
-	color: var(--kdv-primary);
+	color: var(--kdv-hover-color, var(--kdv-primary));
 }
 .kdv-primary-menu--underline > li > a:hover::before,
+.kdv-primary-menu--underline > li > a:focus-visible::before,
 .kdv-primary-menu--underline > li.current-menu-item > a::before,
 .kdv-primary-menu--underline > li.current-menu-ancestor > a::before,
 .kdv-primary-menu--underline > li.current-menu-parent > a::before {
@@ -673,19 +700,20 @@ body.kdv-header-sticky .kdv-header--scrolled {
 
 /* --- Estilo "pill": píldora de color permanente --- */
 .kdv-primary-menu--pill > li > a {
-	color: var(--kdv-primary);
-	background: color-mix(in srgb, var(--kdv-primary) 12%, transparent);
+	color: var(--kdv-hover-color, var(--kdv-primary));
+	background: color-mix(in srgb, var(--kdv-hover-color, var(--kdv-primary)) 12%, transparent);
 	padding: 8px 16px;
 	border-radius: 999px;
 }
-.kdv-primary-menu--pill > li > a:hover {
-	background: var(--kdv-primary);
+.kdv-primary-menu--pill > li > a:hover,
+.kdv-primary-menu--pill > li > a:focus-visible {
+	background: var(--kdv-hover-color, var(--kdv-primary));
 	color: #fff;
 }
 .kdv-primary-menu--pill > li.current-menu-item > a,
 .kdv-primary-menu--pill > li.current-menu-ancestor > a,
 .kdv-primary-menu--pill > li.current-menu-parent > a {
-	background: var(--kdv-primary);
+	background: var(--kdv-hover-color, var(--kdv-primary));
 	color: #fff;
 }
 

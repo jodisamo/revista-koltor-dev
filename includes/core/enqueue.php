@@ -77,6 +77,22 @@ function kdv_enqueue_editor_assets() {
 add_action( 'enqueue_block_editor_assets', 'kdv_enqueue_editor_assets' );
 
 /**
+ * Intensidad del fondo al pasar el ratón por la barra de plataformas:
+ * opción del Personalizador => % del color del resalte mezclado con
+ * transparente (color-mix en main.css). La comparten el Personalizador
+ * (lista de opciones), el CSS dinámico y la vista previa en vivo.
+ *
+ * @return int[]
+ */
+function kdv_platform_hover_mixes() {
+	return [
+		'ninguno' => 0,
+		'suave'   => 12,
+		'intenso' => 24,
+	];
+}
+
+/**
  * Builds a small block of CSS custom-property overrides from the values the
  * site owner picks in Apariencia → Personalizar. Kept separate from
  * main.css so the stylesheet itself stays fully cacheable.
@@ -108,6 +124,13 @@ function kdv_get_dynamic_css() {
 	$menu_easing     = $menu_easings[ $menu_easing_key ] ?? $menu_easings['suave'];
 	$menu_speed_ms   = absint( get_theme_mod( 'kdv_menu_transition_speed', 200 ) );
 
+	// Resalte al pasar el ratón (Personalizar → Menús y efectos). Sin color
+	// propio, el resalte usa el color primario.
+	$hover_color    = sanitize_hex_color( get_theme_mod( 'kdv_hover_color', '' ) );
+	$hover_speed_ms = min( 600, absint( get_theme_mod( 'kdv_hover_speed', 200 ) ) );
+	$hover_mixes    = kdv_platform_hover_mixes();
+	$hover_mix      = $hover_mixes[ get_theme_mod( 'kdv_platform_hover_bg', 'suave' ) ] ?? $hover_mixes['suave'];
+
 	$css = ":root {\n";
 	$css .= '--kdv-primary: ' . esc_html( $primary ) . ";\n";
 	$css .= '--kdv-secondary: ' . esc_html( $secondary ) . ";\n";
@@ -119,6 +142,11 @@ function kdv_get_dynamic_css() {
 	$css .= '--kdv-logo-height: ' . $logo_height . "px;\n";
 	$css .= '--kdv-menu-transition-duration: ' . $menu_speed_ms . "ms;\n";
 	$css .= '--kdv-menu-transition-easing: ' . esc_html( $menu_easing ) . ";\n";
+	if ( $hover_color ) {
+		$css .= '--kdv-hover-color: ' . $hover_color . ";\n";
+	}
+	$css .= '--kdv-hover-duration: ' . $hover_speed_ms . "ms;\n";
+	$css .= '--kdv-platform-hover-mix: ' . absint( $hover_mix ) . "%;\n";
 	$css .= "}\n";
 
 	return $css;

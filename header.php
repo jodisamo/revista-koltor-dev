@@ -51,7 +51,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<span aria-hidden="true">&times;</span>
 			</button>
 			<?php
-			$kdv_menu_style = get_theme_mod( 'kdv_menu_style', 'color' );
+			$kdv_menu_style = get_theme_mod( 'kdv_menu_style', 'underline' );
 			wp_nav_menu( [
 				'theme_location' => 'primary',
 				'container'      => false,

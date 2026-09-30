@@ -26,6 +26,46 @@
 		} );
 	} );
 
+	// Menús y efectos: resalte al pasar el ratón.
+	var rootStyle = document.documentElement.style;
+
+	wp.customize( 'kdv_hover_color', function ( value ) {
+		value.bind( function ( newval ) {
+			// Vacío = volver al color primario (la variable deja de existir
+			// y el CSS usa su valor de respaldo, var(--kdv-primary)).
+			if ( newval ) {
+				rootStyle.setProperty( '--kdv-hover-color', newval );
+			} else {
+				rootStyle.removeProperty( '--kdv-hover-color' );
+			}
+		} );
+	} );
+
+	wp.customize( 'kdv_hover_speed', function ( value ) {
+		value.bind( function ( newval ) {
+			rootStyle.setProperty( '--kdv-hover-duration', Math.min( 600, Math.max( 0, parseInt( newval, 10 ) || 0 ) ) + 'ms' );
+		} );
+	} );
+
+	wp.customize( 'kdv_platform_hover_bg', function ( value ) {
+		value.bind( function ( newval ) {
+			var mixes = ( window.KdvPreview && window.KdvPreview.platformHoverMixes ) || {};
+			if ( Object.prototype.hasOwnProperty.call( mixes, newval ) ) {
+				rootStyle.setProperty( '--kdv-platform-hover-mix', mixes[ newval ] + '%' );
+			}
+		} );
+	} );
+
+	wp.customize( 'kdv_platform_icon_effect', function ( value ) {
+		value.bind( function ( newval ) {
+			var body = document.body;
+			[ 'lift', 'zoom', 'none' ].forEach( function ( fx ) {
+				body.classList.remove( 'kdv-platform-icon-fx-' + fx );
+			} );
+			body.classList.add( 'kdv-platform-icon-fx-' + newval );
+		} );
+	} );
+
 	// Hero title / subtitle.
 	wp.customize( 'kdv_hero_title', function ( value ) {
 		value.bind( function ( newval ) {

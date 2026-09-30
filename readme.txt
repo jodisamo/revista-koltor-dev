@@ -5,7 +5,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.8.0
+Stable tag: 1.9.0
 Tags: blog, news, entertainment, two-columns, grid-layout, custom-logo, custom-menu, custom-colors, editor-style, featured-images, threaded-comments, translation-ready, block-styles, wide-blocks, dark-mode
 
 == Description ==
@@ -44,7 +44,7 @@ Características principales:
 
 1. Sube el .zip desde Apariencia → Temas → Añadir nuevo → Subir tema, y actívalo.
 2. Ajustes → Generales: pon el nombre y la descripción corta de tu publicación.
-3. Apariencia → Personalizar → panel del tema: sube el logo y ajusta colores, tipografía, portada y pie de página.
+3. Apariencia → Personalizar → panel del tema (o el acceso directo "Revista Koltor Dev → Personalizar el tema" del escritorio): sube el logo y ajusta colores, tipografía, menús y efectos, portada y pie de página.
 4. Personalizar → Reseñas: cambia los nombres de los cuatro apartados de puntuación por los que encajen con tu temática.
 5. Apariencia → Menús: crea el "Menú principal" y, si quieres, el "Menú de pie de página" y el "Menú legal (pie de página)".
 6. Revista Koltor Dev → Información del sitio: escribe la presentación y los datos de contacto que salen en el pie, y los créditos de los recursos que uses (por ejemplo, los iconos de plataformas de Icons8, cuya licencia gratuita exige un enlace).
@@ -60,6 +60,12 @@ Tipografías: "Baloo 2" y "Noto Sans" (Google Fonts, licencia SIL Open Font Lice
 Swiper.js (assets/lib/swiper/), usado para el slider nativo de portada, licencia MIT. https://swiperjs.com/
 
 == Changelog ==
+
+= 1.9.0 =
+* Nueva sección Personalizar → Revista Koltor Dev → "Menús y efectos": color y velocidad del resalte al pasar el ratón, fondo de la barra de plataformas (sin fondo / suave / intenso) y efecto del icono (levantarse / agrandarse / ninguno), con vista previa en vivo. Los ajustes de menú que estaban en "Cabecera" (estilo de resaltado, velocidad, curva y aparición de los desplegables) se movieron aquí conservando lo ya guardado.
+* Resalte más visible: la barra de plataformas usa un toque del color del resalte como fondo (antes un gris casi invisible) y su icono reacciona; el mismo efecto se ve al llegar con el teclado, y con "reducir movimiento" solo cambian los colores.
+* El menú principal usa por defecto el subrayado animado (antes "solo color"). Los sitios que ya habían elegido un estilo lo conservan.
+* Accesos directos en el escritorio, menú "Revista Koltor Dev": Información del sitio, Personalizar el tema, Menús y efectos, Menús de navegación y Plataformas.
 
 = 1.8.0 =
 * Nuevo campo "Créditos" en Revista Koltor Dev → Información del sitio: una línea pequeña bajo el copyright para agradecer los recursos que usa el sitio (iconos, fotos, tipografías). Admite enlaces, que es lo que exigen licencias gratuitas como la de Icons8. Solo se permiten enlaces y énfasis (strong/em); cualquier otra etiqueta o atributo se elimina al guardar y al mostrar.
