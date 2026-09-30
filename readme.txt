@@ -5,7 +5,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.7.1
+Stable tag: 1.7.2
 Tags: blog, news, entertainment, two-columns, grid-layout, custom-logo, custom-menu, custom-colors, editor-style, featured-images, threaded-comments, translation-ready, block-styles, wide-blocks, dark-mode
 
 == Description ==
@@ -38,7 +38,7 @@ Características principales:
 * "Reseñas" (menú propio en el admin): Custom Post Type con puntuación y ficha técnica. Se clasifican con las taxonomías Género y Estudio.
 * "Diapositivas (Hero)" (menú propio en el admin): Custom Post Type para el slider de portada. Cada diapositiva usa el título de la entrada, una Imagen destacada obligatoria, y un subtítulo y botón opcionales. Sin diapositivas publicadas, la portada usa el título e imagen de respaldo de Personalizar.
 * "Entradas" normales, organizadas por tipo de contenido en las categorías Noticias (Lanzamientos, Industria, Esports), Avances, Reportajes (Opinión, Especiales) y Eventos, creadas automáticamente al activar el tema solo si no existen. La categoría dice QUÉ es el contenido; la plataforma dice PARA QUÉ es.
-* "Plataformas" (PlayStation → PS5/PS4, Nintendo → Switch 2/Switch, Xbox → Series X|S/One, PC → Steam, Móvil): taxonomía aparte, compartida por Entradas y Reseñas; se navega con la barra de iconos de la cabecera.
+* "Plataformas" (PlayStation → PS5/PS4, Nintendo → Switch 2/Switch, Xbox → Series X|S/One, PC → Steam, Android): taxonomía aparte, compartida por Entradas y Reseñas; se navega con la barra de iconos de la cabecera.
 
 == Instalación ==
 
@@ -60,6 +60,9 @@ Tipografías: "Baloo 2" y "Noto Sans" (Google Fonts, licencia SIL Open Font Lice
 Swiper.js (assets/lib/swiper/), usado para el slider nativo de portada, licencia MIT. https://swiperjs.com/
 
 == Changelog ==
+
+= 1.7.2 =
+* La plataforma "Móvil" pasa a llamarse "Android" (slug android), a juego con su icono. Barra: PlayStation · Nintendo · Xbox · PC · Android.
 
 = 1.7.1 =
 * Orden de la barra de plataformas: PlayStation · Nintendo · Xbox · PC · Móvil.

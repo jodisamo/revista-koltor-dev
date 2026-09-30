@@ -21,7 +21,7 @@ require_once KDV_INCLUDES_DIR . '/core/enqueue.php';
 // Custom Post Type "Reseña" + taxonomía de géneros.
 require_once KDV_INCLUDES_DIR . '/core/cpt-resena.php';
 
-// Taxonomía "Plataforma" (PC, PlayStation, Xbox, Nintendo Switch, Móvil...).
+// Taxonomía "Plataforma" (PlayStation, Nintendo, Xbox, PC → Steam, Android...).
 require_once KDV_INCLUDES_DIR . '/core/taxonomy-plataforma.php';
 
 // Custom Post Type "Diapositiva" (slider nativo del hero).

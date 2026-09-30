@@ -1,7 +1,7 @@
 <?php
 /**
- * Taxonomía "Plataforma" (kdv_plataforma) — PlayStation, Xbox, Nintendo, PC,
- * Móvil, compartida entre Reseñas y Entradas igual que kdv_genero (ver
+ * Taxonomía "Plataforma" (kdv_plataforma) — PlayStation, Nintendo, Xbox, PC,
+ * Android, compartida entre Reseñas y Entradas igual que kdv_genero (ver
  * includes/core/cpt-resena.php). No es una categoría: un juego suele salir
  * en varias plataformas a la vez, y la categoría ya dice qué tipo de
  * contenido es.
@@ -56,7 +56,7 @@ function kdv_get_default_platforms() {
 		'nintendo'    => [ 'Nintendo', [ 'switch-2' => 'Switch 2', 'switch' => 'Switch' ] ],
 		'xbox'        => [ 'Xbox', [ 'xbox-series' => 'Xbox Series X|S', 'xbox-one' => 'Xbox One' ] ],
 		'pc'          => [ 'PC', [ 'steam' => 'Steam' ] ],
-		'movil'       => [ 'Móvil', [] ],
+		'android'     => [ 'Android', [] ],
 	];
 }
 
