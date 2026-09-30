@@ -211,7 +211,7 @@ $kdv_hero_mods   = ( 'normal' !== $kdv_hero_height ? ' kdv-hero--' . $kdv_hero_h
 
 	<?php
 	// --- 3-5. Secciones por categoría, elegidas en Personalizar → Secciones
-	// de la portada (por defecto: Novedades, Análisis, Guías, si
+	// de la portada (por defecto: Noticias, Reportajes, Avances, si
 	// esas categorías existen). Cada slot se puede apagar u cambiar de
 	// categoría sin tocar código.
 	for ( $slot = 3; $slot <= 5; $slot++ ) :

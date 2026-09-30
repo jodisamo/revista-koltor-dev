@@ -1,10 +1,15 @@
 <?php
 /**
- * Taxonomía "Plataforma" (kdv_plataforma) — PC, PlayStation, Xbox, Nintendo
- * Switch, Móvil... Plana y compartida entre Reseñas y Entradas, igual que
- * kdv_genero (ver includes/core/cpt-resena.php): un juego suele salir en
- * varias plataformas a la vez, así que no tiene sentido como categoría
- * única ni jerárquica.
+ * Taxonomía "Plataforma" (kdv_plataforma) — PlayStation, Xbox, Nintendo, PC,
+ * Móvil, compartida entre Reseñas y Entradas igual que kdv_genero (ver
+ * includes/core/cpt-resena.php). No es una categoría: un juego suele salir
+ * en varias plataformas a la vez, y la categoría ya dice qué tipo de
+ * contenido es.
+ *
+ * Jerárquica desde la 1.6.0 para admitir subplataformas (PlayStation → PS5,
+ * PS4): la barra solo muestra las principales, y filtrar por una principal
+ * incluye sus subplataformas (tax_query con include_children, el valor por
+ * defecto), así que un artículo marcado solo "PS5" sale bajo PlayStation.
  *
  * El icono de cada plataforma se sube como imagen normal de la biblioteca
  * de medios (term meta `kdv_platform_icon`, un ID de adjunto) -- a
@@ -33,16 +38,32 @@ function kdv_register_taxonomy_plataforma() {
 			'add_new_item'  => __( 'Añadir nueva plataforma', 'revista-koltor-dev' ),
 			'menu_name'     => __( 'Plataformas', 'revista-koltor-dev' ),
 		],
-		'hierarchical' => false,
+		'hierarchical' => true,
 		'public'       => true,
 		'show_in_rest' => true,
-		'rewrite'      => [ 'slug' => 'plataforma' ],
+		'rewrite'      => [ 'slug' => 'plataforma', 'hierarchical' => false ],
 	] );
 }
 add_action( 'init', 'kdv_register_taxonomy_plataforma' );
 
 /**
- * Cinco plataformas de partida, una sola vez -- mismo patrón exacto que
+ * Plataformas de partida (familia => subplataformas), por slug => [ nombre,
+ * [ subslug => subnombre ] ], en el orden en que salen en la barra.
+ *
+ * @return array
+ */
+function kdv_get_default_platforms() {
+	return [
+		'playstation' => [ 'PlayStation', [ 'ps5' => 'PS5', 'ps4' => 'PS4' ] ],
+		'xbox'        => [ 'Xbox', [ 'xbox-series' => 'Xbox Series X|S', 'xbox-one' => 'Xbox One' ] ],
+		'nintendo'    => [ 'Nintendo', [ 'switch-2' => 'Switch 2', 'switch' => 'Switch' ] ],
+		'pc'          => [ 'PC', [] ],
+		'movil'       => [ 'Móvil', [] ],
+	];
+}
+
+/**
+ * Crea las plataformas de partida una sola vez -- mismo patrón que
  * kdv_create_default_categories() en cpt-resena.php: si se borran o
  * renombran después, no se vuelven a crear solas.
  */
@@ -51,11 +72,18 @@ function kdv_create_default_platforms() {
 		return;
 	}
 
-	$platforms = [ 'PC', 'PlayStation', 'Xbox', 'Nintendo Switch', 'Móvil' ];
-
-	foreach ( $platforms as $name ) {
-		if ( ! term_exists( $name, 'kdv_plataforma' ) ) {
-			wp_insert_term( $name, 'kdv_plataforma' );
+	foreach ( kdv_get_default_platforms() as $slug => [ $name, $children ] ) {
+		$parent = term_exists( $slug, 'kdv_plataforma' );
+		if ( ! $parent ) {
+			$parent = wp_insert_term( $name, 'kdv_plataforma', [ 'slug' => $slug ] );
+		}
+		if ( is_wp_error( $parent ) ) {
+			continue;
+		}
+		foreach ( $children as $child_slug => $child_name ) {
+			if ( ! term_exists( $child_slug, 'kdv_plataforma' ) ) {
+				wp_insert_term( $child_name, 'kdv_plataforma', [ 'slug' => $child_slug, 'parent' => (int) $parent['term_id'] ] );
+			}
 		}
 	}
 

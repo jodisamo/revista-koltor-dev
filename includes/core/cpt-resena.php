@@ -4,8 +4,10 @@
  *
  * Modelo de contenido mixto:
  * - "Reseñas" (kdv_resena) es un CPT propio, con ficha técnica y puntuación.
- * - Novedades, Análisis y Guías siguen siendo categorías normales
- *   de "Entradas" (post), para no complicar el modelo de datos.
+ * - Noticias, Avances, Reportajes y Eventos son categorías normales de
+ *   "Entradas" (post): la categoría dice QUÉ es el contenido y la
+ *   plataforma (taxonomy-plataforma.php) PARA QUÉ es, así que nunca hace
+ *   falta una categoría por plataforma.
  *
  * @package Revista_Koltor_Dev
  */
@@ -113,26 +115,121 @@ function kdv_include_resenas_in_tag_archive( $query ) {
 add_action( 'pre_get_posts', 'kdv_include_resenas_in_tag_archive' );
 
 /**
- * Categorías sugeridas para las Entradas estándar.
- * Se crean solo una vez, al activar el tema, y no se vuelven a tocar después
- * (para no pisar cambios que el usuario haga en Categorías).
+ * Categorías de partida (tipo de contenido) con sus subcategorías, por
+ * slug => [ nombre, [ subslug => subnombre ] ]. El tema busca las suyas
+ * por slug (kdv_get_category_id_by_slug()), así que el nombre visible se
+ * puede cambiar libremente en Entradas → Categorías.
+ *
+ * @return array
+ */
+function kdv_get_default_categories() {
+	return [
+		'noticias'   => [ 'Noticias', [
+			'lanzamientos' => 'Lanzamientos',
+			'industria'    => 'Industria',
+			'esports'      => 'Esports',
+		] ],
+		'avances'    => [ 'Avances', [] ],
+		'reportajes' => [ 'Reportajes', [
+			'opinion'    => 'Opinión',
+			'especiales' => 'Especiales',
+		] ],
+		'eventos'    => [ 'Eventos', [] ],
+	];
+}
+
+/**
+ * Crea las categorías de partida una sola vez, al activar el tema, y no las
+ * vuelve a tocar después (para no pisar cambios hechos en Categorías).
  */
 function kdv_create_default_categories() {
 	if ( get_option( 'kdv_default_categories_created' ) ) {
 		return;
 	}
 
-	$categories = [ 'Novedades', 'Análisis', 'Guías' ];
-
-	foreach ( $categories as $cat_name ) {
-		if ( ! term_exists( $cat_name, 'category' ) ) {
-			wp_insert_term( $cat_name, 'category' );
+	foreach ( kdv_get_default_categories() as $slug => [ $name, $children ] ) {
+		$parent = term_exists( $slug, 'category' );
+		if ( ! $parent ) {
+			$parent = wp_insert_term( $name, 'category', [ 'slug' => $slug ] );
+		}
+		if ( is_wp_error( $parent ) ) {
+			continue;
+		}
+		foreach ( $children as $child_slug => $child_name ) {
+			if ( ! term_exists( $child_slug, 'category' ) ) {
+				wp_insert_term( $child_name, 'category', [ 'slug' => $child_slug, 'parent' => (int) $parent['term_id'] ] );
+			}
 		}
 	}
 
 	update_option( 'kdv_default_categories_created', 1 );
 }
 add_action( 'after_switch_theme', 'kdv_create_default_categories' );
+
+/**
+ * Géneros de partida para Reseñas (y Entradas), una sola vez, igual que las
+ * categorías.
+ */
+function kdv_create_default_genres() {
+	if ( get_option( 'kdv_default_genres_created' ) ) {
+		return;
+	}
+
+	$genres = [ 'Acción', 'Aventura', 'RPG', 'Shooter', 'Estrategia', 'Deportes', 'Carreras', 'Lucha', 'Plataformas', 'Terror', 'Simulación', 'Indie' ];
+
+	foreach ( $genres as $name ) {
+		if ( ! term_exists( $name, 'kdv_genero' ) ) {
+			wp_insert_term( $name, 'kdv_genero' );
+		}
+	}
+
+	update_option( 'kdv_default_genres_created', 1 );
+}
+add_action( 'after_switch_theme', 'kdv_create_default_genres' );
+
+/**
+ * Los slugs de categoría que existían antes de la 1.6.0 redirigen (301) a
+ * los nuevos, conservando la paginación y los parámetros (?plataforma=):
+ * así no se pierden enlaces externos ni el posicionamiento ganado.
+ * Solo actúa cuando la URL vieja ya da 404 -- si alguien vuelve a crear una
+ * categoría con ese slug, se respeta.
+ */
+function kdv_redirect_old_category_slugs() {
+	if ( ! is_404() ) {
+		return;
+	}
+
+	$old_to_new = [
+		'novedades' => 'noticias',
+		'analisis'  => 'reportajes',
+	];
+
+	$base = trim( get_option( 'category_base' ) ?: 'category', '/' );
+	$path = trim( (string) wp_parse_url( add_query_arg( [] ), PHP_URL_PATH ), '/' );
+	$home = trim( (string) wp_parse_url( home_url(), PHP_URL_PATH ), '/' );
+	if ( $home && 0 === strpos( $path, $home . '/' ) ) {
+		$path = substr( $path, strlen( $home ) + 1 );
+	}
+
+	if ( ! preg_match( '#^' . preg_quote( $base, '#' ) . '/(' . implode( '|', array_keys( $old_to_new ) ) . ')(/.*)?$#', $path, $m ) ) {
+		return;
+	}
+
+	$new_id = kdv_get_category_id_by_slug( $old_to_new[ $m[1] ] );
+	if ( ! $new_id ) {
+		return;
+	}
+
+	$target = untrailingslashit( get_category_link( $new_id ) ) . ( isset( $m[2] ) ? $m[2] : '' );
+	$target = trailingslashit( $target );
+	if ( ! empty( $_SERVER['QUERY_STRING'] ) ) {
+		$target .= '?' . wp_unslash( $_SERVER['QUERY_STRING'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- se reenvía tal cual; wp_safe_redirect() limpia la URL.
+	}
+
+	wp_safe_redirect( $target, 301 );
+	exit;
+}
+add_action( 'template_redirect', 'kdv_redirect_old_category_slugs' );
 
 /**
  * Flush rewrite rules on theme activation/deactivation so /resenas/ works immediately.

@@ -133,14 +133,16 @@ function kdv_maybe_insert_content_ad( $content ) {
 add_filter( 'the_content', 'kdv_maybe_insert_content_ad' );
 
 /**
- * Resolves a category's term_id by name, or 0 if it doesn't exist yet.
- * Used only to compute sensible Customizer defaults for the configurable
- * homepage sections, matching the categories the readme asks users to
- * create (Novedades, Análisis, Guías) — if they're not there yet,
- * defaulting to 0 just leaves that section slot empty/disabled.
+ * Categorías de contenido del tema, por slug (ver kdv_get_default_categories()
+ * en cpt-resena.php). Se buscan por slug y NO por nombre: el nombre es lo
+ * que se ve y cualquiera puede cambiarlo en Entradas → Categorías (así se
+ * pasó de "Novedades" a "Noticias"); el slug es el identificador estable.
+ *
+ * @param string $slug Slug de la categoría (noticias, avances, reportajes…).
+ * @return int ID de la categoría, o 0 si no existe.
  */
-function kdv_get_default_category_id( $name ) {
-	$term = get_term_by( 'name', $name, 'category' );
+function kdv_get_category_id_by_slug( $slug ) {
+	$term = get_term_by( 'slug', $slug, 'category' );
 	return ( $term && ! is_wp_error( $term ) ) ? (int) $term->term_id : 0;
 }
 
@@ -203,13 +205,13 @@ function kdv_get_site_info( $key = null, $default = '' ) {
  */
 function kdv_get_home_section_default_category( $slot ) {
 	$defaults = [
-		3 => 'Novedades',
-		4 => 'Análisis',
-		5 => 'Guías',
+		3 => 'noticias',
+		4 => 'reportajes',
+		5 => 'avances',
 	];
 	$slot = absint( $slot );
 
-	return isset( $defaults[ $slot ] ) ? kdv_get_default_category_id( $defaults[ $slot ] ) : 0;
+	return isset( $defaults[ $slot ] ) ? kdv_get_category_id_by_slug( $defaults[ $slot ] ) : 0;
 }
 
 /**
@@ -331,14 +333,16 @@ function kdv_render_ticker() {
 }
 
 /**
- * Plataformas (kdv_plataforma) que tienen un icono subido, en el orden en
- * que se crearon -- esta taxonomía no tiene orden manual todavía; si hace
- * falta reordenar, la forma más simple por ahora es borrar y crear de
- * nuevo el término en el orden deseado.
+ * Plataformas PRINCIPALES (kdv_plataforma sin padre: PlayStation, Xbox…)
+ * que tienen un icono subido, en el orden en que se crearon -- las
+ * subplataformas (PS5, PS4…) no salen en la barra. Esta taxonomía no tiene
+ * orden manual todavía; si hace falta reordenar, la forma más simple por
+ * ahora es borrar y crear de nuevo el término en el orden deseado.
  */
 function kdv_get_platforms_with_icon() {
 	$terms = get_terms( [
 		'taxonomy'   => 'kdv_plataforma',
+		'parent'     => 0,
 		'hide_empty' => false,
 		'orderby'    => 'term_id',
 		'order'      => 'ASC',
@@ -347,6 +351,15 @@ function kdv_get_platforms_with_icon() {
 	if ( is_wp_error( $terms ) || empty( $terms ) ) {
 		return [];
 	}
+
+	// Orden de la barra: el de kdv_get_default_platforms() (PlayStation,
+	// Xbox, Nintendo, PC, Móvil); las que se añadan después, al final en
+	// orden de creación.
+	$order = array_flip( array_keys( kdv_get_default_platforms() ) );
+	usort( $terms, function( $a, $b ) use ( $order ) {
+		return ( ( $order[ $a->slug ] ?? PHP_INT_MAX ) <=> ( $order[ $b->slug ] ?? PHP_INT_MAX ) )
+			?: ( $a->term_id <=> $b->term_id );
+	} );
 
 	$with_icon = [];
 	foreach ( $terms as $term ) {
@@ -372,8 +385,8 @@ function kdv_get_platforms_with_icon() {
  *
  * Cada plataforma es un botón con un pequeño desplegable propio (JS en
  * assets/js/main.js, sin relación con el del menú principal) hacia sus
- * secciones ya existentes -- Novedades/Análisis/Guías (las categorías
- * nativas), Reseñas y Tops (la plantilla de Ranking) -- filtradas por esa
+ * secciones ya existentes -- Noticias y Avances (categorías nativas, por
+ * slug), Reseñas y Tops (la plantilla de Ranking) -- filtradas por esa
  * plataforma vía ?plataforma=slug. A propósito NO se crean términos ni
  * categorías nuevas por plataforma: el filtro cruza dos taxonomías que ya
  * existen (kdv_plataforma + category) en la URL, así que cada artículo se
@@ -391,17 +404,17 @@ function kdv_render_platform_bar() {
 		return;
 	}
 
-	$kdv_novedades_id = kdv_get_default_category_id( 'Novedades' );
-	$kdv_analisis_id  = kdv_get_default_category_id( 'Análisis' );
-	$kdv_guias_id     = kdv_get_default_category_id( 'Guías' );
-
-	$sections = [
-		'Novedades' => $kdv_novedades_id ? get_category_link( $kdv_novedades_id ) : '',
-		'Análisis'  => $kdv_analisis_id ? get_category_link( $kdv_analisis_id ) : '',
-		'Guías'     => $kdv_guias_id ? get_category_link( $kdv_guias_id ) : '',
-		'Reseñas'   => get_post_type_archive_link( 'kdv_resena' ),
-		'Tops'      => kdv_get_ranking_page_url(),
-	];
+	// Etiqueta => URL base. Las categorías muestran su nombre actual (si se
+	// renombra en el escritorio, el desplegable lo refleja solo).
+	$sections = [];
+	foreach ( [ 'noticias', 'avances' ] as $cat_slug ) {
+		$cat_id = kdv_get_category_id_by_slug( $cat_slug );
+		if ( $cat_id ) {
+			$sections[ get_cat_name( $cat_id ) ] = get_category_link( $cat_id );
+		}
+	}
+	$sections[ __( 'Reseñas', 'revista-koltor-dev' ) ] = get_post_type_archive_link( 'kdv_resena' );
+	$sections[ __( 'Tops', 'revista-koltor-dev' ) ]    = kdv_get_ranking_page_url();
 	?>
 	<div class="kdv-platform-bar">
 		<div class="kdv-container kdv-platform-bar__inner">

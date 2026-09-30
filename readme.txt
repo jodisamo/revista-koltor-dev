@@ -5,7 +5,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.5.0
+Stable tag: 1.6.0
 Tags: blog, news, entertainment, two-columns, grid-layout, custom-logo, custom-menu, custom-colors, editor-style, featured-images, threaded-comments, translation-ready, block-styles, wide-blocks, dark-mode
 
 == Description ==
@@ -37,7 +37,8 @@ Características principales:
 
 * "Reseñas" (menú propio en el admin): Custom Post Type con puntuación y ficha técnica. Se clasifican con las taxonomías Género y Estudio.
 * "Diapositivas (Hero)" (menú propio en el admin): Custom Post Type para el slider de portada. Cada diapositiva usa el título de la entrada, una Imagen destacada obligatoria, y un subtítulo y botón opcionales. Sin diapositivas publicadas, la portada usa el título e imagen de respaldo de Personalizar.
-* "Entradas" normales, organizadas en las categorías Novedades, Análisis y Guías (creadas automáticamente al activar el tema, solo si no existen).
+* "Entradas" normales, organizadas por tipo de contenido en las categorías Noticias (Lanzamientos, Industria, Esports), Avances, Reportajes (Opinión, Especiales) y Eventos, creadas automáticamente al activar el tema solo si no existen. La categoría dice QUÉ es el contenido; la plataforma dice PARA QUÉ es.
+* "Plataformas" (PlayStation → PS5/PS4, Xbox → Series X|S/One, Nintendo → Switch 2/Switch, PC, Móvil): taxonomía aparte, compartida por Entradas y Reseñas; se navega con la barra de iconos de la cabecera.
 
 == Instalación ==
 
@@ -61,6 +62,15 @@ Swiper.js (assets/lib/swiper/), usado para el slider nativo de portada, licencia
 Iconos: subconjunto de Tabler Icons (https://tabler.io/icons), licencia MIT, incrustados como SVG en el propio tema.
 
 == Changelog ==
+
+= 1.6.0 =
+* Navegación de portal de noticias: la categoría dice QUÉ es el contenido y la plataforma PARA QUÉ es, sin categorías por plataforma. Categorías de partida: Noticias (Lanzamientos, Industria, Esports), Avances, Reportajes (Opinión, Especiales) y Eventos. Se retira Guías.
+* La taxonomía Plataforma admite subplataformas (PlayStation → PS5, PS4; Xbox → Series X|S, One; Nintendo → Switch 2, Switch). La barra solo muestra las principales, en el orden PlayStation · Xbox · Nintendo · PC · Móvil, y filtrar por una principal incluye sus subplataformas.
+* El desplegable de cada plataforma lleva a Noticias, Avances, Reseñas y Tops, con el nombre actual de cada categoría.
+* El tema busca sus categorías por slug (noticias, avances, reportajes) en vez de por nombre: renombrarlas en el escritorio ya no rompe la barra ni las secciones de portada.
+* Secciones 3-5 de la portada por defecto: Noticias, Reportajes, Avances.
+* 12 géneros de partida para las reseñas (Acción, Aventura, RPG, Shooter, Estrategia, Deportes, Carreras, Lucha, Plataformas, Terror, Simulación, Indie).
+* Redirección 301 de las direcciones antiguas /category/novedades/ → /category/noticias/ y /category/analisis/ → /category/reportajes/, conservando paginación y filtros.
 
 = 1.5.0 =
 * Pantalla de acceso (wp-login.php) con la marca del sitio: el logo de Personalizar → Identidad del sitio en lugar de la "W" de WordPress (o el nombre del sitio si no hay logo), el botón "Acceder" con el color primario y el logo enlazando a la portada.
