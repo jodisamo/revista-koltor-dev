@@ -1,0 +1,1807 @@
+/* =========================================================
+   Koltor Dev — main stylesheet
+   Organised by section. Custom properties drive light/dark
+   theming via [data-kdv-theme] on <html>.
+   ========================================================= */
+
+/* ---------- Design tokens ---------- */
+:root {
+	--kdv-primary: #2E9BD6;
+	--kdv-secondary: #2BB3C0;
+	--kdv-accent: #F5A623;
+
+	--kdv-bg: #F5F9FC;
+	--kdv-surface: #FFFFFF;
+	--kdv-text: #15242E;
+	--kdv-text-muted: #5B7183;
+	--kdv-border: #DEE9F1;
+
+	--kdv-score-great: #2FA36B;
+	--kdv-score-good: #7FB53F;
+	--kdv-score-mixed: #E8A317;
+	--kdv-score-poor: #E05B5B;
+	--kdv-score-neutral: #9AA7B1;
+
+	/* Paleta fija para las etiquetas (Entradas/Reseñas) — tonos suaves y
+	   fríos, a juego con el azul de marca, pero independientes de
+	   --kdv-primary/secondary/accent para que nunca desentonen si esos
+	   colores cambian. */
+	--kdv-tag-1-bg: #DCEBFA; --kdv-tag-1-text: #1F6FB2; /* azul */
+	--kdv-tag-2-bg: #D3F1F0; --kdv-tag-2-text: #10807C; /* turquesa */
+	--kdv-tag-3-bg: #DCF3E2; --kdv-tag-3-text: #1E8A4C; /* verde */
+	--kdv-tag-4-bg: #FBEFD2; --kdv-tag-4-text: #A2740B; /* ámbar */
+	--kdv-tag-5-bg: #E5E3FB; --kdv-tag-5-text: #5B4FC7; /* lavanda */
+	--kdv-tag-6-bg: #D6EEF9; --kdv-tag-6-text: #17739B; /* celeste */
+	--kdv-tag-7-bg: #FBE2DC; --kdv-tag-7-text: #B85436; /* coral */
+	--kdv-tag-8-bg: #E0E6F7; --kdv-tag-8-text: #3A4FA0; /* índigo */
+
+	--kdv-radius-sm: 8px;
+	--kdv-radius: 16px;
+	--kdv-radius-lg: 24px;
+	--kdv-shadow: 0 6px 24px rgba(46, 155, 214, 0.14);
+	--kdv-shadow-sm: 0 2px 8px rgba(21, 36, 46, 0.08);
+
+	--kdv-font-heading: 'Baloo 2', 'Segoe UI', sans-serif;
+	--kdv-font-body: 'Noto Sans', system-ui, sans-serif;
+
+	--kdv-container: 1200px;
+}
+
+html[data-kdv-theme="dark"] {
+	--kdv-bg: #0D1A22;
+	--kdv-surface: #142530;
+	--kdv-text: #E8F1F7;
+	--kdv-text-muted: #9FB4C2;
+	--kdv-border: #22384A;
+	--kdv-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+	--kdv-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+/* ---------- Reset & base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+/* Nada puede ensanchar la página a lo ancho.
+   En móviles, Chrome de Android cuenta el panel del menú desplegable —que
+   espera fuera de la pantalla, a la derecha— como parte del ancho del
+   documento. El resultado era que el navegador se alejaba para que cupiera
+   todo (el contenido se veía encogido contra el borde izquierdo) y los
+   elementos fijos, como la barra de redes sociales, se estiraban sobre ese
+   ancho falso en vez de sobre la pantalla: por eso se salían los últimos
+   iconos.
+   "clip" recorta ese desbordamiento SIN convertir la página en un contenedor
+   de scroll, así que la cabecera fija al hacer scroll sigue funcionando;
+   "hidden" queda solo como respaldo para navegadores antiguos que no
+   entienden "clip". */
+html { overflow-x: hidden; }
+@supports (overflow-x: clip) {
+	html { overflow-x: clip; }
+}
+
+/*
+ * Cortafuegos definitivo contra el ancho. Lo anterior (overflow en <html>) NO
+ * es suficiente por sí solo: el navegador propaga el overflow del elemento
+ * raíz al viewport, y Chrome en Android sigue midiendo el contenido y
+ * ensanchando el área de maquetación hasta abarcarlo. Resultado: la página se
+ * ve encogida y pegada a la izquierda y los elementos fijos —la barra
+ * flotante de redes— se estiran fuera de la pantalla. Y aparece "al
+ * desplazarse", no al cargar, porque el recálculo ocurre en el primer
+ * reflujo (imágenes en carga diferida, animaciones de entrada).
+ *
+ * Puesto en cambio sobre un envoltorio intermedio, "overflow-x: clip" sí
+ * impide que lo que haya dentro cuente para el ancho del documento. Así,
+ * cualquier cosa que en el futuro se salga de lo previsto —un embed pegado a
+ * mano, un plugin, un bloque nuevo— queda contenida y no puede volver a
+ * descuadrar el sitio entero.
+ *
+ * Es la red de seguridad, no la solución de fondo: el contenido ancho que sí
+ * hay que poder leer (bloques de código, tablas) se hace desplazable dentro
+ * de su propia caja más abajo, para que no se recorte nada.
+ *
+ * Solo bajo @supports: el respaldo "hidden" no vale aquí, porque en un
+ * elemento que no es la raíz convertiría el envoltorio en un contenedor de
+ * scroll vertical propio.
+ */
+@supports (overflow-x: clip) {
+	.kdv-site-content,
+	.kdv-footer { overflow-x: clip; }
+}
+
+body {
+	margin: 0;
+	background: var(--kdv-bg);
+	color: var(--kdv-text);
+	font-family: var(--kdv-font-body);
+	font-size: 16px;
+	line-height: 1.65;
+	-webkit-font-smoothing: antialiased;
+	transition: background-color .25s ease, color .25s ease;
+}
+
+img { max-width: 100%; height: auto; display: block; }
+
+a { color: var(--kdv-primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: var(--kdv-font-heading);
+	font-weight: 700;
+	line-height: 1.25;
+	margin: 0 0 .5em;
+	color: var(--kdv-text);
+}
+
+p { margin: 0 0 1.2em; }
+
+ul, ol { padding-left: 1.3em; }
+
+blockquote {
+	margin: 1.5em 0;
+	padding: .8em 1.4em;
+	border-left: 4px solid var(--kdv-primary);
+	background: var(--kdv-surface);
+	border-radius: 0 var(--kdv-radius-sm) var(--kdv-radius-sm) 0;
+	font-style: italic;
+}
+
+table { width: 100%; border-collapse: collapse; margin: 1.5em 0; }
+th, td { padding: .6em .8em; border: 1px solid var(--kdv-border); text-align: left; }
+
+button, input, select, textarea { font-family: inherit; font-size: 1rem; }
+
+/* ---------- Red de seguridad de anchura (contenido de los artículos) ----------
+   Esto existe por un motivo muy concreto y muy fácil de pasar por alto: en el
+   móvil, una pieza de contenido más ancha que la pantalla NO se recorta sin
+   más. Chrome en Android ensancha el "viewport de maquetación" hasta el ancho
+   de ese contenido, y a partir de ahí TODA la página se ve encogida y pegada a
+   la izquierda, y los elementos fijos (la barra flotante de redes, la
+   cabecera) se salen de la pantalla. Un solo bloque de código con una línea
+   larga, o una tabla de seis columnas dentro de un artículo, basta para
+   descuadrar la portada entera.
+
+   La comprobación que tiene que cumplirse siempre, en cualquier página y a
+   cualquier ancho:  documentElement.scrollWidth === documentElement.clientWidth
+   ---------------------------------------------------------------------------- */
+
+/* Bloques de código: se desplazan dentro de su propia caja en vez de
+   ensanchar la página. */
+pre {
+	max-width: 100%;
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
+/* Palabras y enlaces sin espacios (URLs pegadas, hashes, nombres de archivo
+   largos) parten de línea en vez de sobresalir de su columna. */
+p, li, dd, dt, h1, h2, h3, h4, h5, h6, blockquote, figcaption, th, td, .kdv-card__title {
+	overflow-wrap: break-word;
+}
+
+/* Vídeos y embeds pegados a mano (YouTube, mapas, publicaciones incrustadas).
+   "img" ya tenía max-width más arriba; estos no lo tenían. */
+iframe, embed, object, video { max-width: 100%; }
+.wp-block-embed__wrapper iframe { width: 100%; }
+
+/* Tablas anchas: el bloque "Tabla" de Gutenberg ya llega envuelto en
+   <figure class="wp-block-table">, así que basta con hacer que ese envoltorio
+   se desplace. Las tablas pegadas a mano (editor clásico, bloque de HTML
+   personalizado) las envuelve assets/js/main.js en .kdv-table-scroll al
+   cargar la página. En ambos casos la tabla conserva su ancho natural y es el
+   envoltorio el que se arrastra con el dedo. */
+.wp-block-table,
+.kdv-table-scroll {
+	max-width: 100%;
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+}
+.wp-block-table > table,
+.kdv-table-scroll > table {
+	min-width: max-content;
+	margin-block: 0;
+}
+.kdv-table-scroll { margin: 1.5em 0; }
+
+.kdv-container {
+	max-width: var(--kdv-container);
+	margin-inline: auto;
+	padding-inline: 20px;
+}
+
+.screen-reader-text {
+	position: absolute !important;
+	width: 1px; height: 1px;
+	overflow: hidden;
+	clip: rect(1px, 1px, 1px, 1px);
+	white-space: nowrap;
+}
+
+/* Gutenberg alignment helpers used by our own blocks + core blocks */
+.alignwide { max-width: 1200px; margin-inline: auto; }
+.alignfull { max-width: none; margin-inline: calc(50% - 50vw); }
+
+/* ---------- Header ---------- */
+.kdv-header {
+	background: var(--kdv-surface);
+	border-bottom: 1px solid var(--kdv-border);
+	transition: background-color .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+
+/* "Cabecera fija al hacer scroll" en Personalizar → Cabecera (activado por
+   defecto) añade esta clase al <body> — ver includes/core/theme-setup.php. */
+body.kdv-header-sticky .kdv-header {
+	position: sticky;
+	top: 0;
+	z-index: 100;
+}
+
+/* Once the visitor scrolls a little (assets/js/main.js adds this class to a
+   sticky header only), the solid header gets a soft frosted-glass look —
+   still opaque enough on its own (the color-mix% keeps it readable even in
+   browsers without backdrop-filter, which just silently drop that line and
+   keep the plain surface colour underneath). */
+body.kdv-header-sticky .kdv-header--scrolled {
+	background: color-mix( in srgb, var(--kdv-surface) 86%, transparent );
+	backdrop-filter: blur(14px);
+	-webkit-backdrop-filter: blur(14px);
+	border-bottom-color: transparent;
+	box-shadow: var(--kdv-shadow-sm);
+}
+
+/* El logo y los botones de la derecha nunca se encogen; el menú es la única
+   pieza elástica y puede reducirse (min-width:0) en vez de desbordarse por
+   encima del resto — que es lo que causaba que el menú se montara sobre el
+   logo/los iconos cuando hay varias categorías en la barra. */
+.kdv-header__bar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 20px;
+	padding-block: 14px;
+	flex-wrap: nowrap;
+}
+.kdv-header__brand { flex: 0 0 auto; min-width: 0; }
+.kdv-header__actions { flex: 0 0 auto; }
+
+/* "Posición del logo: Centrado" en Personalizar → Cabecera — solo en
+   escritorio, el móvil siempre usa el layout normal de arriba. */
+@media (min-width: 1101px) {
+	.kdv-header__bar--centered {
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+	}
+	.kdv-header__bar--centered .kdv-header__brand { order: 2; justify-self: center; text-align: center; }
+	.kdv-header__bar--centered .kdv-header__nav { order: 1; justify-self: start; }
+	.kdv-header__bar--centered .kdv-header__actions { order: 3; justify-self: end; }
+}
+
+/* ---------- Espacios publicitarios (Personalizar → Publicidad) ---------- */
+.kdv-ad-slot {
+	margin-block: 24px;
+	text-align: center;
+}
+.kdv-ad-slot__label {
+	display: block;
+	font-size: .7rem;
+	text-transform: uppercase;
+	letter-spacing: .08em;
+	color: var(--kdv-text-muted);
+	margin-bottom: 8px;
+}
+.kdv-ad-slot--header,
+.kdv-ad-slot--footer {
+	padding-block: 16px;
+}
+.kdv-ad-slot--sidebar { margin-top: 0; }
+.kdv-ad-slot--content {
+	padding: 16px;
+	border: 1px dashed var(--kdv-border);
+	border-radius: var(--kdv-radius-sm);
+}
+
+.kdv-logo-text {
+	font-family: var(--kdv-font-heading);
+	font-weight: 800;
+	font-size: 1.6rem;
+	color: var(--kdv-primary);
+}
+.kdv-logo-text:hover { text-decoration: none; opacity: .85; }
+.custom-logo-link img { max-height: var(--kdv-logo-height, 56px); width: auto; }
+
+.kdv-site-tagline {
+	display: block;
+	font-size: .8rem;
+	color: var(--kdv-text-muted);
+	margin-top: -4px;
+}
+
+.kdv-header__nav {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 18px;
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.kdv-primary-menu {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: 6px 20px;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	min-width: 0;
+}
+.kdv-primary-menu li { position: relative; }
+.kdv-primary-menu a {
+	color: var(--kdv-text);
+	font-weight: 600;
+	font-size: .95rem;
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 8px 0;
+}
+.kdv-primary-menu a:hover { color: var(--kdv-primary); text-decoration: none; }
+
+/* Top-level items = categories. The visual treatment (color / underline /
+   pill) is chosen in Personalizar → Cabecera → "Estilo de resaltado del
+   menú" — only the top level gets it, dropdown subcategory items (.sub-menu
+   a, styled further below) always stay plain text regardless of the choice. */
+
+/* --- Estilo "color" (clásico, por defecto): solo cambia el color --- */
+.kdv-primary-menu--color > li.current-menu-item > a,
+.kdv-primary-menu--color > li.current-menu-ancestor > a,
+.kdv-primary-menu--color > li.current-menu-parent > a {
+	color: var(--kdv-primary);
+}
+
+/* --- Estilo "underline": subrayado animado (efecto de movimiento) --- */
+.kdv-primary-menu--underline > li > a {
+	padding-bottom: 10px;
+}
+.kdv-primary-menu--underline > li > a::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 2px;
+	background: var(--kdv-primary);
+	border-radius: 2px;
+	transform: scaleX(0);
+	transform-origin: left;
+	transition: transform .25s ease;
+}
+.kdv-primary-menu--underline > li > a:hover,
+.kdv-primary-menu--underline > li.current-menu-item > a,
+.kdv-primary-menu--underline > li.current-menu-ancestor > a,
+.kdv-primary-menu--underline > li.current-menu-parent > a {
+	color: var(--kdv-primary);
+}
+.kdv-primary-menu--underline > li > a:hover::before,
+.kdv-primary-menu--underline > li.current-menu-item > a::before,
+.kdv-primary-menu--underline > li.current-menu-ancestor > a::before,
+.kdv-primary-menu--underline > li.current-menu-parent > a::before {
+	transform: scaleX(1);
+}
+
+/* --- Estilo "pill": píldora de color permanente --- */
+.kdv-primary-menu--pill > li > a {
+	color: var(--kdv-primary);
+	background: color-mix(in srgb, var(--kdv-primary) 12%, transparent);
+	padding: 8px 16px;
+	border-radius: 999px;
+}
+.kdv-primary-menu--pill > li > a:hover {
+	background: var(--kdv-primary);
+	color: #fff;
+}
+.kdv-primary-menu--pill > li.current-menu-item > a,
+.kdv-primary-menu--pill > li.current-menu-ancestor > a,
+.kdv-primary-menu--pill > li.current-menu-parent > a {
+	background: var(--kdv-primary);
+	color: #fff;
+}
+
+/* Caret on items that have a submenu */
+.kdv-primary-menu .menu-item-has-children > a::after {
+	content: "";
+	width: 6px;
+	height: 6px;
+	border-right: 2px solid currentColor;
+	border-bottom: 2px solid currentColor;
+	transform: rotate(45deg);
+	margin-top: -3px;
+	opacity: .6;
+}
+
+/* Dropdown submenus (desktop): hidden by default, shown on hover/focus */
+.kdv-primary-menu .sub-menu {
+	display: none;
+	list-style: none;
+	margin: 0;
+	padding: 8px;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	min-width: 230px;
+	/* Nunca más ancho que la ventana, por si el navegador va muy estrecho. */
+	max-width: calc(100vw - 32px);
+	background: var(--kdv-surface);
+	border: 1px solid var(--kdv-border);
+	border-radius: var(--kdv-radius-sm);
+	box-shadow: var(--kdv-shadow);
+	z-index: 200;
+}
+.kdv-primary-menu .sub-menu .sub-menu {
+	top: -8px;
+	left: 100%;
+}
+.kdv-primary-menu li:hover > .sub-menu,
+.kdv-primary-menu li:focus-within > .sub-menu {
+	display: block;
+}
+
+/*
+ * Desplegables que no caben: se voltean para abrir hacia el lado contrario.
+ *
+ * El problema que resuelve: los submenús se anclan al borde izquierdo de su
+ * item padre y miden 230px. En las últimas categorías del menú eso se sale de
+ * la pantalla por la derecha, y el tercer nivel (que se abre con left: 100%,
+ * o sea a la derecha del submenú padre) se salía a CUALQUIER ancho, incluso a
+ * 1600px — con lo que una subcategoría de una subcategoría era literalmente
+ * inalcanzable.
+ *
+ * La clase la pone assets/js/main.js midiendo cada submenú al abrirse, que es
+ * la única forma fiable de saber si cabe. La regla de :last-child de abajo es
+ * el respaldo para cuando no hay JavaScript: cubre el caso más habitual.
+ */
+.kdv-primary-menu > li.kdv-submenu-flip > .sub-menu,
+.kdv-primary-menu > li:last-child > .sub-menu {
+	left: auto;
+	right: 0;
+}
+.kdv-primary-menu .sub-menu li.kdv-submenu-flip > .sub-menu {
+	left: auto;
+	right: 100%;
+}
+/* El tercer nivel dentro de un desplegable ya volteado nace hacia la
+   izquierda: si no, vuelve a salirse por donde acabábamos de entrar. */
+.kdv-primary-menu > li.kdv-submenu-flip .sub-menu .sub-menu,
+.kdv-primary-menu > li:last-child .sub-menu .sub-menu {
+	left: auto;
+	right: 100%;
+}
+.kdv-primary-menu .sub-menu li { width: 100%; }
+.kdv-primary-menu .sub-menu a {
+	display: flex;
+	width: 100%;
+	padding: 8px 10px;
+	border-radius: var(--kdv-radius-sm);
+	font-weight: 500;
+	font-size: .88rem;
+	white-space: nowrap;
+}
+.kdv-primary-menu .sub-menu a:hover { background: var(--kdv-bg); }
+
+.kdv-header__actions {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.kdv-icon-btn {
+	background: none;
+	border: none;
+	cursor: pointer;
+	width: 38px;
+	height: 38px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	color: var(--kdv-text);
+	transition: background-color .15s ease;
+}
+.kdv-icon-btn:hover { background: var(--kdv-bg); }
+.kdv-icon-btn svg { display: block; }
+
+.kdv-dark-toggle__icon { display: none; align-items: center; justify-content: center; }
+.kdv-dark-toggle__icon--sun { display: inline-flex; }
+html[data-kdv-theme="dark"] .kdv-dark-toggle__icon--sun { display: none; }
+html[data-kdv-theme="dark"] .kdv-dark-toggle__icon--moon { display: inline-flex; }
+
+.kdv-header-search {
+	position: absolute;
+	top: 100%;
+	left: 0; right: 0;
+	background: var(--kdv-surface);
+	border-bottom: 1px solid var(--kdv-border);
+	padding: 14px 0;
+	display: none;
+}
+.kdv-header-search.is-open { display: block; }
+.kdv-header-search .search-form {
+	display: flex;
+	gap: 8px;
+	max-width: var(--kdv-container);
+	margin-inline: auto;
+	padding-inline: 20px;
+}
+.kdv-header-search input[type="search"] {
+	flex: 1;
+	padding: 10px 14px;
+	border: 1px solid var(--kdv-border);
+	border-radius: var(--kdv-radius-sm);
+	background: var(--kdv-bg);
+	color: var(--kdv-text);
+}
+.kdv-header-search button {
+	background: var(--kdv-primary);
+	color: #fff;
+	border: none;
+	padding: 0 18px;
+	border-radius: var(--kdv-radius-sm);
+	cursor: pointer;
+	font-weight: 600;
+}
+
+.kdv-header-social { display: flex; flex-wrap: wrap; gap: 4px; }
+
+/* Botón de cerrar y fondo oscuro del menú móvil: en escritorio no existen
+   (el menú es una barra horizontal normal), solo aparecen en el panel
+   deslizante. */
+.kdv-nav-close { display: none; }
+.kdv-nav-backdrop { display: none; }
+
+#kdv-menu-toggle {
+	display: none;
+	background: none;
+	border: none;
+	cursor: pointer;
+	padding: 6px;
+}
+.kdv-menu-toggle__bar {
+	display: block;
+	width: 24px;
+	height: 2px;
+	background: var(--kdv-text);
+	margin: 5px 0;
+	border-radius: 2px;
+}
+
+/* ---------- Hero ---------- */
+.kdv-hero {
+	position: relative;
+	padding: 64px 0;
+	text-align: center;
+	background:
+		radial-gradient(circle at 15% 20%, color-mix(in srgb, var(--kdv-primary) 12%, transparent), transparent 55%),
+		radial-gradient(circle at 85% 30%, color-mix(in srgb, var(--kdv-secondary) 14%, transparent), transparent 55%);
+}
+.kdv-hero--compact { padding: 36px 0; }
+.kdv-hero--tall { padding: 100px 0; }
+.kdv-hero--align-left { text-align: left; }
+.kdv-hero__title {
+	font-size: clamp(1.9rem, 4vw, 3rem);
+	max-width: 780px;
+	margin-inline: auto;
+}
+.kdv-hero--align-left .kdv-hero__title { margin-inline: 0; }
+.kdv-hero__subtitle {
+	font-size: 1.15rem;
+	color: var(--kdv-text-muted);
+	max-width: 620px;
+	margin: 0 auto;
+}
+.kdv-hero--align-left .kdv-hero__subtitle { margin-inline: 0; }
+
+/* ---------- Hero slider (native, Swiper.js) ---------- */
+.kdv-hero-slider {
+	padding: 0;
+	background: var(--kdv-text);
+	overflow: hidden;
+}
+.kdv-hero-slider .swiper,
+.kdv-hero-slider .swiper-wrapper,
+.kdv-hero-slider .swiper-slide {
+	height: clamp(360px, 52vw, 560px);
+}
+.kdv-hero-slider--compact .swiper,
+.kdv-hero-slider--compact .swiper-wrapper,
+.kdv-hero-slider--compact .swiper-slide {
+	height: clamp(260px, 36vw, 400px);
+}
+.kdv-hero-slider--tall .swiper,
+.kdv-hero-slider--tall .swiper-wrapper,
+.kdv-hero-slider--tall .swiper-slide {
+	height: clamp(440px, 68vw, 720px);
+}
+.kdv-hero-slider .swiper-slide {
+	position: relative;
+	background-image: var(--kdv-slide-bg);
+	background-size: cover;
+	background-position: center;
+	background-color: var(--kdv-text);
+	display: flex;
+	align-items: center;
+}
+@media (max-width: 640px) {
+	.kdv-hero-slider .swiper-slide {
+		/* Falls back to the desktop image automatically when no mobile
+		   image was set for this slide. */
+		background-image: var(--kdv-slide-bg-mobile, var(--kdv-slide-bg));
+	}
+}
+.kdv-hero-slider__overlay {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(
+		180deg,
+		rgba(20, 16, 26, var(--kdv-hero-overlay-top, .25)) 0%,
+		rgba(20, 16, 26, var(--kdv-hero-overlay-bottom, .72)) 100%
+	);
+}
+.kdv-hero-slider__content {
+	position: relative;
+	z-index: 1;
+	text-align: center;
+	color: #fff;
+	width: 100%;
+}
+.kdv-hero-slider--align-left .kdv-hero-slider__content {
+	text-align: left;
+}
+.kdv-hero-slider--align-left .kdv-hero-slider__content .kdv-hero__title,
+.kdv-hero-slider--align-left .kdv-hero-slider__content .kdv-hero__subtitle {
+	margin-inline: 0;
+}
+.kdv-hero-slider__content .kdv-hero__title {
+	color: #fff;
+}
+.kdv-hero-slider__content .kdv-hero__subtitle {
+	color: rgba(255, 255, 255, .88);
+}
+.kdv-hero-slider__cta {
+	display: inline-block;
+	margin-top: 18px;
+}
+.kdv-hero-slider .swiper-pagination-bullet {
+	background: #fff;
+	opacity: .55;
+}
+.kdv-hero-slider .swiper-pagination-bullet-active {
+	opacity: 1;
+	background: var(--kdv-primary);
+}
+.kdv-hero-slider .swiper-button-prev,
+.kdv-hero-slider .swiper-button-next {
+	width: 44px;
+	height: 44px;
+	background: rgba(20, 16, 26, .4);
+	border-radius: 50%;
+	color: #fff;
+	backdrop-filter: blur(2px);
+	transition: background .2s ease;
+}
+.kdv-hero-slider .swiper-button-prev:hover,
+.kdv-hero-slider .swiper-button-next:hover {
+	background: var(--kdv-primary);
+}
+.kdv-hero-slider .swiper-button-prev::after,
+.kdv-hero-slider .swiper-button-next::after {
+	font-size: 18px;
+	font-weight: 700;
+}
+@media (max-width: 640px) {
+	.kdv-hero-slider .swiper-button-prev,
+	.kdv-hero-slider .swiper-button-next {
+		display: none;
+	}
+}
+
+/*
+ * La flecha del slider se aparta de la barra flotante de redes.
+ *
+ * Swiper coloca sus flechas pegadas al borde de la pantalla (right: 10px) y a
+ * media altura, que es exactamente donde vive la barra flotante. Y la barra
+ * está por encima (z-index 90 contra 10), así que se comía la flecha
+ * "siguiente": se veía la de ir atrás pero no se podía avanzar con el ratón.
+ *
+ * Solo se mueve la flecha del lado donde esté la barra, que es el que estorba.
+ * La clase del <body> la pone el filtro body_class de
+ * includes/core/theme-setup.php — desde el pie de página, donde se dibuja la
+ * barra, no hay forma de seleccionar hacia arriba con CSS.
+ *
+ * Va dentro de un @media porque por debajo de 760px la barra desaparece (o
+ * pasa a ser horizontal abajo, donde no molesta), así que ahí no hay nada de
+ * lo que apartarse.
+ */
+@media (min-width: 761px) {
+	body.kdv-has-social-bar-right .kdv-hero-slider .swiper-button-next { right: 68px; }
+	body.kdv-has-social-bar-left .kdv-hero-slider .swiper-button-prev { left: 68px; }
+}
+
+/* ---------- Section headings ---------- */
+.kdv-section { padding-block: 48px; }
+.kdv-section__head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	margin-bottom: 24px;
+}
+.kdv-section__title, .kdv-review-grid__title {
+	font-size: 1.6rem;
+	position: relative;
+	padding-left: 16px;
+	border-left: 6px solid var(--kdv-primary);
+}
+.kdv-section__link { font-weight: 600; font-size: .9rem; }
+
+/* ---------- Cards grid ---------- */
+.kdv-cards-grid {
+	display: grid;
+	gap: 24px;
+	grid-template-columns: repeat(3, 1fr);
+}
+.kdv-cards-grid--cols-2 { grid-template-columns: repeat(2, 1fr); }
+.kdv-cards-grid--cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+/* Fade-in-on-scroll: assets/js/main.js adds "kdv-fade-ready" to <html> only
+   when IntersectionObserver exists and the visitor hasn't asked for reduced
+   motion — so without JS, or with it disabled, nothing here ever applies
+   and every card is simply visible immediately (progressive enhancement,
+   never a cause of missing/invisible content). */
+.kdv-fade-ready .kdv-cards-grid > *,
+.kdv-fade-ready .kdv-ranking-item {
+	opacity: 0;
+	transform: translateY(18px);
+	transition: opacity .5s ease, transform .5s ease;
+}
+.kdv-fade-ready .kdv-cards-grid > *.kdv-fade-in,
+.kdv-fade-ready .kdv-ranking-item.kdv-fade-in {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+/* ---------- Populares del mes (slider horizontal) ---------- */
+.kdv-popular-slider { position: relative; display: flex; align-items: center; gap: 10px; }
+.kdv-popular-slider__track {
+	display: flex;
+	gap: 18px;
+	list-style: none;
+	margin: 0;
+	padding: 4px 2px 10px;
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+	scroll-behavior: smooth;
+	scrollbar-width: none;
+}
+.kdv-popular-slider__track::-webkit-scrollbar { display: none; }
+.kdv-popular-slider__item { flex: 0 0 150px; scroll-snap-align: start; }
+.kdv-popular-slider__link { display: block; position: relative; color: var(--kdv-text); }
+.kdv-popular-slider__link:hover { text-decoration: none; }
+.kdv-popular-slider__thumb {
+	display: block;
+	width: 100%;
+	aspect-ratio: 1 / 1;
+	border-radius: var(--kdv-radius);
+	overflow: hidden;
+	background: var(--kdv-bg);
+	box-shadow: var(--kdv-shadow-sm);
+	transition: transform .18s ease, box-shadow .18s ease;
+}
+.kdv-popular-slider__link:hover .kdv-popular-slider__thumb { transform: translateY(-3px); box-shadow: var(--kdv-shadow); }
+.kdv-popular-slider__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.kdv-popular-slider__thumb-fallback {
+	display: block;
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(135deg, var(--kdv-primary), var(--kdv-secondary));
+	opacity: .3;
+}
+.kdv-popular-slider__rank {
+	position: absolute;
+	top: 8px;
+	left: 8px;
+	min-width: 24px;
+	height: 24px;
+	padding: 0 6px;
+	border-radius: 999px;
+	background: rgba(20, 16, 26, .65);
+	color: #fff;
+	font-size: .78rem;
+	font-weight: 800;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1;
+}
+.kdv-popular-slider__title {
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	margin-top: 8px;
+	font-size: .86rem;
+	font-weight: 700;
+	line-height: 1.3;
+}
+.kdv-popular-slider__nav {
+	flex: 0 0 auto;
+	width: 38px;
+	height: 38px;
+	border-radius: 50%;
+	border: none;
+	background: var(--kdv-surface);
+	box-shadow: var(--kdv-shadow-sm);
+	color: var(--kdv-text);
+	font-size: 1.3rem;
+	line-height: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition: opacity .15s ease, transform .15s ease;
+}
+.kdv-popular-slider__nav:hover { opacity: .85; transform: scale(1.05); }
+@media (max-width: 640px) {
+	.kdv-popular-slider__nav { display: none; }
+	.kdv-popular-slider__item { flex-basis: 130px; }
+}
+
+.kdv-card {
+	background: var(--kdv-surface);
+	border-radius: var(--kdv-radius);
+	overflow: hidden;
+	box-shadow: var(--kdv-shadow-sm);
+	display: flex;
+	flex-direction: column;
+	transition: transform .18s ease, box-shadow .18s ease;
+}
+.kdv-card:hover { transform: translateY(-4px); box-shadow: var(--kdv-shadow); }
+
+.kdv-card__thumb { position: relative; aspect-ratio: 3 / 2; overflow: hidden; }
+.kdv-card__thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s ease; }
+.kdv-card:hover .kdv-card__thumb img { transform: scale(1.06); }
+/* Especificidad de dos clases a propósito: `.kdv-score-badge` declara
+   `position: relative` más abajo en esta misma hoja y, con un solo nivel de
+   clase, ganaba por orden de aparición — la nota se colaba en el flujo normal
+   de la tarjeta en vez de quedar flotando sobre la miniatura. */
+.kdv-card__thumb .kdv-card__score { position: absolute; top: 10px; right: 10px; z-index: 2; }
+.kdv-card__type {
+	position: absolute; top: 10px; left: 10px;
+	background: rgba(20, 16, 26, .65);
+	color: #fff;
+	font-size: .7rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .04em;
+	padding: 4px 9px;
+	border-radius: 999px;
+}
+
+.kdv-card__body { padding: 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.kdv-card__category {
+	display: inline-flex;
+	align-self: flex-start;
+	font-size: .7rem;
+	font-weight: 700;
+	color: #fff;
+	background: var(--kdv-primary);
+	text-transform: uppercase;
+	letter-spacing: .03em;
+	padding: 4px 12px;
+	border-radius: 999px;
+	transition: opacity .15s ease, transform .15s ease;
+}
+.kdv-card__category:hover { opacity: .85; text-decoration: none; color: #fff; transform: translateY(-1px); }
+.kdv-category-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+
+/* ---------- Etiquetas (post_tag) ---------- */
+.kdv-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 28px 0; }
+.kdv-tag {
+	display: inline-flex;
+	font-size: .8rem;
+	font-weight: 600;
+	padding: 5px 13px;
+	border-radius: 999px;
+	transition: opacity .15s ease, transform .15s ease;
+}
+.kdv-tag:hover { opacity: .8; text-decoration: none; transform: translateY(-1px); }
+.kdv-tag--1 { background: var(--kdv-tag-1-bg); color: var(--kdv-tag-1-text); }
+.kdv-tag--2 { background: var(--kdv-tag-2-bg); color: var(--kdv-tag-2-text); }
+.kdv-tag--3 { background: var(--kdv-tag-3-bg); color: var(--kdv-tag-3-text); }
+.kdv-tag--4 { background: var(--kdv-tag-4-bg); color: var(--kdv-tag-4-text); }
+.kdv-tag--5 { background: var(--kdv-tag-5-bg); color: var(--kdv-tag-5-text); }
+.kdv-tag--6 { background: var(--kdv-tag-6-bg); color: var(--kdv-tag-6-text); }
+.kdv-tag--7 { background: var(--kdv-tag-7-bg); color: var(--kdv-tag-7-text); }
+.kdv-tag--8 { background: var(--kdv-tag-8-bg); color: var(--kdv-tag-8-text); }
+.kdv-card__title { font-size: 1.05rem; margin: 0; }
+.kdv-card__title a { color: var(--kdv-text); }
+.kdv-card__title a:hover { color: var(--kdv-primary); text-decoration: none; }
+.kdv-card__excerpt { font-size: .88rem; color: var(--kdv-text-muted); margin: 0; }
+.kdv-card__meta { font-size: .78rem; color: var(--kdv-text-muted); margin-top: auto; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.kdv-card__avatar { border-radius: 50%; width: 18px; height: 18px; vertical-align: middle; }
+
+/* ---------- Score badge ----------
+   Rendered as a ring (conic-gradient filled to --kdv-score-pct, set inline
+   per badge by kdv_score_badge()) instead of a flat coloured border — same
+   footprint/sizes as before, reads more like a rating meter. The ::before
+   disc punches the "donut" hole using the same background colour the flat
+   circle always had, so it still shows as one solid disc wherever it sits
+   (card thumbnail overlay, review header, ranking list). */
+.kdv-score-badge {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	background: conic-gradient( var(--kdv-score-ring, var(--kdv-score-neutral)) calc(var(--kdv-score-pct, 0) * 1%), var(--kdv-border) 0 );
+	box-shadow: var(--kdv-shadow-sm);
+	font-family: var(--kdv-font-heading);
+	font-weight: 800;
+	color: var(--kdv-text);
+	padding: 3px;
+}
+.kdv-score-badge::before {
+	content: "";
+	position: absolute;
+	inset: 3px;
+	border-radius: 50%;
+	background: var(--kdv-surface);
+}
+.kdv-score-badge__value { position: relative; z-index: 1; }
+.kdv-score-badge--md { width: 46px; height: 46px; font-size: .95rem; }
+.kdv-score-badge--lg { width: 72px; height: 72px; font-size: 1.4rem; }
+.kdv-score-badge--sm { width: 34px; height: 34px; font-size: .75rem; }
+
+.kdv-score--great { --kdv-score-ring: var(--kdv-score-great); color: var(--kdv-score-great); }
+.kdv-score--good { --kdv-score-ring: var(--kdv-score-good); color: var(--kdv-score-good); }
+.kdv-score--mixed { --kdv-score-ring: var(--kdv-score-mixed); color: var(--kdv-score-mixed); }
+.kdv-score--poor { --kdv-score-ring: var(--kdv-score-poor); color: var(--kdv-score-poor); }
+.kdv-score--neutral { --kdv-score-ring: var(--kdv-score-neutral); color: var(--kdv-score-neutral); }
+
+/* ---------- Single Reseña ---------- */
+.kdv-review-header { padding-block: 40px; }
+.kdv-review-header__grid {
+	display: grid;
+	grid-template-columns: 280px 1fr;
+	gap: 32px;
+	align-items: start;
+}
+.kdv-review-header__poster {
+	border-radius: var(--kdv-radius);
+	overflow: hidden;
+	box-shadow: var(--kdv-shadow);
+}
+.kdv-review-header__meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-bottom: 14px;
+}
+.kdv-pill {
+	background: var(--kdv-surface);
+	border: 1px solid var(--kdv-border);
+	border-radius: 999px;
+	padding: 5px 12px;
+	font-size: .78rem;
+	font-weight: 600;
+	color: var(--kdv-text-muted);
+}
+.kdv-review-header__title { font-size: clamp(1.6rem, 3vw, 2.4rem); margin-bottom: 6px; }
+.kdv-review-header__score { display: flex; align-items: center; gap: 14px; margin-top: 18px; }
+.kdv-review-header__score-label { font-weight: 700; color: var(--kdv-text-muted); }
+
+.kdv-score-breakdown { display: grid; gap: 10px; margin: 24px 0; }
+.kdv-score-breakdown__row { display: grid; grid-template-columns: 140px 1fr 40px; align-items: center; gap: 12px; font-size: .88rem; }
+.kdv-score-breakdown__bar { height: 8px; border-radius: 999px; background: var(--kdv-border); overflow: hidden; }
+.kdv-score-breakdown__fill { height: 100%; background: linear-gradient(90deg, var(--kdv-primary), var(--kdv-secondary)); border-radius: 999px; }
+
+.kdv-review-box, .kdv-proscons {
+	background: var(--kdv-surface);
+	border-radius: var(--kdv-radius);
+	box-shadow: var(--kdv-shadow-sm);
+	padding: 20px;
+	margin: 24px 0;
+}
+.kdv-review-box { display: flex; gap: 18px; }
+.kdv-review-box__image img { width: 130px; border-radius: var(--kdv-radius-sm); }
+.kdv-review-box__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.kdv-review-box__title { margin: 0; font-size: 1.15rem; }
+.kdv-review-box__summary { color: var(--kdv-text-muted); font-size: .92rem; margin-top: 8px; }
+
+.kdv-proscons, .kdv-review-box__proscons { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.kdv-proscons__col h4 { font-size: .85rem; text-transform: uppercase; letter-spacing: .03em; margin-bottom: 8px; }
+.kdv-proscons__col--pros h4 { color: var(--kdv-score-great); }
+.kdv-proscons__col--contras h4 { color: var(--kdv-score-poor); }
+.kdv-proscons__col ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; font-size: .9rem; }
+.kdv-proscons__col--pros li::before { content: "✓ "; color: var(--kdv-score-great); font-weight: 700; }
+.kdv-proscons__col--contras li::before { content: "✕ "; color: var(--kdv-score-poor); font-weight: 700; }
+
+/* ---------- Post content / single ---------- */
+.kdv-content { padding-block: 40px; }
+.kdv-content__grid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 40px; }
+.kdv-content__grid--full { grid-template-columns: minmax(0, 1fr); max-width: 780px; margin-inline: auto; }
+.kdv-post__title { font-size: clamp(1.6rem, 3vw, 2.2rem); }
+.kdv-post__meta { color: var(--kdv-text-muted); font-size: .88rem; margin-bottom: 24px; display: flex; gap: 14px; flex-wrap: wrap; }
+.kdv-post__thumbnail { border-radius: var(--kdv-radius); overflow: hidden; margin-bottom: 24px; box-shadow: var(--kdv-shadow-sm); }
+.kdv-post__body :is(h2, h3) { margin-top: 1.6em; }
+
+/* ---------- Share buttons ---------- */
+.kdv-share-buttons {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 12px;
+	margin: 28px 0;
+	padding-top: 20px;
+	border-top: 1px solid var(--kdv-border);
+}
+.kdv-share-buttons__label { font-weight: 700; font-size: .88rem; color: var(--kdv-text-muted); }
+.kdv-share-buttons__list { list-style: none; display: flex; gap: 8px; margin: 0; padding: 0; flex-wrap: wrap; }
+.kdv-share-btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 38px;
+	height: 38px;
+	border-radius: 50%;
+	background: var(--kdv-surface);
+	border: 1px solid var(--kdv-border);
+	color: var(--kdv-text-muted);
+	cursor: pointer;
+	transition: background-color .15s ease, color .15s ease, transform .15s ease;
+}
+.kdv-share-btn:hover {
+	background: var(--kdv-primary);
+	border-color: var(--kdv-primary);
+	color: #fff;
+	text-decoration: none;
+	transform: translateY(-2px);
+}
+.kdv-share-btn svg { display: block; }
+.kdv-share-btn--copy { position: relative; }
+.kdv-share-btn--copy.is-copied { background: var(--kdv-score-great); border-color: var(--kdv-score-great); color: #fff; }
+.kdv-share-btn--copy.is-copied::after {
+	content: "\2713";
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: inherit;
+	border-radius: inherit;
+	font-weight: 700;
+}
+
+/* ---------- Author box ---------- */
+.kdv-author-box {
+	display: flex;
+	gap: 16px;
+	background: var(--kdv-surface);
+	border-radius: var(--kdv-radius);
+	box-shadow: var(--kdv-shadow-sm);
+	padding: 20px;
+	margin: 24px 0;
+}
+.kdv-author-box__avatar img { border-radius: 50%; display: block; }
+.kdv-author-box__label { font-size: .78rem; text-transform: uppercase; letter-spacing: .03em; color: var(--kdv-text-muted); }
+.kdv-author-box__name { margin: 2px 0 6px; font-size: 1.1rem; }
+.kdv-author-box__bio { color: var(--kdv-text-muted); font-size: .9rem; margin: 0 0 8px; }
+.kdv-author-box__link { font-weight: 600; font-size: .85rem; }
+
+/* ---------- Ranking de reseñas ---------- */
+.kdv-ranking-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.kdv-ranking-item { display: grid; grid-template-columns: 56px 1fr; align-items: center; gap: 16px; }
+.kdv-ranking-item__rank {
+	font-family: var(--kdv-font-heading);
+	font-weight: 800;
+	font-size: 1.3rem;
+	color: var(--kdv-text-muted);
+	text-align: center;
+}
+.kdv-ranking-item:nth-child(1) .kdv-ranking-item__rank { color: var(--kdv-score-great); font-size: 1.6rem; }
+.kdv-ranking-item:nth-child(2) .kdv-ranking-item__rank,
+.kdv-ranking-item:nth-child(3) .kdv-ranking-item__rank { color: var(--kdv-accent); font-size: 1.45rem; }
+.kdv-ranking-item__card .kdv-card { flex-direction: row; }
+.kdv-ranking-item__card .kdv-card__thumb { width: 140px; flex-shrink: 0; aspect-ratio: 3/2; }
+@media (max-width: 640px) {
+	.kdv-ranking-item { grid-template-columns: 34px 1fr; gap: 10px; }
+	.kdv-ranking-item__card .kdv-card { flex-direction: column; }
+	.kdv-ranking-item__card .kdv-card__thumb { width: 100%; }
+}
+
+/* ---------- Sidebar / widgets ---------- */
+.kdv-widget {
+	background: var(--kdv-surface);
+	border-radius: var(--kdv-radius);
+	box-shadow: var(--kdv-shadow-sm);
+	padding: 20px;
+	margin-bottom: 24px;
+}
+.kdv-widget-title {
+	font-size: 1rem;
+	border-left: 4px solid var(--kdv-primary);
+	padding-left: 10px;
+	margin-bottom: 14px;
+}
+
+/* ---------- Koltor Dev: Entradas recientes / Comentarios recientes ---------- */
+.kdv-widget-recent-posts,
+.kdv-widget-recent-comments { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+
+.kdv-widget-recent-posts__item { display: flex; align-items: center; gap: 12px; }
+.kdv-widget-recent-posts__thumb {
+	flex: 0 0 60px;
+	width: 60px;
+	height: 60px;
+	border-radius: var(--kdv-radius-sm);
+	overflow: hidden;
+	display: block;
+	background: var(--kdv-bg);
+}
+.kdv-widget-recent-posts__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.kdv-widget-recent-posts__thumb-fallback {
+	display: block;
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(135deg, var(--kdv-primary), var(--kdv-secondary));
+	opacity: .3;
+}
+.kdv-widget-recent-posts__body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.kdv-widget-recent-posts__title {
+	font-weight: 700;
+	font-size: .9rem;
+	line-height: 1.35;
+	color: var(--kdv-text);
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+.kdv-widget-recent-posts__title:hover { color: var(--kdv-primary); text-decoration: none; }
+.kdv-widget-recent-posts__date { font-size: .74rem; color: var(--kdv-text-muted); }
+
+.kdv-widget-recent-comments__item { display: flex; align-items: flex-start; gap: 12px; }
+.kdv-widget-recent-comments__avatar { flex: 0 0 36px; width: 36px; height: 36px; border-radius: 50%; }
+.kdv-widget-recent-comments__body { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.kdv-widget-recent-comments__author { font-weight: 700; font-size: .84rem; color: var(--kdv-text); }
+.kdv-widget-recent-comments__excerpt {
+	font-size: .82rem;
+	color: var(--kdv-text-muted);
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+.kdv-widget-recent-comments__excerpt:hover { color: var(--kdv-primary); text-decoration: none; }
+
+/* ---------- Koltor Dev: Categorías ---------- */
+.kdv-widget-categories { list-style: none; margin: 0; padding: 0; }
+.kdv-widget-categories__item { border-bottom: 1px solid var(--kdv-border); }
+.kdv-widget-categories__item:last-child { border-bottom: none; }
+.kdv-widget-categories__link {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 2px;
+	color: var(--kdv-text);
+	transition: transform .15s ease;
+}
+.kdv-widget-categories__link:hover { color: var(--kdv-primary); text-decoration: none; transform: translateX(2px); }
+.kdv-widget-categories__icon {
+	flex: 0 0 30px;
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	line-height: 1;
+}
+.kdv-widget-categories__icon .kdv-icon { width: 17px; height: 17px; }
+.kdv-widget-categories__name { flex: 1; font-weight: 600; font-size: .92rem; min-width: 0; }
+.kdv-widget-categories__count {
+	font-size: .76rem;
+	color: var(--kdv-text-muted);
+	background: var(--kdv-bg);
+	border-radius: 999px;
+	padding: 2px 8px;
+}
+.kdv-widget-categories__chevron { color: var(--kdv-text-muted); font-size: 1.1rem; transition: transform .15s ease; }
+.kdv-widget-categories__link:hover .kdv-widget-categories__chevron { transform: translateX(2px); color: var(--kdv-primary); }
+
+/* ---------- Pagination ---------- */
+.kdv-pagination { display: flex; gap: 8px; justify-content: center; margin-top: 40px; flex-wrap: wrap; }
+.kdv-pagination a, .kdv-pagination span {
+	min-width: 38px;
+	height: 38px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: var(--kdv-radius-sm);
+	background: var(--kdv-surface);
+	border: 1px solid var(--kdv-border);
+	font-weight: 600;
+	font-size: .9rem;
+}
+.kdv-pagination .current { background: var(--kdv-primary); color: #fff; border-color: var(--kdv-primary); }
+.kdv-pagination a:hover { text-decoration: none; border-color: var(--kdv-primary); color: var(--kdv-primary); }
+
+/* ---------- Comments ---------- */
+.kdv-comments { margin-top: 48px; }
+.kdv-comments__title { font-size: 1.3rem; margin-bottom: 20px; }
+.kdv-comments__closed { color: var(--kdv-text-muted); font-style: italic; }
+.comment-list { list-style: none; padding: 0; }
+.comment-list .children { list-style: none; padding-left: 32px; }
+.kdv-comment {
+	background: var(--kdv-surface);
+	border-radius: var(--kdv-radius);
+	padding: 16px;
+	margin-bottom: 14px;
+	box-shadow: var(--kdv-shadow-sm);
+	display: grid;
+	grid-template-columns: 48px 1fr;
+	gap: 4px 14px;
+}
+.kdv-comment__avatar { grid-row: 1 / 4; }
+.kdv-comment__avatar img { border-radius: 50%; display: block; }
+.kdv-comment__meta { grid-column: 2; font-size: .82rem; color: var(--kdv-text-muted); }
+.kdv-comment__content { grid-column: 2; }
+.kdv-comment > .reply {
+	grid-column: 2;
+	margin-top: 4px;
+}
+.kdv-comment > .reply .comment-reply-link {
+	font-size: .82rem;
+	font-weight: 700;
+	color: var(--kdv-primary);
+}
+.comment-form input, .comment-form textarea {
+	width: 100%;
+	padding: 10px 12px;
+	border: 1px solid var(--kdv-border);
+	border-radius: var(--kdv-radius-sm);
+	background: var(--kdv-bg);
+	color: var(--kdv-text);
+	margin-bottom: 12px;
+}
+.comment-form button, .kdv-btn {
+	background: var(--kdv-primary);
+	color: #fff;
+	border: none;
+	padding: 11px 22px;
+	border-radius: var(--kdv-radius-sm);
+	font-weight: 700;
+	cursor: pointer;
+	display: inline-block;
+}
+.comment-form button:hover, .kdv-btn:hover { opacity: .9; text-decoration: none; color: #fff; }
+
+/* ---------- Footer ---------- */
+.kdv-footer { background: var(--kdv-surface); border-top: 1px solid var(--kdv-border); margin-top: 60px; }
+/* Brand column stays fixed-width; every other column (widgets, the optional
+   newsletter block, the optional footer menu) auto-fits into the remaining
+   space — so however many of those end up rendering, based on "Columnas de
+   widgets" in Personalizar → Pie de página plus which optional blocks are
+   active, none of them ever overflow into or borrow the brand column's
+   width. */
+/* Cuadrícula pareja: cada widget del pie de página es una celda propia, no
+   una lista apilada. ".kdv-footer__col" usa display:contents justamente para
+   eso — la zona de widgets desaparece como caja y sus widgets pasan a ser
+   celdas directas de esta cuadrícula, así que da igual si pones los widgets
+   repartidos en las 3 zonas o todos en la misma: siempre se acomodan en
+   columnas. */
+.kdv-footer__top { padding-block: 48px; display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 32px; align-items: start; }
+.kdv-footer__col { display: contents; }
+/* En el pie de página los widgets no llevan la "tarjeta" (fondo + sombra)
+   que sí tienen en la barra lateral: aquí se ven como columnas de texto. */
+.kdv-footer__top .kdv-widget { background: none; box-shadow: none; padding: 0; margin-bottom: 0; }
+
+/* ---------- Franja de información del pie de página ----------
+   (Revista Koltor Dev → Información del sitio: presentación, secciones, legal
+   y contacto. No depende de widgets.) */
+/* Todas las columnas ocupan una celda: si "Sobre" ocupara dos, en pantallas
+   de portátil no cabrían las cuatro y "Contacto" se caía a una segunda fila. */
+.kdv-footer__info-col { min-width: 0; }
+.kdv-footer__about-text {
+	color: var(--kdv-text-muted);
+	font-size: .88rem;
+	line-height: 1.65;
+	margin: 0 0 14px;
+}
+.kdv-footer__social { margin-top: 4px; }
+/* Los menús del pie (Explorar / Legal) van como lista limpia, sin viñetas
+   ni sangría — antes heredaban el estilo por defecto del navegador. */
+.kdv-footer-menu {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 9px;
+}
+.kdv-footer-menu li { margin: 0; }
+.kdv-footer-menu a {
+	color: var(--kdv-text-muted);
+	font-size: .88rem;
+	transition: color .15s ease;
+}
+.kdv-footer-menu a:hover { color: var(--kdv-primary); text-decoration: none; }
+.kdv-footer-menu .sub-menu { display: none; }
+.kdv-footer__contact-mail {
+	display: inline-block;
+	font-weight: 600;
+	font-size: .88rem;
+	word-break: break-word;
+}
+.kdv-footer__newsletter-title { margin-bottom: 6px; }
+.kdv-footer__newsletter-desc { color: var(--kdv-text-muted); font-size: .85rem; margin-bottom: 10px; }
+.kdv-footer__bottom {
+	border-top: 1px solid var(--kdv-border);
+	padding-block: 18px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: .85rem;
+	color: var(--kdv-text-muted);
+	text-align: center;
+}
+.kdv-footer__copyright { max-width: 100%; }
+@media (max-width: 640px) {
+	.kdv-footer__bottom {
+		font-size: .78rem;
+		line-height: 1.5;
+		padding-inline: 12px;
+		word-break: break-word;
+	}
+}
+.kdv-social-list { list-style: none; display: flex; gap: 10px; margin: 0; padding: 0; flex-wrap: wrap; }
+.kdv-social-list a {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	background: var(--kdv-bg);
+	border: 1px solid var(--kdv-border);
+	color: var(--kdv-text-muted);
+	transition: background-color .15s ease, color .15s ease, transform .15s ease;
+}
+.kdv-social-list a:hover {
+	background: var(--kdv-primary);
+	border-color: var(--kdv-primary);
+	color: #fff;
+	text-decoration: none;
+	transform: translateY(-2px);
+}
+.kdv-social-list svg { display: block; }
+
+/* ---------- Colores de marca de cada red ----------
+   Se usan en la barra flotante y en el hover de las listas normales. Los
+   valores son los colores oficiales de cada plataforma; X y TikTok son
+   negros, así que en modo oscuro se aclaran un poco más abajo para que no
+   desaparezcan contra el fondo. */
+:root {
+	--kdv-brand-facebook:  #1877F2;
+	--kdv-brand-instagram: #D6249F;
+	--kdv-brand-x:         #101010;
+	--kdv-brand-tiktok:    #101010;
+	--kdv-brand-youtube:   #FF0000;
+	--kdv-brand-discord:   #5865F2;
+	--kdv-brand-whatsapp:  #25D366;
+	--kdv-brand-custom:    var(--kdv-primary);
+}
+html[data-kdv-theme="dark"] {
+	--kdv-brand-x:      #3A3A3A;
+	--kdv-brand-tiktok: #3A3A3A;
+}
+
+.kdv-social--facebook  { --kdv-brand: var(--kdv-brand-facebook); }
+.kdv-social--instagram { --kdv-brand: var(--kdv-brand-instagram); }
+.kdv-social--x         { --kdv-brand: var(--kdv-brand-x); }
+.kdv-social--tiktok    { --kdv-brand: var(--kdv-brand-tiktok); }
+.kdv-social--youtube   { --kdv-brand: var(--kdv-brand-youtube); }
+.kdv-social--discord   { --kdv-brand: var(--kdv-brand-discord); }
+.kdv-social--whatsapp  { --kdv-brand: var(--kdv-brand-whatsapp); }
+.kdv-social--custom    { --kdv-brand: var(--kdv-brand-custom); }
+
+/* En las listas normales (cabecera/pie) el icono se queda discreto y solo
+   toma el color de su marca al pasar el cursor. */
+.kdv-social-list a:hover {
+	background: var(--kdv-brand, var(--kdv-primary));
+	border-color: var(--kdv-brand, var(--kdv-primary));
+}
+
+/* ---------- Barra flotante de redes ---------- */
+.kdv-social-floating {
+	position: fixed;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 90;
+}
+.kdv-social-floating--right { right: 0; }
+.kdv-social-floating--left { left: 0; }
+
+.kdv-social-floating__list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+.kdv-social-floating__link {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	background: var(--kdv-brand, var(--kdv-primary));
+	color: #fff;
+	padding: 11px 12px;
+	box-shadow: var(--kdv-shadow-sm);
+	transition: padding .18s ease, filter .18s ease;
+}
+.kdv-social-floating--right .kdv-social-floating__link { border-radius: 10px 0 0 10px; }
+.kdv-social-floating--left .kdv-social-floating__link { border-radius: 0 10px 10px 0; flex-direction: row-reverse; }
+.kdv-social-floating__link:hover { text-decoration: none; color: #fff; filter: brightness(1.08); }
+.kdv-social-floating__icon { display: flex; }
+.kdv-social-floating__icon svg { display: block; width: 20px; height: 20px; }
+
+/* La etiqueta con el nombre de la red está siempre en el HTML (lectores de
+   pantalla y buscadores la leen), pero visualmente se despliega al pasar el
+   cursor: con "max-width" en vez de "display:none" la transición es suave. */
+.kdv-social-floating__label {
+	max-width: 0;
+	overflow: hidden;
+	white-space: nowrap;
+	font-size: .82rem;
+	font-weight: 600;
+	transition: max-width .25s ease;
+}
+.kdv-social-floating__link:hover .kdv-social-floating__label,
+.kdv-social-floating__link:focus-visible .kdv-social-floating__label { max-width: 140px; }
+
+/* Por defecto la barra lateral desaparece en pantallas pequeñas. */
+@media (max-width: 760px) {
+	.kdv-social-floating { display: none; }
+
+	/* ...salvo que se active "Mostrarla también en móviles", donde pasa a ser
+	   una barra horizontal abajo y empuja el botón "Volver arriba" hacia
+	   arriba para que no se solapen. */
+	.kdv-social-floating--show-mobile {
+		display: block;
+		top: auto;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		transform: none;
+	}
+	.kdv-social-floating--show-mobile .kdv-social-floating__list {
+		flex-direction: row;
+		gap: 0;
+	}
+	.kdv-social-floating--show-mobile .kdv-social-floating__list li { flex: 1 1 0; }
+	.kdv-social-floating--show-mobile .kdv-social-floating__link {
+		border-radius: 0;
+		justify-content: center;
+		padding: 13px 0;
+	}
+	.kdv-social-floating--show-mobile .kdv-social-floating__label { display: none; }
+	.kdv-social-floating--show-mobile ~ .kdv-back-to-top { bottom: 72px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.kdv-social-floating__link,
+	.kdv-social-floating__label { transition: none; }
+}
+
+/* ---------- Native WordPress widgets (Recent Posts, Archives, etc.) ---------- */
+.kdv-widget ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.kdv-widget ul ul { padding-left: 14px; margin-top: 8px; }
+.kdv-widget li {
+	font-size: .9rem;
+	padding-bottom: 10px;
+	border-bottom: 1px solid var(--kdv-border);
+}
+.kdv-widget li:last-child { border-bottom: none; padding-bottom: 0; }
+.kdv-widget li a { color: var(--kdv-text); font-weight: 600; }
+.kdv-widget li a:hover { color: var(--kdv-primary); text-decoration: none; }
+.kdv-widget .post-date,
+.kdv-widget small,
+.kdv-widget .rss-date {
+	display: block;
+	font-size: .78rem;
+	color: var(--kdv-text-muted);
+	font-weight: 400;
+	margin-top: 2px;
+}
+.kdv-widget select {
+	width: 100%;
+	padding: 9px 10px;
+	border: 1px solid var(--kdv-border);
+	border-radius: var(--kdv-radius-sm);
+	background: var(--kdv-bg);
+	color: var(--kdv-text);
+}
+.kdv-widget .wp-block-search__input,
+.kdv-widget input[type="search"],
+.kdv-widget input[type="text"] {
+	padding: 9px 10px;
+	border: 1px solid var(--kdv-border);
+	border-radius: var(--kdv-radius-sm);
+	background: var(--kdv-bg);
+	color: var(--kdv-text);
+	width: 100%;
+}
+.kdv-widget .wp-block-tag-cloud a,
+.kdv-widget .tagcloud a {
+	display: inline-block;
+	font-size: .78rem !important;
+	background: var(--kdv-bg);
+	border: 1px solid var(--kdv-border);
+	padding: 5px 10px;
+	border-radius: 999px;
+	margin: 0 6px 6px 0;
+	color: var(--kdv-text-muted);
+}
+.kdv-widget .tagcloud a:hover { color: var(--kdv-primary); border-color: var(--kdv-primary); text-decoration: none; }
+
+/* ---------- Back to top ---------- */
+.kdv-back-to-top {
+	position: fixed;
+	right: 22px;
+	bottom: 22px;
+	width: 46px;
+	height: 46px;
+	border-radius: 50%;
+	border: none;
+	background: var(--kdv-primary);
+	color: #fff;
+	font-size: 1.2rem;
+	line-height: 1;
+	cursor: pointer;
+	box-shadow: var(--kdv-shadow);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(10px);
+	transition: opacity .2s ease, transform .2s ease, visibility .2s;
+	/* Deliberately very high — floating widgets added later by plugins
+	   (cookie-consent icons, chat bubbles, etc.) commonly use a high
+	   z-index of their own and would otherwise render on top of this
+	   button and make it look like it "disappeared". */
+	z-index: 999999;
+}
+.kdv-back-to-top.is-visible { opacity: 1; visibility: visible; transform: translateY(0); }
+.kdv-back-to-top:hover { opacity: .9; }
+/* Avoid it floating awkwardly over the open off-canvas mobile menu. */
+.kdv-nav-open .kdv-back-to-top { display: none; }
+
+/* ---------- 404 / search-empty ---------- */
+.kdv-empty-state { text-align: center; padding: 80px 20px; }
+.kdv-empty-state h1 { font-size: 2.4rem; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 960px) {
+	.kdv-content__grid { grid-template-columns: 1fr; }
+	.kdv-footer__top { grid-template-columns: 1fr 1fr; }
+	.kdv-review-header__grid { grid-template-columns: 200px 1fr; }
+}
+
+/* El menú desplegable (hamburguesa) entra a los 1100px y no a los 760px:
+   con 5-6 categorías en la barra, el menú horizontal ya no cabe junto al
+   logo y los botones mucho antes de llegar al tamaño de un móvil, y era ahí
+   donde se montaba encima del logo en pantallas de portátil. */
+@media (max-width: 1100px) {
+	.kdv-header__nav {
+		position: fixed;
+		inset: 0 0 0 auto;
+		width: min(320px, 86vw);
+		z-index: 105;
+		background: var(--kdv-surface);
+		flex-direction: column;
+		align-items: flex-start;
+		justify-content: flex-start;
+		padding: 90px 24px 24px;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		/*
+		 * El panel cerrado se OCULTA RECORTÁNDOLO, no empujándolo fuera de la
+		 * pantalla con transform: translateX(100%), que es como estaba antes.
+		 * El motivo es importante: un panel de 320px empujado más allá del
+		 * borde derecho ocupa igualmente esos 320px de "sitio", y Chrome en
+		 * Android ensancha el área de maquetación hasta abarcarlo. Cuando eso
+		 * pasa, TODA la página se ve encogida y los elementos fijos —la barra
+		 * flotante de redes sobre todo— se estiran más allá de la pantalla.
+		 * Con clip-path la caja del panel nunca sale del viewport: se queda en
+		 * su sitio y simplemente no se pinta. El recorte se anima igual que
+		 * antes, así que el efecto sigue siendo un panel que entra desde la
+		 * derecha.
+		 *
+		 * Los -40px de los otros tres lados dejan que se vea la sombra del
+		 * panel abierto, que si no quedaría cortada justo en su borde.
+		 *
+		 * "visibility" aparte, para que los enlaces del panel cerrado no sean
+		 * alcanzables con el tabulador ni los lean los lectores de pantalla.
+		 * El retardo deja que la animación de salida se complete.
+		 */
+		clip-path: inset(-40px -40px -40px 100%);
+		visibility: hidden;
+		transition: clip-path .25s ease, visibility 0s linear .25s;
+	}
+	.kdv-nav-open .kdv-header__nav {
+		clip-path: inset(-40px -40px -40px 0);
+		box-shadow: -12px 0 32px rgba(0,0,0,.15);
+		visibility: visible;
+		transition: clip-path .25s ease, visibility 0s;
+	}
+
+	/* Navegadores sin clip-path (muy antiguos): se conserva el comportamiento
+	   anterior, que funciona pero puede ensanchar la maquetación. */
+	@supports not (clip-path: inset(0 0 0 0)) {
+		.kdv-header__nav { clip-path: none; transform: translateX(100%); transition: transform .25s ease, visibility 0s linear .25s; }
+		.kdv-nav-open .kdv-header__nav { transform: translateX(0); transition: transform .25s ease, visibility 0s; }
+	}
+	.kdv-primary-menu { flex-direction: column; flex-wrap: nowrap; justify-content: flex-start; gap: 4px; width: 100%; }
+	#kdv-menu-toggle { display: block; }
+
+	/* On the offcanvas mobile menu there's no hover, so submenus are always
+	   expanded inline (indented) instead of appearing as a dropdown. */
+	.kdv-primary-menu li { width: 100%; }
+	.kdv-primary-menu a { padding: 10px 0; width: 100%; }
+	.kdv-primary-menu .menu-item-has-children > a::after { display: none; }
+	.kdv-primary-menu .sub-menu {
+		display: block;
+		position: static;
+		width: 100%;
+		background: none;
+		border: none;
+		box-shadow: none;
+		padding: 0 0 4px 16px;
+		margin: 0 0 6px;
+	}
+	.kdv-primary-menu .sub-menu a { padding: 7px 0; font-size: .85rem; }
+	.kdv-header-social { margin-top: 8px; }
+
+	/* Con la barra de administrador de WordPress la cabecera baja 46px, así
+	   que el panel (que arranca en el borde superior de la pantalla) necesita
+	   ese margen extra arriba; si no, los primeros enlaces del menú quedan
+	   justo encima de la lupa, el modo oscuro y la hamburguesa. */
+	body.admin-bar .kdv-header__nav { padding-top: 136px; }
+
+	/* Botón de cerrar dentro del panel: es la forma más evidente de salir y,
+	   a diferencia de la hamburguesa, nunca puede quedar tapado por un
+	   enlace del propio menú. */
+	/* Objetivos de toque: los tres botones de la cabecera (buscar, modo oscuro
+	   y hamburguesa) están pegados uno al lado del otro, así que a 38px eran
+	   pequeños para el dedo y muy fáciles de confundir entre ellos. 44px es la
+	   medida mínima recomendada, y el hueco entre ellos sube a la par. */
+	.kdv-icon-btn { width: 44px; height: 44px; }
+	.kdv-header__actions { gap: 6px; }
+
+	/*
+	 * Con los botones más grandes, un logo ancho ya no cabe en una pantalla
+	 * pequeña. La marca tenía flex-shrink: 0, así que en vez de encogerse
+	 * empujaba la cabecera y desbordaba la página a lo ancho — justo el fallo
+	 * que arrastramos durante varias versiones (medido: 380px de documento en
+	 * una pantalla de 360 con un logo de 420x120). Ahora la marca sí puede
+	 * ceder y el logo se escala solo; los botones nunca se encogen.
+	 */
+	.kdv-header__brand { flex: 0 1 auto; min-width: 0; overflow: hidden; }
+	.kdv-header__brand img,
+	.custom-logo-link img { max-width: 100%; height: auto; }
+	.kdv-site-tagline {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.kdv-nav-close {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		position: absolute;
+		/* A la izquierda del panel a propósito: pegado a la derecha caía justo
+		   encima de la hamburguesa de la cabecera y quedaban dos controles
+		   superpuestos. */
+		top: 14px;
+		left: 14px;
+		width: 44px;
+		height: 44px;
+		padding: 0;
+		border: none;
+		border-radius: 50%;
+		background: var(--kdv-bg);
+		color: var(--kdv-text);
+		font-size: 1.8rem;
+		line-height: 1;
+		cursor: pointer;
+		z-index: 2;
+	}
+	body.admin-bar .kdv-nav-close { top: 60px; }
+	.kdv-nav-close:hover { background: var(--kdv-primary); color: #fff; }
+
+	/* Fondo oscuro: tocar fuera del panel cierra el menú. */
+	.kdv-nav-backdrop {
+		display: block;
+		position: fixed;
+		inset: 0;
+		z-index: 104;
+		background: rgba(0, 0, 0, .45);
+		opacity: 0;
+		visibility: hidden;
+		transition: opacity .25s ease, visibility 0s linear .25s;
+	}
+	.kdv-nav-open .kdv-nav-backdrop {
+		opacity: 1;
+		visibility: visible;
+		transition: opacity .25s ease, visibility 0s;
+	}
+
+	/* Con el panel abierto, la página de detrás no se mueve. Si se moviera, el
+	   dedo arrastraría el contenido de debajo y —con la cabecera fija
+	   desactivada en Personalizar— la hamburguesa se iría de la pantalla,
+	   dejando el menú abierto y aparentemente sin salida. La clase la pone y
+	   la quita assets/js/main.js. */
+	html.kdv-nav-locked,
+	html.kdv-nav-locked body { overflow: hidden; }
+
+	/* El panel deslizante se dibuja por encima de la barra (position:fixed),
+	   así que los botones de la derecha necesitan subir por encima de él —
+	   si no, el propio panel tapa el botón de hamburguesa y el menú queda
+	   abierto sin forma visible de cerrarlo. */
+	.kdv-header__actions { position: relative; z-index: 110; }
+}
+
+@media (max-width: 760px) {
+	.kdv-cards-grid, .kdv-cards-grid--cols-4, .kdv-cards-grid--cols-2 { grid-template-columns: repeat(2, 1fr); }
+	.kdv-footer__top { grid-template-columns: 1fr; }
+	.kdv-review-header__grid { grid-template-columns: 1fr; }
+	.kdv-review-header__poster { max-width: 220px; }
+	.kdv-proscons, .kdv-review-box__proscons { grid-template-columns: 1fr; }
+	.kdv-review-box { flex-direction: column; }
+}
+
+@media (max-width: 540px) {
+	.kdv-cards-grid, .kdv-cards-grid--cols-4, .kdv-cards-grid--cols-2, .kdv-cards-grid--cols-3 { grid-template-columns: 1fr; }
+	.kdv-score-breakdown__row { grid-template-columns: 100px 1fr 34px; }
+}
+
+/* ---------- Reading progress bar (single artículo/reseña only) ----------
+   Markup printed conditionally in header.php; width is updated by
+   assets/js/main.js on scroll. Without JS the bar stays at 0% width —
+   effectively invisible, never a broken-looking empty box. */
+.kdv-reading-progress {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 3px;
+	z-index: 210;
+	pointer-events: none;
+}
+.kdv-reading-progress__bar {
+	display: block;
+	height: 100%;
+	width: 0%;
+	background: linear-gradient(90deg, var(--kdv-primary), var(--kdv-secondary));
+}
+
+/* Respect "reduce motion" OS/browser preference: keep every state change
+   instant instead of animated. The scroll-triggered fade-in (main.js) is
+   skipped entirely at the JS level for these visitors, so there's nothing
+   to override for it here. */
+@media (prefers-reduced-motion: reduce) {
+	.kdv-card__thumb img,
+	.kdv-header,
+	.kdv-reading-progress__bar {
+		transition: none !important;
+	}
+}

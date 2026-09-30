@@ -1,0 +1,25 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "revista-koltor-dev/review-box",
+  "title": "Caja de Reseña",
+  "category": "revista-koltor-dev",
+  "icon": "star-filled",
+  "description": "Resumen de reseña con puntuación, pros y contras — para insertar dentro de cualquier entrada (por ejemplo un artículo de opinión que menciona un título concreto).",
+  "keywords": [ "reseña", "review", "puntuación", "score" ],
+  "textdomain": "revista-koltor-dev",
+  "attributes": {
+    "titulo": { "type": "string", "default": "" },
+    "puntuacion": { "type": "number", "default": 8 },
+    "imagenUrl": { "type": "string", "default": "" },
+    "imagenId": { "type": "number", "default": 0 },
+    "resumen": { "type": "string", "default": "" },
+    "pros": { "type": "string", "default": "" },
+    "contras": { "type": "string", "default": "" }
+  },
+  "supports": {
+    "align": [ "wide" ],
+    "html": false
+  },
+  "editorScript": "kdv-block-review-box"
+}

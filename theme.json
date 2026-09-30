@@ -1,0 +1,73 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 2,
+  "settings": {
+    "appearanceTools": true,
+    "layout": {
+      "contentSize": "760px",
+      "wideSize": "1200px"
+    },
+    "color": {
+      "custom": false,
+      "customGradient": false,
+      "palette": [
+        { "slug": "brand-blue", "color": "#2E9BD6", "name": "Azul de marca" },
+        { "slug": "brand-blue-deep", "color": "#1B7FB5", "name": "Azul profundo" },
+        { "slug": "teal", "color": "#2BB3C0", "name": "Turquesa" },
+        { "slug": "indigo", "color": "#5B4FC7", "name": "Índigo" },
+        { "slug": "amber", "color": "#F5A623", "name": "Ámbar" },
+        { "slug": "ink", "color": "#15242E", "name": "Tinta (texto)" },
+        { "slug": "paper", "color": "#F5F9FC", "name": "Papel (fondo claro)" },
+        { "slug": "night", "color": "#0D1A22", "name": "Noche (fondo oscuro)" },
+        { "slug": "white", "color": "#FFFFFF", "name": "Blanco" }
+      ]
+    },
+    "typography": {
+      "fontSizes": [
+        { "slug": "small", "size": "0.85rem", "name": "Pequeño" },
+        { "slug": "medium", "size": "1rem", "name": "Mediano" },
+        { "slug": "large", "size": "1.5rem", "name": "Grande" },
+        { "slug": "x-large", "size": "2.25rem", "name": "Extra grande" },
+        { "slug": "xx-large", "size": "3rem", "name": "Titular" }
+      ],
+      "fontFamilies": [
+        {
+          "slug": "heading",
+          "name": "Baloo 2 (títulos)",
+          "fontFamily": "'Baloo 2', 'Segoe UI', sans-serif"
+        },
+        {
+          "slug": "body",
+          "name": "Noto Sans (texto)",
+          "fontFamily": "'Noto Sans', system-ui, sans-serif"
+        }
+      ]
+    },
+    "spacing": {
+      "blockGap": true,
+      "units": ["px", "%", "em", "rem", "vh", "vw"]
+    }
+  },
+  "styles": {
+    "typography": {
+      "fontFamily": "var(--wp--preset--font-family--body)"
+    },
+    "color": {
+      "background": "var(--wp--preset--color--paper)",
+      "text": "var(--wp--preset--color--ink)"
+    },
+    "elements": {
+      "heading": {
+        "typography": {
+          "fontFamily": "var(--wp--preset--font-family--heading)",
+          "fontWeight": "700"
+        }
+      },
+      "link": {
+        "color": {
+          "text": "var(--wp--preset--color--brand-blue)"
+        }
+      }
+    }
+  }
+}

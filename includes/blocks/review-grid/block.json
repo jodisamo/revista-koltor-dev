@@ -1,0 +1,23 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "revista-koltor-dev/review-grid",
+  "title": "Grid de Reseñas",
+  "category": "revista-koltor-dev",
+  "icon": "grid-view",
+  "description": "Cuadrícula automática con las últimas Reseñas publicadas, con opción de filtrar por género.",
+  "keywords": [ "reseñas", "grid", "catálogo", "puntuación" ],
+  "textdomain": "revista-koltor-dev",
+  "attributes": {
+    "cantidad": { "type": "number", "default": 6 },
+    "columnas": { "type": "number", "default": 3 },
+    "generoSlug": { "type": "string", "default": "" },
+    "mostrarPuntuacion": { "type": "boolean", "default": true },
+    "titulo": { "type": "string", "default": "Últimas reseñas" }
+  },
+  "supports": {
+    "align": [ "wide", "full" ],
+    "html": false
+  },
+  "editorScript": "kdv-block-review-grid"
+}

@@ -1,0 +1,27 @@
+/* Editor-only styles so the block editor content area roughly matches the frontend. */
+
+body {
+	font-family: 'Noto Sans', system-ui, sans-serif;
+	color: #241C29;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: 'Baloo 2', 'Segoe UI', sans-serif;
+	font-weight: 700;
+}
+
+a { color: #2E9BD6; }
+
+blockquote {
+	border-left: 4px solid #2E9BD6;
+	padding-left: 1.2em;
+	font-style: italic;
+}
+
+.kdv-review-box--editor {
+	background: #fff;
+	border: 1px solid #F3E3EA;
+	border-radius: 16px;
+	padding: 20px;
+	box-shadow: 0 2px 8px rgba(36, 28, 41, 0.08);
+}
