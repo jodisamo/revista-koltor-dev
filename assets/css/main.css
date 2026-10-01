@@ -1309,11 +1309,35 @@ html[data-kdv-theme="dark"] .kdv-dark-toggle__icon--moon { display: inline-flex;
 }
 /* Solo icono: círculos, sin el nombre. */
 .kdv-hero-slider__platforms--icon .kdv-hero-chip { padding: 4px; gap: 0; }
+
+/* Variante del móvil (solo iconos, dentro del contenido, encima del
+   título): oculta en escritorio, donde manda la esquina elegida. */
+.kdv-hero-slider__platforms--mobile { display: none; }
 @media (max-width: 640px) {
-	.kdv-hero-slider__corner--bottom-left,
-	.kdv-hero-slider__corner--bottom-right { bottom: 40px; } /* por encima de los puntos */
-	.kdv-hero-slider__corner--top-left,
-	.kdv-hero-slider__corner--top-right { top: 14px; }
+	/* En el móvil el texto llena la diapositiva: nada en las esquinas, que
+	   acababa encima del botón; los iconos van encima del título. */
+	.kdv-hero-slider__corner { display: none; }
+	.kdv-hero-slider__platforms--mobile { display: flex; }
+	.kdv-hero-slider__platforms { margin-bottom: 10px; gap: 6px; }
+	.kdv-hero-slider__platforms .kdv-hero-chip { padding: 3px; gap: 0; box-shadow: 0 2px 8px rgba(0, 0, 0, .35); }
+	.kdv-hero-slider__platforms .kdv-hero-chip span {
+		position: absolute !important;
+		width: 1px; height: 1px;
+		overflow: hidden;
+		clip: rect(1px, 1px, 1px, 1px);
+		white-space: nowrap;
+	}
+	.kdv-hero-slider__platforms .kdv-hero-chip__icon { width: 16px; height: 16px; padding: 3px; }
+	/* Menos texto en pantalla: título algo más pequeño y subtítulo de 3
+	   líneas como mucho (con "…"). */
+	.kdv-hero-slider__content .kdv-hero__title { font-size: clamp(1.45rem, 6.4vw, 1.9rem); }
+	.kdv-hero-slider__content .kdv-hero__subtitle {
+		font-size: 1rem;
+		display: -webkit-box;
+		-webkit-line-clamp: 3;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
 }
 .kdv-hero-chip {
 	--kdv-pc-base: var(--kdv-pc, var(--kdv-primary));
@@ -2881,8 +2905,10 @@ body.admin-bar .kdv-social-floating { --kdv-floating-top: 192px; }
 	/* Menos espacio en blanco: con 48px arriba y abajo de cada sección, y una
 	   portada de 64px, había que hacer mucho scroll para llegar al contenido. */
 	.kdv-section { padding-block: 28px; }
-	.kdv-hero { padding: 36px 0; }
-	.kdv-hero--tall { padding: 56px 0; }
+	/* Solo la portada estática: el slider va sin relleno (con él salía una
+	   franja clara encima y debajo de las diapositivas). */
+	.kdv-hero:not(.kdv-hero-slider) { padding: 36px 0; }
+	.kdv-hero--tall:not(.kdv-hero-slider) { padding: 56px 0; }
 	.kdv-content { padding-block: 24px; }
 	/* El lema no cabe junto al logo y salía cortado con "…"; el logo ya dice
 	   "revista de videojuegos". */

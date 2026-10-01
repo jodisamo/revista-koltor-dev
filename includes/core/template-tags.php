@@ -640,22 +640,29 @@ function kdv_hero_platform_positions() {
  * plataforma trata lo que anuncia la portada. La posición y el estilo se
  * eligen en Personalizar → Portada.
  *
+ * Con $position = 'mobile' pinta la variante del móvil: solo iconos y
+ * DENTRO del contenido, encima del título (main.css la muestra solo por
+ * debajo de 640px y oculta allí la de la esquina). En el móvil el título y
+ * el subtítulo llenan casi toda la diapositiva y una etiqueta en una
+ * esquina acababa encima del botón; dentro del contenido no puede chocar.
+ *
  * @param WP_Post $slide    Diapositiva.
- * @param string  $position Una de kdv_hero_platform_positions().
+ * @param string  $position Una de kdv_hero_platform_positions(), o 'mobile'.
  */
 function kdv_render_slide_platforms( $slide, $position = 'above-title' ) {
 	$platforms = kdv_get_slide_platforms( $slide );
 	if ( ! $platforms ) {
 		return;
 	}
-	$icon_only = 'icon' === get_theme_mod( 'kdv_hero_platform_style', 'full' );
-	$corner    = 'above-title' !== $position;
+	$mobile    = 'mobile' === $position;
+	$icon_only = $mobile || 'icon' === get_theme_mod( 'kdv_hero_platform_style', 'full' );
+	$corner    = ! $mobile && 'above-title' !== $position;
 
 	// En una esquina va en su propia capa, alineada con el contenedor.
 	if ( $corner ) {
 		echo '<div class="kdv-hero-slider__corner kdv-hero-slider__corner--' . esc_attr( $position ) . '"><div class="kdv-container">';
 	}
-	echo '<ul class="kdv-hero-slider__platforms' . ( $icon_only ? ' kdv-hero-slider__platforms--icon' : '' ) . '">';
+	echo '<ul class="kdv-hero-slider__platforms' . ( $icon_only ? ' kdv-hero-slider__platforms--icon' : '' ) . ( $mobile ? ' kdv-hero-slider__platforms--mobile' : '' ) . '"' . '>';
 	foreach ( array_slice( $platforms, 0, 4 ) as $p ) {
 		$term     = $p['term'];
 		$color    = kdv_get_platform_color( $term );

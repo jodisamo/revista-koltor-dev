@@ -63,10 +63,9 @@ $kdv_hero_mods   = ( 'normal' !== $kdv_hero_height ? ' kdv-hero--' . $kdv_hero_h
 							// con la misma clase, así que se ven exactamente igual.
 							$kdv_slide_tag = 0 === $slide_index ? 'h1' : 'h2';
 
-							// Plataformas encima del título (si se eligió esa posición).
-							if ( 'above-title' === $kdv_chip_pos ) {
-								kdv_render_slide_platforms( $slide, 'above-title' );
-							}
+							// Plataformas encima del título: si se eligió esa posición, o
+							// (solo iconos) en el móvil cuando van en una esquina.
+							kdv_render_slide_platforms( $slide, 'above-title' === $kdv_chip_pos ? 'above-title' : 'mobile' );
 							?>
 							<<?php echo $kdv_slide_tag; // phpcs:ignore WordPress.Security.EscapeOutput -- 'h1' o 'h2' literal. ?> class="kdv-hero__title"><?php echo esc_html( get_the_title( $slide ) ); ?></<?php echo $kdv_slide_tag; // phpcs:ignore WordPress.Security.EscapeOutput ?>>
 							<?php if ( $subtitle ) : ?>
