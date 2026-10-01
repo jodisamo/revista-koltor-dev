@@ -1077,6 +1077,43 @@ body.kdv-submenu-reveal-slide .kdv-primary-menu li:focus-within > .sub-menu {
 html[data-kdv-theme="dark"] .kdv-dark-toggle__icon--sun { display: none; }
 html[data-kdv-theme="dark"] .kdv-dark-toggle__icon--moon { display: inline-flex; }
 
+/* Formulario de búsqueda del tema (searchform.php) donde no hay un estilo
+   más concreto: 404, "Sin resultados"… Antes salía con el aspecto por
+   defecto del navegador (campo y botón de 24px de alto). */
+.search-form {
+	display: flex;
+	gap: 8px;
+	width: 100%;
+	max-width: 520px;
+	margin-inline: auto;
+}
+.search-form input[type="search"] {
+	flex: 1;
+	min-width: 0;
+	min-height: 46px;
+	padding: 10px 14px;
+	border: 1px solid var(--kdv-border);
+	border-radius: var(--kdv-radius-sm);
+	background: var(--kdv-surface);
+	color: var(--kdv-text);
+	font: inherit;
+}
+.search-form input[type="search"]:focus-visible { outline: 2px solid var(--kdv-primary); outline-offset: 1px; border-color: var(--kdv-primary); }
+.search-form button {
+	flex: 0 0 auto;
+	min-height: 46px;
+	padding: 0 20px;
+	border: 0;
+	border-radius: var(--kdv-radius-sm);
+	background: var(--kdv-primary);
+	color: #fff;
+	font: inherit;
+	font-weight: 700;
+	cursor: pointer;
+}
+.search-form button:hover,
+.search-form button:focus-visible { filter: brightness(.92); }
+
 .kdv-header-search {
 	position: absolute;
 	top: 100%;
@@ -1497,6 +1534,7 @@ html[data-kdv-theme="dark"] .kdv-section__link:focus-visible { color: var(--kdv-
 }
 
 .kdv-card {
+	position: relative;
 	background: var(--kdv-surface);
 	border-radius: var(--kdv-radius);
 	overflow: hidden;
@@ -1531,7 +1569,7 @@ html[data-kdv-theme="dark"] .kdv-section__link:focus-visible { color: var(--kdv-
 .kdv-card__category {
 	display: inline-flex;
 	align-self: flex-start;
-	font-size: .7rem;
+	font-size: .75rem;
 	font-weight: 700;
 	color: #fff;
 	background: var(--kdv-primary);
@@ -1587,14 +1625,11 @@ html[data-kdv-theme="dark"] .kdv-platform-badge {
 	text-decoration: none;
 }
 .kdv-platform-badge--text { width: auto; padding-inline: 8px; }
-/* El icono subido, pintado del color de la marca con máscara CSS. */
-.kdv-platform-badge__icon {
-	width: 15px;
-	height: 15px;
-	background: var(--kdv-pc-text);
-	-webkit-mask: var(--kdv-icon-url) center / contain no-repeat;
-	mask: var(--kdv-icon-url) center / contain no-repeat;
-}
+/* El icono real (no una silueta por máscara: a este tamaño, el de PC
+   -un cuadrado con letras recortadas- quedaba como un cuadrado relleno).
+   El color de la marca lo pone el fondo del distintivo. */
+.kdv-platform-badge__img { width: 16px; height: 16px; object-fit: contain; display: block; }
+html[data-kdv-theme="dark"] .kdv-platform-badge__img { filter: invert(1); }
 .kdv-platform-badges__more {
 	font-size: .72rem;
 	font-weight: 700;
@@ -1628,6 +1663,38 @@ html[data-kdv-theme="dark"] .kdv-platform-badge {
 .kdv-tag--8 { background: var(--kdv-tag-8-bg); color: var(--kdv-tag-8-text); }
 .kdv-card__title { font-size: 1.05rem; margin: 0; }
 .kdv-card__title a { color: var(--kdv-text); }
+/* Toda la tarjeta lleva al artículo (en el móvil, la línea del título era
+   el único sitio "tocable": unos 19px). Los demás enlaces de la tarjeta
+   -etiqueta de tipo, distintivos de plataforma- quedan por encima. */
+.kdv-card__title a::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+}
+.kdv-card__labels a,
+.kdv-card__thumb { position: relative; z-index: 2; }
+.kdv-card:has(.kdv-card__title a:focus-visible) { outline: 2px solid var(--kdv-primary); outline-offset: 2px; }
+.kdv-card__title a:focus-visible { outline: none; }
+
+/* Reseña sin imagen destacada: fondo con el color y el icono de su
+   plataforma (o el del sitio) en vez de un recuadro vacío. */
+.kdv-card__thumb-fallback {
+	--kdv-pc-base: var(--kdv-pc, var(--kdv-primary));
+	position: absolute;
+	inset: 0;
+	background:
+		radial-gradient(circle at 30% 25%, color-mix(in srgb, var(--kdv-pc-base) 30%, transparent), transparent 60%),
+		linear-gradient(135deg, color-mix(in srgb, var(--kdv-pc-base) 22%, var(--kdv-surface)), color-mix(in srgb, var(--kdv-secondary) 14%, var(--kdv-surface)));
+}
+.kdv-card__thumb-fallback.has-icon::after {
+	content: "";
+	position: absolute;
+	inset: 30%;
+	background: color-mix(in srgb, var(--kdv-pc-base) 45%, transparent);
+	-webkit-mask: var(--kdv-icon-url) center / contain no-repeat;
+	mask: var(--kdv-icon-url) center / contain no-repeat;
+}
 .kdv-card__title a:hover { color: var(--kdv-primary); text-decoration: none; }
 .kdv-card__excerpt { font-size: .88rem; color: var(--kdv-text-muted); margin: 0; }
 .kdv-card__meta { font-size: .78rem; color: var(--kdv-text-muted); margin-top: auto; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
@@ -1758,8 +1825,8 @@ html[data-kdv-theme="dark"] .kdv-platform-badge {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: 38px;
-	height: 38px;
+	width: 44px;
+	height: 44px;
 	border-radius: 50%;
 	background: var(--kdv-surface);
 	border: 1px solid var(--kdv-border);
@@ -1910,7 +1977,9 @@ html[data-kdv-theme="dark"] .kdv-platform-badge {
 .kdv-widget-recent-posts,
 .kdv-widget-recent-comments { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
 
-.kdv-widget-recent-posts__item { display: flex; align-items: center; gap: 12px; }
+.kdv-widget-recent-posts__item { position: relative; display: flex; align-items: center; gap: 12px; min-height: 60px; }
+/* Toda la fila (miniatura incluida) lleva al artículo, no solo el título. */
+.kdv-widget-recent-posts__title::after { content: ""; position: absolute; inset: 0; }
 .kdv-widget-recent-posts__thumb {
 	flex: 0 0 60px;
 	width: 60px;
@@ -1940,7 +2009,7 @@ html[data-kdv-theme="dark"] .kdv-platform-badge {
 	overflow: hidden;
 }
 .kdv-widget-recent-posts__title:hover { color: var(--kdv-primary); text-decoration: none; }
-.kdv-widget-recent-posts__date { font-size: .74rem; color: var(--kdv-text-muted); }
+.kdv-widget-recent-posts__date { font-size: .78rem; color: var(--kdv-text-muted); }
 
 .kdv-widget-recent-comments__item { display: flex; align-items: flex-start; gap: 12px; }
 .kdv-widget-recent-comments__avatar { flex: 0 0 36px; width: 36px; height: 36px; border-radius: 50%; }
@@ -2720,4 +2789,25 @@ body.admin-bar .kdv-social-floating { --kdv-floating-top: 192px; }
 	.kdv-maintenance__illustration img {
 		max-width: 220px;
 	}
+}
+
+/* ---------- Ajustes del móvil (auditoría 1.12.3) ----------
+   Al final de la hoja a propósito: con la misma especificidad que las
+   reglas base, solo gana el que va después. */
+@media (max-width: 640px) {
+	/* Menos espacio en blanco: con 48px arriba y abajo de cada sección, y una
+	   portada de 64px, había que hacer mucho scroll para llegar al contenido. */
+	.kdv-section { padding-block: 28px; }
+	.kdv-hero { padding: 36px 0; }
+	.kdv-hero--tall { padding: 56px 0; }
+	.kdv-content { padding-block: 24px; }
+	/* El lema no cabe junto al logo y salía cortado con "…"; el logo ya dice
+	   "revista de videojuegos". */
+	.kdv-site-tagline { display: none; }
+	/* Objetivos de toque de 44px (los botones de "Ver todas", los accesos
+	   de la portada de plataforma y los distintivos de las tarjetas). */
+	.kdv-section__link { min-height: 44px; }
+	.kdv-platform-hub__chips .kdv-pill { min-height: 44px; }
+	.kdv-platform-badge { width: 32px; height: 32px; }
+	.kdv-platform-badges { gap: 6px; }
 }

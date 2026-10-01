@@ -631,7 +631,7 @@ function kdv_render_platform_badges( $post_id = null ) {
 			esc_url( get_term_link( $term ) ),
 			esc_attr( $title ),
 			$style ? ' style="' . esc_attr( $style ) . '"' : '',
-			$icon_url ? '<span class="kdv-platform-badge__icon" aria-hidden="true"></span>' : '<span aria-hidden="true">' . esc_html( mb_substr( $term->name, 0, 3 ) ) . '</span>',
+			$icon_url ? '<img class="kdv-platform-badge__img" src="' . esc_url( $icon_url ) . '" alt="" width="16" height="16" loading="lazy" decoding="async" />' : '<span aria-hidden="true">' . esc_html( mb_substr( $term->name, 0, 3 ) ) . '</span>',
 			esc_html( $title )
 		);
 	}

@@ -37,7 +37,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<?php if ( get_theme_mod( 'kdv_card_show_author_avatar', false ) ) : ?>
 				<?php echo get_avatar( get_the_author_meta( 'ID' ), 18, '', '', [ 'class' => 'kdv-card__avatar' ] ); ?>
 			<?php endif; ?>
-			<span><?php echo esc_html( get_the_date() ); ?> · <?php the_author(); ?></span>
+			<?php $kdv_author = get_the_author(); ?>
+			<span><?php echo esc_html( get_the_date() ); ?><?php echo $kdv_author ? ' · ' . esc_html( $kdv_author ) : ''; ?></span>
 			<?php if ( get_theme_mod( 'kdv_card_show_reading_time', false ) ) : ?>
 				<?php /* translators: %d: estimated reading time in minutes. */ ?>
 				<span>· <?php echo esc_html( sprintf( __( '%d min de lectura', 'revista-koltor-dev' ), kdv_get_reading_time() ) ); ?></span>

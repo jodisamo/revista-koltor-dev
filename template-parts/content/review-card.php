@@ -17,6 +17,24 @@ $tipo       = get_post_meta( get_the_ID(), '_kdv_tipo', true );
 	<a href="<?php the_permalink(); ?>" class="kdv-card__thumb">
 		<?php if ( has_post_thumbnail() ) : ?>
 			<?php the_post_thumbnail( 'kdv-card' ); ?>
+		<?php else : ?>
+			<?php
+			/*
+			 * Sin imagen destacada: en vez de un recuadro vacío (300px en el
+			 * móvil), un fondo con el color y el icono de su plataforma
+			 * principal, o el color del sitio si no tiene ninguna.
+			 */
+			$kdv_fallback_style = '';
+			$kdv_fallback_pf    = kdv_get_post_top_platforms( get_the_ID() );
+			if ( $kdv_fallback_pf ) {
+				$kdv_fb_term  = $kdv_fallback_pf[0]['term'];
+				$kdv_fb_color = kdv_get_platform_color( $kdv_fb_term );
+				$kdv_fb_icon  = absint( get_term_meta( $kdv_fb_term->term_id, 'kdv_platform_icon', true ) );
+				$kdv_fb_url   = $kdv_fb_icon ? wp_get_attachment_image_url( $kdv_fb_icon, 'thumbnail' ) : '';
+				$kdv_fallback_style = ( $kdv_fb_color ? '--kdv-pc:' . $kdv_fb_color . ';' : '' ) . ( $kdv_fb_url ? '--kdv-icon-url:url(' . esc_url( $kdv_fb_url ) . ');' : '' );
+			}
+			?>
+			<span class="kdv-card__thumb-fallback<?php echo false !== strpos( $kdv_fallback_style, 'icon-url' ) ? ' has-icon' : ''; ?>" aria-hidden="true"<?php echo $kdv_fallback_style ? ' style="' . esc_attr( $kdv_fallback_style ) . '"' : ''; ?>></span>
 		<?php endif; ?>
 
 		<?php if ( $tipo ) : ?>

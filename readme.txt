@@ -5,7 +5,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.12.2
+Stable tag: 1.12.3
 Tags: blog, news, entertainment, two-columns, grid-layout, custom-logo, custom-menu, custom-colors, editor-style, featured-images, threaded-comments, translation-ready, block-styles, wide-blocks, dark-mode
 
 == Description ==
@@ -62,6 +62,17 @@ Swiper.js (assets/lib/swiper/), usado para el slider nativo de portada, licencia
 Iconos de redes sociales: Simple Icons (https://simpleicons.org), licencia CC0-1.0 (dominio público), incrustados como SVG en includes/core/template-tags.php. Los logotipos siguen siendo marcas de sus respectivos dueños.
 
 == Changelog ==
+
+= 1.12.3 =
+Revisión del móvil (auditoría medida con Chrome emulando un teléfono de 390px en portada, artículo, reseña, portada de plataforma, categoría, reseñas, búsqueda, 404 y Tops; ninguna página se desborda en horizontal):
+* Corregido: el buscador de la 404 y de "Sin resultados" salía con el aspecto por defecto del navegador (campo y botón de 24px). Ahora tiene el estilo del tema, con 46px de alto.
+* Toda la tarjeta lleva al artículo, no solo la línea del título (unos 19px en el móvil); la etiqueta de tipo y los distintivos de plataforma siguen siendo enlaces propios por encima. Lo mismo en las filas de "Lo último" de la barra lateral.
+* Reseñas sin imagen destacada: fondo con el color y el icono de su plataforma en vez de un recuadro vacío (300px en el móvil).
+* Distintivos de plataforma con el icono real en vez de una silueta (el de PC quedaba como un cuadrado relleno).
+* Objetivos de toque de 44px: botones de compartir, "Ver todas" y accesos de la portada de plataforma; distintivos de 32px en el móvil.
+* Texto mínimo de 12px: etiquetas de tipo y fechas de la barra lateral.
+* Móvil: menos espacio vertical entre secciones y en la portada, y sin el lema junto al logo (salía cortado con "…").
+* Corregido: la fecha de la tarjeta terminaba en "·" cuando la entrada no tenía autor.
 
 = 1.12.2 =
 Correcciones de seguridad (auditoría con ataques simulados sobre el sitio local):
