@@ -2214,12 +2214,24 @@ html[data-kdv-theme="dark"] {
 }
 
 /* ---------- Barra flotante de redes ---------- */
+/*
+ * Centrada en el espacio que queda BAJO la cabecera fija (~160px), no en
+ * toda la ventana: centrada en la ventana, con 7 redes o más su primer
+ * icono subía hasta quedar escondido detrás de la cabecera. Si no caben
+ * todas, la lista se desplaza en vez de salirse de la pantalla.
+ */
 .kdv-social-floating {
+	--kdv-floating-top: 160px;
 	position: fixed;
-	top: 50%;
+	top: calc(50% + var(--kdv-floating-top) / 2);
 	transform: translateY(-50%);
+	max-height: calc(100vh - var(--kdv-floating-top) - 24px);
+	overflow-y: auto;
+	scrollbar-width: none;
 	z-index: 90;
 }
+.kdv-social-floating::-webkit-scrollbar { display: none; }
+body.admin-bar .kdv-social-floating { --kdv-floating-top: 192px; }
 .kdv-social-floating--right { right: 0; }
 .kdv-social-floating--left { left: 0; }
 

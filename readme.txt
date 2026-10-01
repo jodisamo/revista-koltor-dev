@@ -5,7 +5,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.12.0
+Stable tag: 1.12.1
 Tags: blog, news, entertainment, two-columns, grid-layout, custom-logo, custom-menu, custom-colors, editor-style, featured-images, threaded-comments, translation-ready, block-styles, wide-blocks, dark-mode
 
 == Description ==
@@ -59,7 +59,14 @@ Tipografías: "Baloo 2" y "Noto Sans" (Google Fonts, licencia SIL Open Font Lice
 
 Swiper.js (assets/lib/swiper/), usado para el slider nativo de portada, licencia MIT. https://swiperjs.com/
 
+Iconos de redes sociales: Simple Icons (https://simpleicons.org), licencia CC0-1.0 (dominio público), incrustados como SVG en includes/core/template-tags.php. Los logotipos siguen siendo marcas de sus respectivos dueños.
+
 == Changelog ==
+
+= 1.12.1 =
+* Corregido (redes sociales): los campos de Personalizar → Redes sociales solo funcionaban con la URL completa. "@usuario", el usuario a secas o un número de WhatsApp se guardaban como enlaces rotos ("http://@entrepixeles", "http://573001234567"). Ahora cada campo acepta URL (con o sin https://), @usuario, usuario o, en WhatsApp, el número con código de país, y arma el enlace correcto en https (x.com/…, wa.me/…, tiktok.com/@…). Los valores ya guardados rotos se reparan solos al mostrarse. El campo libre "otras redes" pasa por la misma normalización.
+* Corregido: con muchas redes (7 o más), la barra flotante, centrada en la ventana, subía hasta esconder su primer icono detrás de la cabecera fija. Ahora se centra en el espacio bajo la cabecera y, si no caben todas, la lista se desplaza.
+* Iconos de redes reconocibles: los logotipos de Simple Icons (CC0) sustituyen a los trazos dibujados a mano (la "X" era una cruz que parecía un botón de cerrar; TikTok y Discord apenas se reconocían). "Copiar enlace" usa ahora una cadena en vez de un círculo con "+".
 
 = 1.12.0 =
 * Nueva sección Personalizar → Revista Koltor Dev → "Barra lateral y widgets": en qué páginas se muestra (artículos, reseñas, archivos, búsqueda), barra fija al hacer scroll, caja de los widgets (tarjeta / borde / plano), estilo, tamaño y color de los títulos, esquinas y separadores; todo con vista previa en vivo.

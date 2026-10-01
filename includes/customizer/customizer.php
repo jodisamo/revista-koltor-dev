@@ -583,7 +583,7 @@ function kdv_customize_register( WP_Customize_Manager $wp_customize ) {
 	$wp_customize->add_section( 'kdv_section_social', [
 		'title'       => __( 'Redes sociales', 'revista-koltor-dev' ),
 		'panel'       => 'kdv_panel',
-		'description' => __( 'Pega aquí el enlace a tu perfil de cada red. El icono correcto de cada una se muestra automáticamente — no hace falta configurarlo. Los que dejes vacíos simplemente no aparecen. Se muestran tanto en la cabecera como en el pie de página.', 'revista-koltor-dev' ),
+		'description' => __( 'Escribe tu perfil en cada red como prefieras: el enlace completo, "@usuario" o solo el usuario (en WhatsApp, el número con el código de país). El tema arma el enlace correcto y pone el icono de cada red. Los que dejes vacíos no aparecen.', 'revista-koltor-dev' ),
 	] );
 
 	$social_platforms = [
@@ -593,7 +593,7 @@ function kdv_customize_register( WP_Customize_Manager $wp_customize ) {
 		'tiktok'    => [ __( 'TikTok', 'revista-koltor-dev' ), 'https://tiktok.com/@tuusuario' ],
 		'youtube'   => [ __( 'YouTube', 'revista-koltor-dev' ), 'https://youtube.com/@tucanal' ],
 		'discord'   => [ __( 'Discord', 'revista-koltor-dev' ), 'https://discord.gg/tuinvitacion' ],
-		'whatsapp'  => [ __( 'WhatsApp', 'revista-koltor-dev' ), 'https://wa.me/50400000000' ],
+		'whatsapp'  => [ __( 'WhatsApp', 'revista-koltor-dev' ), '+57 300 000 0000' ],
 	];
 
 	foreach ( $social_platforms as $key => $field ) {
@@ -602,13 +602,17 @@ function kdv_customize_register( WP_Customize_Manager $wp_customize ) {
 
 		$wp_customize->add_setting( $setting_id, [
 			'default'           => '',
-			'sanitize_callback' => 'esc_url_raw',
+			// URL, "@usuario", usuario o número (WhatsApp): ver kdv_normalize_social_url().
+			'sanitize_callback' => function( $value ) use ( $key ) {
+				return kdv_normalize_social_url( $value, $key );
+			},
 			'transport'         => 'postMessage',
 		] );
 		$wp_customize->add_control( $setting_id, [
 			'label'       => $label,
 			'section'     => 'kdv_section_social',
-			'type'        => 'url',
+			// "text" y no "url": un campo url del navegador rechaza "@usuario".
+			'type'        => 'text',
 			'input_attrs' => [ 'placeholder' => $placeholder ],
 		] );
 		$wp_customize->selective_refresh->add_partial( $setting_id, [
