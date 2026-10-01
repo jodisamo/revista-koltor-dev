@@ -471,6 +471,26 @@ function kdv_customize_register( WP_Customize_Manager $wp_customize ) {
 		'type'    => 'checkbox',
 	] );
 
+	/* ---------------------------------------------------------------
+	 * Section: Rendimiento
+	 * ------------------------------------------------------------- */
+	$wp_customize->add_section( 'kdv_section_performance', [
+		'title'       => __( 'Rendimiento', 'revista-koltor-dev' ),
+		'description' => __( 'Ajustes que hacen que el sitio cargue más rápido, sobre todo en el móvil.', 'revista-koltor-dev' ),
+		'panel'       => 'kdv_panel',
+	] );
+	$wp_customize->add_setting( 'kdv_webp_images', [
+		'default'           => true,
+		'sanitize_callback' => 'wp_validate_boolean',
+		'transport'         => 'refresh',
+	] );
+	$wp_customize->add_control( 'kdv_webp_images', [
+		'label'       => __( 'Generar las imágenes en WebP', 'revista-koltor-dev' ),
+		'description' => __( 'Las copias de las imágenes que subas (miniaturas, tarjetas, logo…) se crean en WebP, que pesa mucho menos que PNG o JPEG con la misma calidad. El archivo que subes se conserva en el servidor como imagen original. Afecta a lo que subas a partir de ahora; para las imágenes ya subidas, regenera las miniaturas (por ejemplo, con el plugin "Regenerate Thumbnails").', 'revista-koltor-dev' ),
+		'section'     => 'kdv_section_performance',
+		'type'        => 'checkbox',
+	] );
+
 	$wp_customize->add_setting( 'kdv_header_show_search', [
 		'default'           => true,
 		'sanitize_callback' => 'wp_validate_boolean',

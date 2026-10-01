@@ -11,17 +11,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 function kdv_enqueue_assets() {
 
-	// Google Fonts for the active pairing chosen in Personalizar → Tipografía.
-	$kdv_typography = kdv_get_active_typography();
-	wp_enqueue_style(
-		'kdv-fonts',
-		'https://fonts.googleapis.com/css2?' . $kdv_typography['google'] . '&display=swap',
-		[],
-		null
-	);
+	// Tipografías del emparejamiento elegido en Personalizar → Tipografía,
+	// servidas desde el propio tema (assets/fonts/, ver kdv_get_fonts_css_url()).
+	wp_enqueue_style( 'kdv-fonts', kdv_get_fonts_css_url(), [], KDV_THEME_VERSION );
 
-	// Main stylesheet.
-	wp_enqueue_style( 'kdv-main', KDV_ASSETS_URL . '/css/main.css', [], KDV_THEME_VERSION );
+	// Main stylesheet. El zip de producción trae además main.min.css (lo genera
+	// scripts/build-zip.sh, ~40% menos); en el repositorio solo existe el
+	// legible. Con SCRIPT_DEBUG se usa siempre el legible, para depurar.
+	$kdv_css = ( ! ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) && file_exists( KDV_THEME_DIR . '/assets/css/main.min.css' ) ) ? 'main.min.css' : 'main.css';
+	wp_enqueue_style( 'kdv-main', KDV_ASSETS_URL . '/css/' . $kdv_css, [], KDV_THEME_VERSION );
 
 	// Dynamic CSS (colours coming from the Customizer).
 	wp_add_inline_style( 'kdv-main', kdv_get_dynamic_css() );
@@ -63,16 +61,59 @@ function kdv_enqueue_assets() {
 add_action( 'wp_enqueue_scripts', 'kdv_enqueue_assets' );
 
 /**
+ * URL del CSS de fuentes de un emparejamiento (por defecto, el activo).
+ *
+ * Las tipografías se sirven desde el propio tema y no desde Google Fonts:
+ * con Google, antes de pintar el texto el navegador tenía que ir a
+ * fonts.googleapis.com a por el CSS y de ahí a fonts.gstatic.com a por los
+ * archivos -- dos servidores más, dos conexiones nuevas y la IP de cada
+ * visitante enviada a Google (un problema conocido de privacidad, RGPD).
+ *
+ * @param string|null $key Clave del emparejamiento (redonda, elegant, modern).
+ * @return string
+ */
+function kdv_get_fonts_css_url( $key = null ) {
+	$pairings = kdv_typography_pairings();
+	if ( null === $key || ! isset( $pairings[ $key ] ) ) {
+		$key = get_theme_mod( 'kdv_typography_pairing', 'redonda' );
+		$key = isset( $pairings[ $key ] ) ? $key : 'redonda';
+	}
+	return KDV_ASSETS_URL . '/fonts/' . $key . '.css';
+}
+
+/**
+ * Precarga los archivos de fuente "latin" del emparejamiento activo (uno por
+ * familia: títulos y texto), para que el navegador los pida en paralelo con
+ * el CSS en vez de descubrirlos después. Se leen del propio CSS de fuentes.
+ */
+function kdv_preload_fonts() {
+	$pairings = kdv_typography_pairings();
+	$key      = get_theme_mod( 'kdv_typography_pairing', 'redonda' );
+	$key      = isset( $pairings[ $key ] ) ? $key : 'redonda';
+	$css_path = KDV_THEME_DIR . '/assets/fonts/' . $key . '.css';
+	if ( ! is_readable( $css_path ) ) {
+		return;
+	}
+	$css = (string) file_get_contents( $css_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions -- archivo local del propio tema.
+
+	$files = [];
+	if ( preg_match_all( "#/\* latin \*/\s*@font-face\s*\{[^}]*font-family:\s*'([^']+)'[^}]*url\(([^)]+\.woff2)\)#", $css, $m, PREG_SET_ORDER ) ) {
+		foreach ( $m as [ , $family, $file ] ) {
+			$files[ $family ] = $files[ $family ] ?? $file; // el primero de cada familia
+		}
+	}
+	foreach ( $files as $file ) {
+		printf( '<link rel="preload" href="%s" as="font" type="font/woff2" crossorigin>' . "\n", esc_url( KDV_ASSETS_URL . '/fonts/' . $file ) );
+	}
+}
+add_action( 'wp_head', 'kdv_preload_fonts', 2 );
+
+/**
  * Block editor gets the same fonts + a lightweight editor stylesheet
  * (registered separately in theme-setup.php via add_editor_style()).
  */
 function kdv_enqueue_editor_assets() {
-	wp_enqueue_style(
-		'kdv-editor-fonts',
-		'https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Noto+Sans:wght@400;600&display=swap',
-		[],
-		null
-	);
+	wp_enqueue_style( 'kdv-editor-fonts', kdv_get_fonts_css_url( 'redonda' ), [], KDV_THEME_VERSION );
 }
 add_action( 'enqueue_block_editor_assets', 'kdv_enqueue_editor_assets' );
 

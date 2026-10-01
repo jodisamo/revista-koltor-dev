@@ -111,9 +111,11 @@ add_action( 'template_redirect', 'kdv_track_post_view' );
 /**
  * Devuelve un WP_Query con las entradas/reseñas más vistas este mes.
  *
- * Si el sitio es nuevo y todavía no hay datos de vistas del mes en curso
- * (p. ej. recién instalado el tema), cae de vuelta a mostrar las entradas
- * más recientes en su lugar, para que la sección nunca se vea vacía o rota.
+ * Si las que tienen visitas este mes no llegan a llenar la sección (a
+ * principios de mes, o en un sitio nuevo), se completa con las más
+ * recientes que no estén ya en la lista. Antes, en cuanto UNA entrada tenía
+ * visitas, la sección mostraba solo esa (o esas pocas) y el carrusel se
+ * quedaba medio vacío; y si ninguna tenía, solo las recientes.
  *
  * @param int $number Cuántas entradas devolver.
  * @return WP_Query
@@ -121,26 +123,45 @@ add_action( 'template_redirect', 'kdv_track_post_view' );
 function kdv_get_popular_posts_this_month( $number = 8 ) {
 	$number   = max( 2, absint( $number ) );
 	$meta_key = '_kdv_views_' . gmdate( 'Ym' );
+	$types    = [ 'post', 'kdv_resena' ];
 
-	$query = new WP_Query( [
-		'post_type'           => [ 'post', 'kdv_resena' ],
+	$popular_ids = get_posts( [
+		'post_type'           => $types,
 		'post_status'         => 'publish',
 		'posts_per_page'      => $number,
 		'no_found_rows'       => true,
 		'ignore_sticky_posts' => true,
-		'meta_key'            => $meta_key,
+		'fields'              => 'ids',
+		'meta_key'            => $meta_key, // phpcs:ignore WordPress.DB.SlowDBQuery -- orden por el contador del mes.
 		'orderby'             => 'meta_value_num',
 		'order'               => 'DESC',
 	] );
 
-	if ( $query->have_posts() ) {
-		return $query;
+	$ids = $popular_ids;
+	if ( count( $ids ) < $number ) {
+		$recent_ids = get_posts( [
+			'post_type'           => $types,
+			'post_status'         => 'publish',
+			'posts_per_page'      => $number - count( $ids ),
+			'no_found_rows'       => true,
+			'ignore_sticky_posts' => true,
+			'fields'              => 'ids',
+			'post__not_in'        => $ids,
+		] );
+		$ids = array_merge( $ids, $recent_ids );
 	}
 
+	if ( ! $ids ) {
+		return new WP_Query(); // Sitio sin entradas: la sección no se pinta.
+	}
+
+	// Una sola consulta final, en el orden calculado (populares primero).
 	return new WP_Query( [
-		'post_type'           => [ 'post', 'kdv_resena' ],
+		'post_type'           => $types,
 		'post_status'         => 'publish',
-		'posts_per_page'      => $number,
+		'post__in'            => $ids,
+		'orderby'             => 'post__in',
+		'posts_per_page'      => count( $ids ),
 		'no_found_rows'       => true,
 		'ignore_sticky_posts' => true,
 	] );

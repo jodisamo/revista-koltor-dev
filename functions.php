@@ -18,6 +18,9 @@ require_once KDV_INCLUDES_DIR . '/core/theme-setup.php';
 // Enqueue scripts and styles.
 require_once KDV_INCLUDES_DIR . '/core/enqueue.php';
 
+// Imágenes ligeras: copias en WebP y logo del tamaño justo.
+require_once KDV_INCLUDES_DIR . '/core/images.php';
+
 // Custom Post Type "Reseña" + taxonomía de géneros.
 require_once KDV_INCLUDES_DIR . '/core/cpt-resena.php';
 

@@ -10,7 +10,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Curated font pairings for Personalizar → Tipografía. Only the frontend
+ * Curated font pairings for Personalizar → Tipografía. Los archivos de cada
+ * uno viven en assets/fonts/<clave>.css (scripts/fetch-fonts.py); la clave
+ * 'google' queda como referencia de lo que se descargó. Only the frontend
  * stylesheet reads the active pairing (via CSS custom properties set in
  * includes/core/enqueue.php) — the block editor keeps the theme.json
  * defaults, which is an intentional, low-risk simplification.

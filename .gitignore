@@ -1,1 +1,3 @@
 dist/
+# Lo genera scripts/build-zip.sh dentro del zip; nunca va al repositorio.
+assets/css/main.min.css

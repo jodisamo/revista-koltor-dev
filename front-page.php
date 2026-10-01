@@ -36,7 +36,9 @@ $kdv_hero_mods   = ( 'normal' !== $kdv_hero_height ? ' kdv-hero--' . $kdv_hero_h
 		<div class="swiper">
 			<div class="swiper-wrapper">
 				<?php foreach ( $hero_slides as $slide_index => $slide ) :
-					$bg          = get_the_post_thumbnail_url( $slide, 'full' );
+					// kdv-hero (1200x720) y no 'full': una foto de 4000px se
+					// descargaba entera para un fondo de 1200px como mucho.
+					$bg          = get_the_post_thumbnail_url( $slide, 'kdv-hero' );
 					$mobile_id   = (int) get_post_meta( $slide->ID, '_kdv_slide_image_mobile', true );
 					$mobile_bg   = $mobile_id ? wp_get_attachment_image_url( $mobile_id, 'large' ) : '';
 					$subtitle    = get_post_meta( $slide->ID, '_kdv_slide_subtitle', true );

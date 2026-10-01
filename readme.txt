@@ -5,7 +5,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.12.3
+Stable tag: 1.13.0
 Tags: blog, news, entertainment, two-columns, grid-layout, custom-logo, custom-menu, custom-colors, editor-style, featured-images, threaded-comments, translation-ready, block-styles, wide-blocks, dark-mode
 
 == Description ==
@@ -55,13 +55,22 @@ Características principales:
 
 Revista Koltor Dev es software libre y se distribuye bajo los términos de la GNU General Public License v2 o posterior.
 
-Tipografías: "Baloo 2" y "Noto Sans" (Google Fonts, licencia SIL Open Font License), cargadas desde fonts.googleapis.com.
+Tipografías: "Baloo 2", "Noto Sans", "Playfair Display", "Lora", "Poppins" e "Inter" (Google Fonts, licencia SIL Open Font License 1.1), incluidas en assets/fonts/ y servidas desde el propio sitio; el texto de sus licencias está en assets/fonts/OFL.txt.
 
 Swiper.js (assets/lib/swiper/), usado para el slider nativo de portada, licencia MIT. https://swiperjs.com/
 
 Iconos de redes sociales: Simple Icons (https://simpleicons.org), licencia CC0-1.0 (dominio público), incrustados como SVG en includes/core/template-tags.php. Los logotipos siguen siendo marcas de sus respectivos dueños.
 
 == Changelog ==
+
+= 1.13.0 =
+Rendimiento (medido en la portada emulando un móvil con 4G: de 705 KB a 145 KB descargados, -80%, y ninguna petición a servidores externos):
+* El logo se descargaba en su copia de 1536px (646 KB, el 92% de la portada) porque WordPress anunciaba que ocupaba todo el ancho de la pantalla. Ahora "sizes" lleva su ancho real en la cabecera y hay un tamaño propio para el logo (kdv-logo, 180px de alto): 27 KB.
+* Nuevo: las copias de las imágenes que se suban se generan en WebP (Personalizar → Revista Koltor Dev → Rendimiento, activado por defecto). El archivo subido se conserva como imagen original. Para las imágenes ya subidas, regenera las miniaturas.
+* Tipografías servidas desde el propio tema (assets/fonts/) en vez de Google Fonts: sin las dos conexiones a fonts.googleapis.com y fonts.gstatic.com antes de pintar el texto, sin enviar la IP de cada visitante a Google (RGPD), y con precarga de las dos fuentes principales. Solo alfabetos latin y latin-ext.
+* El zip de producción incluye main.min.css (97 KB -> 60 KB; 25 -> 11 KB comprimido), generado al empaquetar con scripts/minify-css.py y verificado regla a regla; en el repositorio se sigue editando main.css.
+* Las diapositivas de portada usan la copia de 1200px (kdv-hero) como fondo en vez de la imagen a tamaño completo.
+* "Populares del mes" se completa con las entradas más recientes cuando las que tienen visitas este mes no llenan el carrusel (antes, con una sola entrada con visitas, la sección mostraba solo esa).
 
 = 1.12.3 =
 Revisión del móvil (auditoría medida con Chrome emulando un teléfono de 390px en portada, artículo, reseña, portada de plataforma, categoría, reseñas, búsqueda, 404 y Tops; ninguna página se desborda en horizontal):
