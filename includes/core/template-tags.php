@@ -600,6 +600,53 @@ function kdv_get_post_top_platforms( $post_id ) {
 }
 
 /**
+ * Plataformas principales de una diapositiva de portada: las marcadas en la
+ * propia diapositiva o, si no tiene ninguna y su botón enlaza a una entrada
+ * o reseña del sitio, las de esa entrada (así no hay que marcarlas dos
+ * veces).
+ *
+ * @param WP_Post $slide Diapositiva (kdv_slide).
+ * @return array[] Como kdv_get_post_top_platforms().
+ */
+function kdv_get_slide_platforms( $slide ) {
+	$platforms = kdv_get_post_top_platforms( $slide->ID );
+	if ( $platforms ) {
+		return $platforms;
+	}
+	$button_url = (string) get_post_meta( $slide->ID, '_kdv_slide_button_url', true );
+	$linked_id  = $button_url ? url_to_postid( $button_url ) : 0;
+	return $linked_id ? kdv_get_post_top_platforms( $linked_id ) : [];
+}
+
+/**
+ * Etiquetas de plataforma encima de la imagen de una diapositiva: icono y
+ * nombre sobre el color de la marca, para que se vea de un vistazo de qué
+ * plataforma trata lo que anuncia la portada.
+ *
+ * @param WP_Post $slide Diapositiva.
+ */
+function kdv_render_slide_platforms( $slide ) {
+	$platforms = kdv_get_slide_platforms( $slide );
+	if ( ! $platforms ) {
+		return;
+	}
+	echo '<ul class="kdv-hero-slider__platforms">';
+	foreach ( array_slice( $platforms, 0, 4 ) as $p ) {
+		$term     = $p['term'];
+		$color    = kdv_get_platform_color( $term );
+		$icon_id  = absint( get_term_meta( $term->term_id, 'kdv_platform_icon', true ) );
+		$icon_url = $icon_id ? wp_get_attachment_image_url( $icon_id, 'thumbnail' ) : '';
+		printf(
+			'<li class="kdv-hero-chip"%1$s>%2$s<span>%3$s</span></li>',
+			$color ? ' style="' . esc_attr( '--kdv-pc:' . $color ) . '"' : '',
+			$icon_url ? '<img class="kdv-hero-chip__icon" src="' . esc_url( $icon_url ) . '" alt="" width="20" height="20" />' : '',
+			esc_html( $term->name )
+		);
+	}
+	echo '</ul>';
+}
+
+/**
  * Distintivos de plataforma para las tarjetas: el icono de cada plataforma
  * principal, pintado de su color de marca, enlazando a su portada. La
  * etiqueta de la tarjeta sigue diciendo QUÉ es (Noticias, Avances…); esto

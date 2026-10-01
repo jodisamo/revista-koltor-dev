@@ -5,7 +5,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.14.0
+Stable tag: 1.15.0
 Tags: blog, news, entertainment, two-columns, grid-layout, custom-logo, custom-menu, custom-colors, editor-style, featured-images, threaded-comments, translation-ready, block-styles, wide-blocks, dark-mode
 
 == Description ==
@@ -23,7 +23,7 @@ Características principales:
 * Pantalla propia "Revista Koltor Dev → Información del sitio" en el escritorio para los textos del pie de página (presentación y contacto), con columnas de Explorar / Legal / Contacto que no dependen de widgets.
 * Dos bloques de Gutenberg propios, sin compilar nada: "Caja de Reseña" y "Grid de Reseñas".
 * Compatible con el editor de bloques: theme.json con paleta y tipografías de marca, y estilos de editor a juego con el frontend.
-* Slider nativo de portada ("Diapositivas"): imágenes con título, subtítulo y botón opcionales, efecto fade o deslizar, autoplay configurable — sin plugins de slider.
+* Slider nativo de portada ("Diapositivas"): imágenes con título, subtítulo, botón y etiquetas de plataforma opcionales, efecto fade o deslizar, autoplay configurable — sin plugins de slider.
 * Sección "Populares del mes" en la portada: slider horizontal con lo más leído del mes, basado en un contador de vistas propio del tema (sin Google Analytics), que descarta rastreadores y se reinicia solo cada mes.
 * Redes sociales con icono correcto por plataforma (Facebook, Instagram, X, TikTok, YouTube, Discord, WhatsApp) más un campo libre, y barra flotante opcional con el color de cada marca.
 * Portada propia por plataforma (/plataforma/playstation/…): últimas noticias, reseñas, avances, reportajes y eventos de esa plataforma, con acceso a sus subplataformas.
@@ -62,6 +62,10 @@ Swiper.js (assets/lib/swiper/), usado para el slider nativo de portada, licencia
 Iconos de redes sociales: Simple Icons (https://simpleicons.org), licencia CC0-1.0 (dominio público), incrustados como SVG en includes/core/template-tags.php. Los logotipos siguen siendo marcas de sus respectivos dueños.
 
 == Changelog ==
+
+= 1.15.0 =
+* Nuevo: "Revista Koltor Dev → Exportar / Importar". Lleva la configuración de un sitio a otro (por ejemplo, del sitio local de pruebas a producción) sin tocar el contenido: categorías y subcategorías, plataformas con sus iconos (dentro del archivo) y colores, géneros, menús, la página Tops, la barra lateral, los ajustes del Personalizador e Información del sitio. Importar es en dos pasos (vista previa de cada cambio y confirmación); los slugs de versiones anteriores se renombran en vez de duplicarse (Novedades → Noticias, Análisis → Reportajes, Nintendo Switch → Nintendo, Móvil → Android), así que las entradas siguen en su categoría. Nunca borra nada, no copia el modo construcción y guarda una copia de los ajustes para el botón "Restaurar". Cada ajuste pasa por el mismo saneado que en el Personalizador y los iconos se validan como imagen por su contenido.
+* Nuevo: etiquetas de plataforma en las diapositivas de portada. Encima del título se muestra el icono y el nombre de cada plataforma sobre el color de su marca. Se marcan en la propia diapositiva (Plataformas) o, si no se marca ninguna y el botón enlaza a una entrada o reseña del sitio, se usan las de esa entrada.
 
 = 1.14.0 =
 * Datos estructurados para Google Noticias, Discover y los resultados de artículo: cada entrada lleva NewsArticle (Noticias, Eventos), OpinionNewsArticle (Opinión) o Article (Reportajes, Avances…) con titular, imágenes (original y 1200px), fechas de publicación y modificación, autor con su página, editor, sección, etiquetas y plataformas; más sus migas de pan (BreadcrumbList).

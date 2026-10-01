@@ -1265,6 +1265,52 @@ html[data-kdv-theme="dark"] .kdv-dark-toggle__icon--moon { display: inline-flex;
 .kdv-hero-slider__content .kdv-hero__subtitle {
 	color: rgba(255, 255, 255, .88);
 }
+/* Etiquetas de plataforma de la diapositiva (kdv_render_slide_platforms()):
+   icono en un círculo blanco y nombre sobre el color de la marca
+   oscurecido, legible sobre cualquier foto. */
+.kdv-hero-slider__platforms {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 8px;
+	margin: 0 0 14px;
+	padding: 0;
+	list-style: none;
+}
+.kdv-hero-slider--align-left .kdv-hero-slider__platforms { justify-content: flex-start; }
+.kdv-hero-chip {
+	--kdv-pc-base: var(--kdv-pc, var(--kdv-primary));
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 4px 14px 4px 5px;
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--kdv-pc-base) 55%, #000);
+	border: 1px solid color-mix(in srgb, var(--kdv-pc-base) 70%, #fff);
+	box-shadow: 0 4px 14px rgba(0, 0, 0, .35);
+	color: #fff;
+	font-size: .9rem;
+	font-weight: 700;
+	letter-spacing: .01em;
+	backdrop-filter: blur(4px);
+}
+.kdv-hero-chip__icon {
+	/* El icono tal cual, dentro de un círculo blanco: convertirlo a blanco no
+	   sirve con todos (el de PC es un cuadrado negro con las letras
+	   recortadas y quedaba como un cuadrado blanco). */
+	box-sizing: content-box;
+	width: 18px;
+	height: 18px;
+	padding: 4px;
+	border-radius: 50%;
+	background: #fff;
+	object-fit: contain;
+}
+@media (max-width: 640px) {
+	.kdv-hero-chip { font-size: .82rem; padding: 4px 12px 4px 6px; }
+	.kdv-hero-chip__icon { width: 16px; height: 16px; }
+}
+
 .kdv-hero-slider__cta {
 	display: inline-block;
 	margin-top: 18px;

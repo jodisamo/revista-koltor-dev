@@ -53,6 +53,8 @@ if ( is_admin() ) {
 	require_once KDV_INCLUDES_DIR . '/admin/site-info-page.php';
 	// "Revista Koltor Dev → Barra lateral": montar la barra recomendada en un clic.
 	require_once KDV_INCLUDES_DIR . '/admin/sidebar-tools.php';
+	// "Revista Koltor Dev → Exportar / Importar": la configuración de un sitio a otro.
+	require_once KDV_INCLUDES_DIR . '/admin/config-transfer.php';
 }
 
 // Safety-net Spanish translation for stock WordPress widget titles.

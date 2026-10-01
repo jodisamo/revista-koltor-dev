@@ -26,7 +26,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 function kdv_register_taxonomy_plataforma() {
-	register_taxonomy( 'kdv_plataforma', [ 'kdv_resena', 'post' ], [
+	// También en las Diapositivas de portada: su plataforma se muestra como
+	// etiqueta con icono encima de la imagen (front-page.php).
+	register_taxonomy( 'kdv_plataforma', [ 'kdv_resena', 'post', 'kdv_slide' ], [
 		'labels'       => [
 			'name'          => __( 'Plataformas', 'revista-koltor-dev' ),
 			'singular_name' => __( 'Plataforma', 'revista-koltor-dev' ),

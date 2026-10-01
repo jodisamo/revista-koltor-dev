@@ -126,6 +126,7 @@ function kdv_render_slide_meta_box( $post ) {
 		</p>
 		<p class="kdv-slide-hint">
 			<?php esc_html_e( 'No olvides asignar una Imagen destacada a esta diapositiva (barra lateral derecha) — sin ella no se mostrará. El orden entre diapositivas se controla en "Atributos de página" (barra lateral), con números: 0, 1, 2…', 'revista-koltor-dev' ); ?>
+			<br><?php esc_html_e( 'Plataformas (barra lateral): las que marques se muestran como etiqueta con icono encima de la imagen. Si no marcas ninguna y el botón enlaza a un artículo o reseña del sitio, se usan las de ese artículo.', 'revista-koltor-dev' ); ?>
 		</p>
 	</div>
 	<?php

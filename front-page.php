@@ -60,6 +60,9 @@ $kdv_hero_mods   = ( 'normal' !== $kdv_hero_height ? ' kdv-hero--' . $kdv_hero_h
 							// Un solo <h1> por página: el resto de diapositivas usan <h2>
 							// con la misma clase, así que se ven exactamente igual.
 							$kdv_slide_tag = 0 === $slide_index ? 'h1' : 'h2';
+
+							// Plataforma de lo que anuncia la diapositiva (icono + nombre).
+							kdv_render_slide_platforms( $slide );
 							?>
 							<<?php echo $kdv_slide_tag; // phpcs:ignore WordPress.Security.EscapeOutput -- 'h1' o 'h2' literal. ?> class="kdv-hero__title"><?php echo esc_html( get_the_title( $slide ) ); ?></<?php echo $kdv_slide_tag; // phpcs:ignore WordPress.Security.EscapeOutput ?>>
 							<?php if ( $subtitle ) : ?>
