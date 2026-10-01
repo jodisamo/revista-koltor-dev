@@ -50,6 +50,8 @@ function kdv_maybe_show_maintenance_page() {
 	// Evita que el schema.org/Open Graph de la página realmente pedida
 	// aparezca bajo la pantalla de mantenimiento (ver includes/core/seo.php).
 	remove_action( 'wp_head', 'kdv_render_review_schema' );
+	remove_action( 'wp_head', 'kdv_render_article_schema' );
+	remove_action( 'wp_head', 'kdv_render_site_schema' );
 	remove_action( 'wp_head', 'kdv_render_fallback_seo_meta', 1 );
 
 	/*

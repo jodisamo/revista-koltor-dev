@@ -28,6 +28,7 @@ add_action( 'add_meta_boxes', 'kdv_add_resena_meta_box' );
 function kdv_render_resena_meta_box( $post ) {
 	wp_nonce_field( 'kdv_save_resena_meta', 'kdv_resena_nonce' );
 
+	$item_name  = get_post_meta( $post->ID, '_kdv_item_name', true );
 	$tipo       = get_post_meta( $post->ID, '_kdv_tipo', true ) ?: 'videojuego';
 	$estado     = get_post_meta( $post->ID, '_kdv_estado', true ) ?: 'finalizado';
 	$anio       = get_post_meta( $post->ID, '_kdv_anio', true );
@@ -55,6 +56,12 @@ function kdv_render_resena_meta_box( $post ) {
 		.kdv-mb-hint { color:#666; font-size:12px; margin-top:2px; }
 		.kdv-mb-final-score { font-size:13px; color:#2271b1; margin-top:6px; }
 	</style>
+
+	<p style="margin:0 0 18px;">
+		<label for="kdv_item_name" style="display:block;font-weight:600;margin-bottom:4px;"><?php esc_html_e( 'Juego reseñado', 'revista-koltor-dev' ); ?></label>
+		<input type="text" name="kdv_item_name" id="kdv_item_name" value="<?php echo esc_attr( $item_name ); ?>" class="widefat" placeholder="<?php esc_attr_e( 'Ej: The Legend of Zelda: Ocarina of Time', 'revista-koltor-dev' ); ?>" />
+		<span class="kdv-mb-hint"><?php esc_html_e( 'Solo el nombre del juego (o de la película, el libro…), sin "Análisis de…". Es lo que Google asocia a la nota en sus resultados; si lo dejas vacío se usa el título de la reseña.', 'revista-koltor-dev' ); ?></span>
+	</p>
 
 	<div class="kdv-mb-grid">
 		<div>
@@ -156,6 +163,10 @@ function kdv_save_resena_meta( $post_id ) {
 				update_post_meta( $post_id, '_' . $field, $value );
 			}
 		}
+	}
+
+	if ( isset( $_POST['kdv_item_name'] ) ) {
+		update_post_meta( $post_id, '_kdv_item_name', sanitize_text_field( wp_unslash( $_POST['kdv_item_name'] ) ) );
 	}
 
 	if ( isset( $_POST['kdv_periodo'] ) ) {

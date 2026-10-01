@@ -5,7 +5,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.13.0
+Stable tag: 1.14.0
 Tags: blog, news, entertainment, two-columns, grid-layout, custom-logo, custom-menu, custom-colors, editor-style, featured-images, threaded-comments, translation-ready, block-styles, wide-blocks, dark-mode
 
 == Description ==
@@ -30,7 +30,7 @@ Características principales:
 * Widgets propios: Entradas recientes y Comentarios recientes con miniatura, y Categorías con el estilo del tema.
 * Espacios de publicidad configurables (cabecera, barra lateral, dentro del artículo y pie de página).
 * Botones de compartir, artículos relacionados, caja de autor y plantilla "Ranking de Reseñas".
-* SEO: datos estructurados schema.org para las reseñas y etiquetas Open Graph de respaldo, que se desactivan solas si detectan Yoast, Rank Math o similares.
+* SEO: datos estructurados schema.org (NewsArticle/Article con migas de pan en los artículos, Review con plataformas en las reseñas, Organization y WebSite en la portada) y etiquetas Open Graph de respaldo. Todo salvo la reseña se desactiva solo si detecta Yoast, Rank Math o similares.
 * Sin dependencias de plugins de terceros para su funcionamiento base.
 
 == Estructura de contenido ==
@@ -62,6 +62,13 @@ Swiper.js (assets/lib/swiper/), usado para el slider nativo de portada, licencia
 Iconos de redes sociales: Simple Icons (https://simpleicons.org), licencia CC0-1.0 (dominio público), incrustados como SVG en includes/core/template-tags.php. Los logotipos siguen siendo marcas de sus respectivos dueños.
 
 == Changelog ==
+
+= 1.14.0 =
+* Datos estructurados para Google Noticias, Discover y los resultados de artículo: cada entrada lleva NewsArticle (Noticias, Eventos), OpinionNewsArticle (Opinión) o Article (Reportajes, Avances…) con titular, imágenes (original y 1200px), fechas de publicación y modificación, autor con su página, editor, sección, etiquetas y plataformas; más sus migas de pan (BreadcrumbList).
+* Portada: Organization (nombre, logo y redes sociales) y WebSite, que alimentan el panel de marca de Google.
+* Reseñas: el Review incluye las plataformas del juego (gamePlatform), la página del autor, el logo del editor, la fecha de modificación y el idioma. Nuevo campo "Juego reseñado" en la ficha, para que Google asocie la nota al juego y no al titular del artículo.
+* Si una entrada no tiene autor, firma la publicación (Google exige autor en los artículos).
+* Con un plugin de SEO activo (Yoast, Rank Math…), el tema no duplica los datos de artículo ni de portada; solo mantiene el de las reseñas, que esos plugins no conocen. Con el modo construcción activo no se imprime ninguno.
 
 = 1.13.0 =
 Rendimiento (medido en la portada emulando un móvil con 4G: de 705 KB a 145 KB descargados, -80%, y ninguna petición a servidores externos):
