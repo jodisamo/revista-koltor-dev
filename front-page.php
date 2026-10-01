@@ -26,6 +26,8 @@ get_header();
 $hero_slides     = kdv_get_hero_slides();
 $kdv_hero_height = get_theme_mod( 'kdv_hero_height', 'normal' );
 $kdv_hero_align  = get_theme_mod( 'kdv_hero_text_align', 'center' );
+$kdv_chip_pos    = get_theme_mod( 'kdv_hero_platform_position', 'bottom-right' );
+$kdv_chip_pos    = array_key_exists( $kdv_chip_pos, kdv_hero_platform_positions() ) ? $kdv_chip_pos : 'bottom-right';
 $kdv_hero_mods   = ( 'normal' !== $kdv_hero_height ? ' kdv-hero--' . $kdv_hero_height . ' kdv-hero-slider--' . $kdv_hero_height : '' )
 	. ( 'left' === $kdv_hero_align ? ' kdv-hero--align-left kdv-hero-slider--align-left' : '' );
 ?>
@@ -61,8 +63,10 @@ $kdv_hero_mods   = ( 'normal' !== $kdv_hero_height ? ' kdv-hero--' . $kdv_hero_h
 							// con la misma clase, así que se ven exactamente igual.
 							$kdv_slide_tag = 0 === $slide_index ? 'h1' : 'h2';
 
-							// Plataforma de lo que anuncia la diapositiva (icono + nombre).
-							kdv_render_slide_platforms( $slide );
+							// Plataformas encima del título (si se eligió esa posición).
+							if ( 'above-title' === $kdv_chip_pos ) {
+								kdv_render_slide_platforms( $slide, 'above-title' );
+							}
 							?>
 							<<?php echo $kdv_slide_tag; // phpcs:ignore WordPress.Security.EscapeOutput -- 'h1' o 'h2' literal. ?> class="kdv-hero__title"><?php echo esc_html( get_the_title( $slide ) ); ?></<?php echo $kdv_slide_tag; // phpcs:ignore WordPress.Security.EscapeOutput ?>>
 							<?php if ( $subtitle ) : ?>
@@ -72,6 +76,12 @@ $kdv_hero_mods   = ( 'normal' !== $kdv_hero_height ? ' kdv-hero--' . $kdv_hero_h
 								<a class="kdv-btn kdv-hero-slider__cta" href="<?php echo esc_url( $button_url ); ?>"><?php echo esc_html( $button_text ); ?></a>
 							<?php endif; ?>
 						</div>
+						<?php
+						// Plataformas en una esquina (Personalizar → Portada).
+						if ( 'above-title' !== $kdv_chip_pos ) {
+							kdv_render_slide_platforms( $slide, $kdv_chip_pos );
+						}
+						?>
 					</div>
 				<?php endforeach; ?>
 			</div>

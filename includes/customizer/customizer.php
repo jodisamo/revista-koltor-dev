@@ -904,6 +904,39 @@ function kdv_customize_register( WP_Customize_Manager $wp_customize ) {
 		],
 	] );
 
+	// Etiquetas de plataforma de cada diapositiva (kdv_render_slide_platforms()).
+	$wp_customize->add_setting( 'kdv_hero_platform_position', [
+		'default'           => 'bottom-right',
+		'sanitize_callback' => function( $value ) {
+			return array_key_exists( $value, kdv_hero_platform_positions() ) ? $value : 'bottom-right';
+		},
+		'transport'         => 'refresh',
+	] );
+	$wp_customize->add_control( 'kdv_hero_platform_position', [
+		'label'       => __( 'Etiquetas de plataforma: posición', 'revista-koltor-dev' ),
+		'description' => __( 'Dónde se muestran, en cada diapositiva, los iconos de sus plataformas. Abajo a la izquierda se apartan solas del botón de pausa.', 'revista-koltor-dev' ),
+		'section'     => 'kdv_section_hero',
+		'type'        => 'select',
+		'choices'     => kdv_hero_platform_positions(),
+	] );
+
+	$wp_customize->add_setting( 'kdv_hero_platform_style', [
+		'default'           => 'full',
+		'sanitize_callback' => function( $value ) {
+			return in_array( $value, [ 'full', 'icon' ], true ) ? $value : 'full';
+		},
+		'transport'         => 'refresh',
+	] );
+	$wp_customize->add_control( 'kdv_hero_platform_style', [
+		'label'   => __( 'Etiquetas de plataforma: estilo', 'revista-koltor-dev' ),
+		'section' => 'kdv_section_hero',
+		'type'    => 'select',
+		'choices' => [
+			'full' => __( 'Icono y nombre', 'revista-koltor-dev' ),
+			'icon' => __( 'Solo el icono (más discreto)', 'revista-koltor-dev' ),
+		],
+	] );
+
 	$wp_customize->add_setting( 'kdv_hero_overlay_opacity', [
 		'default'           => 70,
 		'sanitize_callback' => function( $value ) {

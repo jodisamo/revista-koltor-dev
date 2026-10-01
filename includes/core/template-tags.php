@@ -619,31 +619,64 @@ function kdv_get_slide_platforms( $slide ) {
 }
 
 /**
- * Etiquetas de plataforma encima de la imagen de una diapositiva: icono y
- * nombre sobre el color de la marca, para que se vea de un vistazo de qué
- * plataforma trata lo que anuncia la portada.
+ * Posiciones posibles de las etiquetas de plataforma de las diapositivas
+ * (Personalizar → Portada).
  *
- * @param WP_Post $slide Diapositiva.
+ * @return string[]
  */
-function kdv_render_slide_platforms( $slide ) {
+function kdv_hero_platform_positions() {
+	return [
+		'bottom-right' => __( 'Abajo a la derecha (por defecto)', 'revista-koltor-dev' ),
+		'bottom-left'  => __( 'Abajo a la izquierda', 'revista-koltor-dev' ),
+		'top-right'    => __( 'Arriba a la derecha', 'revista-koltor-dev' ),
+		'top-left'     => __( 'Arriba a la izquierda', 'revista-koltor-dev' ),
+		'above-title'  => __( 'Encima del título, centradas', 'revista-koltor-dev' ),
+	];
+}
+
+/**
+ * Etiquetas de plataforma de una diapositiva: icono y nombre (o solo el
+ * icono) sobre el color de la marca, para que se vea de un vistazo de qué
+ * plataforma trata lo que anuncia la portada. La posición y el estilo se
+ * eligen en Personalizar → Portada.
+ *
+ * @param WP_Post $slide    Diapositiva.
+ * @param string  $position Una de kdv_hero_platform_positions().
+ */
+function kdv_render_slide_platforms( $slide, $position = 'above-title' ) {
 	$platforms = kdv_get_slide_platforms( $slide );
 	if ( ! $platforms ) {
 		return;
 	}
-	echo '<ul class="kdv-hero-slider__platforms">';
+	$icon_only = 'icon' === get_theme_mod( 'kdv_hero_platform_style', 'full' );
+	$corner    = 'above-title' !== $position;
+
+	// En una esquina va en su propia capa, alineada con el contenedor.
+	if ( $corner ) {
+		echo '<div class="kdv-hero-slider__corner kdv-hero-slider__corner--' . esc_attr( $position ) . '"><div class="kdv-container">';
+	}
+	echo '<ul class="kdv-hero-slider__platforms' . ( $icon_only ? ' kdv-hero-slider__platforms--icon' : '' ) . '">';
 	foreach ( array_slice( $platforms, 0, 4 ) as $p ) {
 		$term     = $p['term'];
 		$color    = kdv_get_platform_color( $term );
 		$icon_id  = absint( get_term_meta( $term->term_id, 'kdv_platform_icon', true ) );
 		$icon_url = $icon_id ? wp_get_attachment_image_url( $icon_id, 'thumbnail' ) : '';
+		// Solo icono: el nombre sigue para lectores de pantalla y como título
+		// al pasar el ratón. Sin icono subido, siempre con nombre.
+		$hide_name = $icon_only && $icon_url;
 		printf(
-			'<li class="kdv-hero-chip"%1$s>%2$s<span>%3$s</span></li>',
+			'<li class="kdv-hero-chip"%1$s%4$s>%2$s<span%5$s>%3$s</span></li>',
 			$color ? ' style="' . esc_attr( '--kdv-pc:' . $color ) . '"' : '',
 			$icon_url ? '<img class="kdv-hero-chip__icon" src="' . esc_url( $icon_url ) . '" alt="" width="20" height="20" />' : '',
-			esc_html( $term->name )
+			esc_html( $term->name ),
+			$hide_name ? ' title="' . esc_attr( $term->name ) . '"' : '',
+			$hide_name ? ' class="screen-reader-text"' : ''
 		);
 	}
 	echo '</ul>';
+	if ( $corner ) {
+		echo '</div></div>';
+	}
 }
 
 /**

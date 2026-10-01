@@ -5,7 +5,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.15.0
+Stable tag: 1.15.1
 Tags: blog, news, entertainment, two-columns, grid-layout, custom-logo, custom-menu, custom-colors, editor-style, featured-images, threaded-comments, translation-ready, block-styles, wide-blocks, dark-mode
 
 == Description ==
@@ -62,6 +62,9 @@ Swiper.js (assets/lib/swiper/), usado para el slider nativo de portada, licencia
 Iconos de redes sociales: Simple Icons (https://simpleicons.org), licencia CC0-1.0 (dominio público), incrustados como SVG en includes/core/template-tags.php. Los logotipos siguen siendo marcas de sus respectivos dueños.
 
 == Changelog ==
+
+= 1.15.1 =
+* Etiquetas de plataforma de las diapositivas: nueva opción en Personalizar → Revista Koltor Dev → Portada para elegir su posición (abajo a la derecha -por defecto-, abajo a la izquierda, arriba a la derecha, arriba a la izquierda o encima del título) y su estilo (icono y nombre, o solo el icono). Centradas encima del título competían con él; en una esquina quedan alineadas con el contenido, se apartan solas del botón de pausa (abajo a la izquierda) y de la barra flotante de redes (a la derecha), y en el móvil quedan por encima de los puntos del slider.
 
 = 1.15.0 =
 * Nuevo: "Revista Koltor Dev → Exportar / Importar". Lleva la configuración de un sitio a otro (por ejemplo, del sitio local de pruebas a producción) sin tocar el contenido: categorías y subcategorías, plataformas con sus iconos (dentro del archivo) y colores, géneros, menús, la página Tops, la barra lateral, los ajustes del Personalizador e Información del sitio. Importar es en dos pasos (vista previa de cada cambio y confirmación); los slugs de versiones anteriores se renombran en vez de duplicarse (Novedades → Noticias, Análisis → Reportajes, Nintendo Switch → Nintendo, Móvil → Android), así que las entradas siguen en su categoría. Nunca borra nada, no copia el modo construcción y guarda una copia de los ajustes para el botón "Restaurar". Cada ajuste pasa por el mismo saneado que en el Personalizador y los iconos se validan como imagen por su contenido.

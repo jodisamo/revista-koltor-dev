@@ -1278,6 +1278,43 @@ html[data-kdv-theme="dark"] .kdv-dark-toggle__icon--moon { display: inline-flex;
 	list-style: none;
 }
 .kdv-hero-slider--align-left .kdv-hero-slider__platforms { justify-content: flex-start; }
+
+/* En una esquina (Personalizar → Portada → Etiquetas de plataforma): capa
+   propia alineada con el contenedor, sin tocar el título. */
+.kdv-hero-slider__corner {
+	position: absolute;
+	left: 0;
+	right: 0;
+	z-index: 2;
+	pointer-events: none; /* que no tape las flechas ni el arrastre */
+}
+.kdv-hero-slider__corner .kdv-hero-slider__platforms { margin: 0; pointer-events: auto; }
+.kdv-hero-slider__corner--bottom-left,
+.kdv-hero-slider__corner--bottom-right { bottom: 26px; }
+.kdv-hero-slider__corner--top-left,
+.kdv-hero-slider__corner--top-right { top: 22px; }
+.kdv-hero-slider__corner--bottom-left .kdv-hero-slider__platforms,
+.kdv-hero-slider__corner--top-left .kdv-hero-slider__platforms { justify-content: flex-start; }
+.kdv-hero-slider__corner--bottom-right .kdv-hero-slider__platforms,
+.kdv-hero-slider__corner--top-right .kdv-hero-slider__platforms { justify-content: flex-end; }
+/* Abajo a la izquierda vive el botón de pausa (16px + 44px): las etiquetas
+   empiezan después de él en pantallas donde el contenedor llega al borde. */
+.kdv-hero-slider__corner--bottom-left .kdv-container {
+	padding-left: max(20px, calc(76px - max(0px, (100vw - var(--kdv-container)) / 2)));
+}
+/* A la derecha, con la barra flotante de redes activada, se apartan de ella. */
+.kdv-has-social-bar-right .kdv-hero-slider__corner--bottom-right .kdv-container,
+.kdv-has-social-bar-right .kdv-hero-slider__corner--top-right .kdv-container {
+	padding-right: max(20px, calc(76px - max(0px, (100vw - var(--kdv-container)) / 2)));
+}
+/* Solo icono: círculos, sin el nombre. */
+.kdv-hero-slider__platforms--icon .kdv-hero-chip { padding: 4px; gap: 0; }
+@media (max-width: 640px) {
+	.kdv-hero-slider__corner--bottom-left,
+	.kdv-hero-slider__corner--bottom-right { bottom: 40px; } /* por encima de los puntos */
+	.kdv-hero-slider__corner--top-left,
+	.kdv-hero-slider__corner--top-right { top: 14px; }
+}
 .kdv-hero-chip {
 	--kdv-pc-base: var(--kdv-pc, var(--kdv-primary));
 	display: inline-flex;
