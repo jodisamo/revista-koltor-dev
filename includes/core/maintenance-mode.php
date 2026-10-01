@@ -52,6 +52,29 @@ function kdv_maybe_show_maintenance_page() {
 	remove_action( 'wp_head', 'kdv_render_review_schema' );
 	remove_action( 'wp_head', 'kdv_render_fallback_seo_meta', 1 );
 
+	/*
+	 * Lo mismo con lo que imprime el propio WordPress en <head>: sin esto,
+	 * al pedir la URL de un artículo la pantalla de mantenimiento llevaba su
+	 * título (un segundo <title>), su canonical, su enlace corto con el ID y
+	 * sus enlaces de feed, oEmbed y API -- bastaba con probar URLs para
+	 * confirmar que una reseña con embargo existe y leer su título.
+	 */
+	remove_action( 'wp_head', '_wp_render_title_tag', 1 );
+	remove_action( 'wp_head', 'feed_links', 2 );
+	remove_action( 'wp_head', 'feed_links_extra', 3 );
+	remove_action( 'wp_head', 'rsd_link' );
+	remove_action( 'wp_head', 'rel_canonical' );
+	remove_action( 'wp_head', 'wp_shortlink_wp_head', 10 );
+	remove_action( 'wp_head', 'adjacent_posts_rel_link_wp_head', 10 );
+	remove_action( 'wp_head', 'wp_oembed_add_discovery_links' );
+	remove_action( 'wp_head', 'rest_output_link_wp_head', 10 );
+
+	// Y la consulta principal se vacía: así tampoco un plugin (Yoast, Rank
+	// Math…) que lea el artículo actual al pintar <head> encuentra nada.
+	$GLOBALS['wp_query']     = new WP_Query();
+	$GLOBALS['wp_the_query'] = $GLOBALS['wp_query'];
+	unset( $GLOBALS['post'] );
+
 	status_header( 503 );
 	header( 'Retry-After: 3600' );
 

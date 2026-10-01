@@ -41,6 +41,11 @@ function kdv_register_cpt_slide() {
 		'show_in_menu'  => true,
 		'menu_icon'     => 'dashicons-images-alt2',
 		'menu_position' => 6,
+		// Permisos de "página" (editor o administrador), no de "entrada": con
+		// los de entrada, cualquier autor podía publicar en la portada o en la
+		// cinta que sale en todo el sitio.
+		'capability_type' => 'page',
+		'map_meta_cap'    => true,
 		'supports'      => [ 'title', 'thumbnail', 'page-attributes' ],
 		'show_in_rest'  => true,
 	] );

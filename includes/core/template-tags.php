@@ -652,10 +652,13 @@ function kdv_render_platform_badges( $post_id = null ) {
  * @return WP_Term|null
  */
 function kdv_get_platform_filter_term() {
-	if ( empty( $_GET['plataforma'] ) ) {
+	// Solo texto: "?plataforma[]=x" llega como array y sanitize_title() con
+	// un array lanza un TypeError (error 500 en cualquier página, porque la
+	// barra de plataformas lee este parámetro en todas).
+	if ( empty( $_GET['plataforma'] ) || ! is_string( $_GET['plataforma'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification -- filtro público de solo lectura.
 		return null;
 	}
-	$slug = sanitize_title( wp_unslash( $_GET['plataforma'] ) );
+	$slug = sanitize_title( wp_unslash( $_GET['plataforma'] ) ); // phpcs:ignore WordPress.Security.NonceVerification
 	$term = get_term_by( 'slug', $slug, 'kdv_plataforma' );
 	return ( $term && ! is_wp_error( $term ) ) ? $term : null;
 }

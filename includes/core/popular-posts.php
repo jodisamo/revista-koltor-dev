@@ -9,8 +9,9 @@
  * para cada mes (p. ej. "_kdv_views_202608"). Al pedir "lo más popular del
  * mes" simplemente ordenamos por el contador del mes actual — así el
  * ranking se reinicia solo cada mes, sin tener que borrar ni archivar nada
- * a mano. No sustituye a una herramienta de analítica de verdad (no filtra
- * bots ni deduplica visitas repetidas de la misma persona), pero para
+ * a mano. No sustituye a una herramienta de analítica de verdad (filtra los
+ * bots que se identifican como tales y cuenta una visita por persona y
+ * artículo cada 6 horas), pero para
  * ordenar "qué se está leyendo más esta semana" en la portada es más que
  * suficiente y no depende de ningún servicio externo.
  *
@@ -57,14 +58,53 @@ function kdv_track_post_view() {
 		return;
 	}
 
-	$meta_key = '_kdv_views_' . gmdate( 'Ym' );
-	$current  = get_post_meta( $post_id, $meta_key, true );
-
-	if ( '' === $current ) {
-		add_post_meta( $post_id, $meta_key, 1, true );
-	} else {
-		update_post_meta( $post_id, $meta_key, absint( $current ) + 1 );
+	/*
+	 * Una visita por persona y artículo cada 6 horas. Sin esto, cualquiera
+	 * con un bucle de peticiones (y un User-Agent de navegador normal, que
+	 * el filtro de arriba no puede distinguir) subía un artículo a "Populares
+	 * del mes" a voluntad. La persona se identifica con un hash de su IP y
+	 * una sal secreta del sitio: nunca se guarda la IP en claro.
+	 *
+	 * Solo REMOTE_ADDR: cabeceras como X-Forwarded-For las inventa el propio
+	 * cliente. Detrás de un proxy o CDN que oculte la IP real, el filtro
+	 * kdv_view_client_ip permite devolver la buena.
+	 */
+	$ip = (string) apply_filters( 'kdv_view_client_ip', isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '' );
+	$seen_key = 'kdv_seen_' . substr( hash_hmac( 'sha256', $post_id . '|' . $ip, wp_salt( 'nonce' ) ), 0, 32 );
+	if ( get_transient( $seen_key ) ) {
+		return;
 	}
+	set_transient( $seen_key, 1, 6 * HOUR_IN_SECONDS );
+
+	kdv_increment_post_views( $post_id, '_kdv_views_' . gmdate( 'Ym' ) );
+}
+
+/**
+ * Suma 1 al contador de forma ATÓMICA: una sola sentencia UPDATE que hace
+ * la suma en la base de datos. Antes se leía el número, se sumaba en PHP y
+ * se escribía; con varias visitas a la vez, unas pisaban a otras (en una
+ * prueba con 60 visitas simultáneas el contador solo subió 30).
+ *
+ * @param int    $post_id  Entrada.
+ * @param string $meta_key Clave del contador del mes.
+ */
+function kdv_increment_post_views( $post_id, $meta_key ) {
+	global $wpdb;
+
+	$updated = $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- incremento atómico; las funciones de metadatos no lo permiten.
+		$wpdb->prepare(
+			"UPDATE {$wpdb->postmeta} SET meta_value = meta_value + 1 WHERE post_id = %d AND meta_key = %s",
+			$post_id,
+			$meta_key
+		)
+	);
+
+	if ( ! $updated ) {
+		// Primera visita del mes: crea el contador (único por entrada y clave).
+		add_post_meta( $post_id, $meta_key, 1, true );
+	}
+
+	wp_cache_delete( $post_id, 'post_meta' );
 }
 add_action( 'template_redirect', 'kdv_track_post_view' );
 

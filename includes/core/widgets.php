@@ -125,13 +125,26 @@ class KDV_Widget_Recent_Comments extends WP_Widget {
 		$number = ! empty( $instance['number'] ) ? absint( $instance['number'] ) : 5;
 		$number = max( 1, min( 10, $number ) );
 
-		$kdv_comments = get_comments( [
-			'number'        => $number,
-			'status'        => 'approve',
-			'post_status'   => 'publish',
-			'type'          => 'comment',
-			'no_found_rows' => true,
-		] );
+		// Se piden de más y se descartan los de entradas protegidas con
+		// contraseña: sin esto el widget mostraba en todo el sitio el texto
+		// de comentarios que solo debería ver quien conoce la contraseña
+		// (el feed de comentarios y el bloque de WordPress ya los excluyen).
+		$kdv_comments = array_slice(
+			array_filter(
+				get_comments( [
+					'number'        => $number * 3,
+					'status'        => 'approve',
+					'post_status'   => 'publish',
+					'type'          => 'comment',
+					'no_found_rows' => true,
+				] ),
+				function( $kdv_c ) {
+					return '' === get_post_field( 'post_password', $kdv_c->comment_post_ID );
+				}
+			),
+			0,
+			$number
+		);
 
 		if ( ! $kdv_comments ) {
 			return;

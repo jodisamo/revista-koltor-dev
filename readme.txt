@@ -5,7 +5,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.12.1
+Stable tag: 1.12.2
 Tags: blog, news, entertainment, two-columns, grid-layout, custom-logo, custom-menu, custom-colors, editor-style, featured-images, threaded-comments, translation-ready, block-styles, wide-blocks, dark-mode
 
 == Description ==
@@ -62,6 +62,15 @@ Swiper.js (assets/lib/swiper/), usado para el slider nativo de portada, licencia
 Iconos de redes sociales: Simple Icons (https://simpleicons.org), licencia CC0-1.0 (dominio público), incrustados como SVG en includes/core/template-tags.php. Los logotipos siguen siendo marcas de sus respectivos dueños.
 
 == Changelog ==
+
+= 1.12.2 =
+Correcciones de seguridad (auditoría con ataques simulados sobre el sitio local):
+* Corregido: "?plataforma[]=x" (el parámetro como lista en vez de texto) provocaba un error fatal de PHP (500) en cualquier página del sitio, porque la barra de plataformas lee ese parámetro en todas.
+* Corregido: con el modo construcción activo, al pedir la URL de un artículo la pantalla de mantenimiento incluía en <head> su título, canonical, enlace corto con el ID y enlaces de feed, oEmbed y API: se podía confirmar que una reseña con embargo existía y leer su título. Ahora la consulta se vacía y esas etiquetas no se imprimen.
+* Corregido: el widget "Koltor Dev: Comentarios recientes" mostraba el texto de comentarios de entradas protegidas con contraseña a cualquier visitante.
+* Corregido: un autor (o un colaborador, como borrador) podía crear Diapositivas de portada y anuncios de la Cinta, que salen en todo el sitio. Ahora requieren permisos de página (editor o administrador).
+* Contador de "Populares del mes": una visita por persona y artículo cada 6 horas (hash de la IP con sal secreta, nunca la IP en claro), para que no se pueda subir un artículo al ranking con un bucle de peticiones; y suma atómica en la base de datos (con visitas simultáneas se perdía la mitad).
+* Caja de Reseña: nota limitada a 0-10 y sin <img src=""> cuando la URL de la imagen no es válida.
 
 = 1.12.1 =
 * Corregido (redes sociales): los campos de Personalizar → Redes sociales solo funcionaban con la URL completa. "@usuario", el usuario a secas o un número de WhatsApp se guardaban como enlaces rotos ("http://@entrepixeles", "http://573001234567"). Ahora cada campo acepta URL (con o sin https://), @usuario, usuario o, en WhatsApp, el número con código de país, y arma el enlace correcto en https (x.com/…, wa.me/…, tiktok.com/@…). Los valores ya guardados rotos se reparan solos al mostrarse. El campo libre "otras redes" pasa por la misma normalización.

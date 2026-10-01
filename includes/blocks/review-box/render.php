@@ -11,8 +11,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 function kdv_render_review_box_block( $attributes ) {
 	$titulo     = $attributes['titulo'] ?? '';
-	$puntuacion = isset( $attributes['puntuacion'] ) ? (float) $attributes['puntuacion'] : null;
-	$imagen_url = $attributes['imagenUrl'] ?? '';
+	$puntuacion = isset( $attributes['puntuacion'] ) ? max( 0, min( 10, (float) $attributes['puntuacion'] ) ) : null;
+	// Solo URLs válidas (esc_url_raw descarta javascript: y similares): así
+	// nunca se imprime un <img src=""> vacío.
+	$imagen_url = esc_url_raw( (string) ( $attributes['imagenUrl'] ?? '' ) );
 	$resumen    = $attributes['resumen'] ?? '';
 	$pros       = kdv_lines_to_array( $attributes['pros'] ?? '' );
 	$contras    = kdv_lines_to_array( $attributes['contras'] ?? '' );
