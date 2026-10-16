@@ -9,6 +9,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Lista de fuentes apta para CSS ('Baloo 2', 'Segoe UI', sans-serif): solo
+ * letras, números, espacios, comas, guiones y comillas, así nada puede
+ * cerrar la regla ni la etiqueta <style>.
+ *
+ * @param string $stack Lista de fuentes.
+ * @return string
+ */
+function kdv_sanitize_css_font_stack( $stack ) {
+	return preg_replace( '/[^A-Za-z0-9 ,\'"\-]/', '', (string) $stack );
+}
+
 function kdv_enqueue_assets() {
 
 	// Tipografías del emparejamiento elegido en Personalizar → Tipografía,
@@ -176,8 +188,8 @@ function kdv_get_dynamic_css() {
 	$css .= '--kdv-primary: ' . esc_html( $primary ) . ";\n";
 	$css .= '--kdv-secondary: ' . esc_html( $secondary ) . ";\n";
 	$css .= '--kdv-accent: ' . esc_html( $accent ) . ";\n";
-	$css .= '--kdv-font-heading: ' . esc_html( $typo['heading'] ) . ";\n";
-	$css .= '--kdv-font-body: ' . esc_html( $typo['body'] ) . ";\n";
+	$css .= '--kdv-font-heading: ' . kdv_sanitize_css_font_stack( $typo['heading'] ) . ";\n";
+	$css .= '--kdv-font-body: ' . kdv_sanitize_css_font_stack( $typo['body'] ) . ";\n";
 	$css .= '--kdv-hero-overlay-top: ' . esc_html( $overlay_top ) . ";\n";
 	$css .= '--kdv-hero-overlay-bottom: ' . esc_html( $overlay_bottom ) . ";\n";
 	$css .= '--kdv-logo-height: ' . $logo_height . "px;\n";

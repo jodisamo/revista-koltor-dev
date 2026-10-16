@@ -5,7 +5,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.15.2
+Stable tag: 1.15.3
 Tags: blog, news, entertainment, two-columns, grid-layout, custom-logo, custom-menu, custom-colors, editor-style, featured-images, threaded-comments, translation-ready, block-styles, wide-blocks, dark-mode
 
 == Description ==
@@ -62,6 +62,12 @@ Swiper.js (assets/lib/swiper/), usado para el slider nativo de portada, licencia
 Iconos de redes sociales: Simple Icons (https://simpleicons.org), licencia CC0-1.0 (dominio público), incrustados como SVG en includes/core/template-tags.php. Los logotipos siguen siendo marcas de sus respectivos dueños.
 
 == Changelog ==
+
+= 1.15.3 =
+* Corregido: el sitio vuelve a usar las tipografías del tema. esc_html() convertía las comillas de la lista de fuentes ('Baloo 2') en &#039; dentro del CSS, la variable quedaba inválida y todo el sitio caía a la fuente por defecto del navegador (Times). Ahora se limpia con un filtro propio que solo deja caracteres válidos en una lista de fuentes. Error presente desde la 1.1.0.
+* Corregido: las barras del desglose de puntuación de las reseñas salían vacías (el relleno era un elemento en línea y no tomaba su ancho).
+* Corregido (móvil): en las diapositivas, una plataforma sin icono subido salía como un círculo vacío; ahora muestra su nombre.
+* La web del tema y del autor pasa a ser koltorgroup.com (Koltor Dev es la división de desarrollo de Koltor Group).
 
 = 1.15.2 =
 * Corregido (móvil): las etiquetas de plataforma de las diapositivas, en una esquina, se montaban encima del botón cuando el título y el subtítulo llenaban la diapositiva. En el móvil ahora van solo como iconos, pequeños y dentro del contenido, encima del título, donde no pueden chocar con nada; en escritorio se mantiene la esquina elegida.

@@ -648,7 +648,7 @@ function kdv_customize_register( WP_Customize_Manager $wp_customize ) {
 	] );
 	$wp_customize->add_control( 'kdv_header_social_links', [
 		'label'       => __( 'Otras redes (opcional, una por línea: Nombre|URL)', 'revista-koltor-dev' ),
-		'description' => __( 'Para cualquier red que no esté en la lista de arriba. Ejemplo: Letterboxd|https://letterboxd.com/koltordev', 'revista-koltor-dev' ),
+		'description' => __( 'Para cualquier red que no esté en la lista de arriba. Ejemplo: Letterboxd|https://letterboxd.com/tuusuario', 'revista-koltor-dev' ),
 		'section'     => 'kdv_section_social',
 		'type'        => 'textarea',
 	] );

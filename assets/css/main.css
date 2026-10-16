@@ -1319,8 +1319,11 @@ html[data-kdv-theme="dark"] .kdv-dark-toggle__icon--moon { display: inline-flex;
 	.kdv-hero-slider__corner { display: none; }
 	.kdv-hero-slider__platforms--mobile { display: flex; }
 	.kdv-hero-slider__platforms { margin-bottom: 10px; gap: 6px; }
-	.kdv-hero-slider__platforms .kdv-hero-chip { padding: 3px; gap: 0; box-shadow: 0 2px 8px rgba(0, 0, 0, .35); }
-	.kdv-hero-slider__platforms .kdv-hero-chip span {
+	/* Solo las que tienen icono quedan en círculo; sin icono subido se
+	   mantiene el nombre (si no, sería un círculo vacío). */
+	.kdv-hero-slider__platforms .kdv-hero-chip { box-shadow: 0 2px 8px rgba(0, 0, 0, .35); }
+	.kdv-hero-slider__platforms .kdv-hero-chip:has(> .kdv-hero-chip__icon) { padding: 3px; gap: 0; }
+	.kdv-hero-slider__platforms .kdv-hero-chip__icon + span {
 		position: absolute !important;
 		width: 1px; height: 1px;
 		overflow: hidden;
@@ -1880,7 +1883,7 @@ html[data-kdv-theme="dark"] .kdv-platform-badge__img { filter: invert(1); }
 .kdv-score-breakdown { display: grid; gap: 10px; margin: 24px 0; }
 .kdv-score-breakdown__row { display: grid; grid-template-columns: 140px 1fr 40px; align-items: center; gap: 12px; font-size: .88rem; }
 .kdv-score-breakdown__bar { height: 8px; border-radius: 999px; background: var(--kdv-border); overflow: hidden; }
-.kdv-score-breakdown__fill { height: 100%; background: linear-gradient(90deg, var(--kdv-primary), var(--kdv-secondary)); border-radius: 999px; }
+.kdv-score-breakdown__fill { display: block; height: 100%; background: linear-gradient(90deg, var(--kdv-primary), var(--kdv-secondary)); border-radius: 999px; }
 
 .kdv-review-box, .kdv-proscons {
 	background: var(--kdv-surface);
